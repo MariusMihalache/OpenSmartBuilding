@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenSmartBuilding — Enterprise Control System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+:root{
+  /* Base */
+  --bg:       #090d12;
+  --bg1:      #0d1219;
+  --bg2:      #111820;
+  --bg3:      #161e28;
+  --bg4:      #1c2533;
+  --border:   #1e2d3d;
+  --border2:  #243447;
+  --border3:  #2d4058;
+  /* Text */
+  --t1: #e8f0f8;
+  --t2: #7a9ab8;
+  --t3: #3d5a75;
+  --t4: #1e3048;
+  /* Accent — single blue */
+  --acc:    #1e88e5;
+  --acc-d:  #0d47a1;
+  --acc-bg: #071428;
+  --acc-b:  #0d2a50;
+  /* Status */
+  --ok:     #00c853;
+  --ok-bg:  #001a0a;
+  --ok-b:   #00401a;
+  --warn:   #ff8f00;
+  --warn-bg:#1a0e00;
+  --warn-b: #3d2400;
+  --crit:   #d32f2f;
+  --crit-bg:#1a0505;
+  --crit-b: #4a0f0f;
+  --info:   #1e88e5;
+  --info-bg:#071428;
+  --info-b: #0d2a50;
+  /* Mono font */
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --r:  4px;
+  --r2: 6px;
+  --r3: 8px;
+}
+
+body { background:var(--bg); color:var(--t1); font-family:var(--sans); font-size:13px; line-height:1.5; }
+
+/* ═══════════════════════════════
+   GLOBAL STATUS BAR — always visible
+═══════════════════════════════ */
+.gsb {
+  height: 38px;
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+.gsb-brand {
+  display: flex; align-items: center; gap: 6px;
+  padding-right: 10px;
+  border-right: 1px solid var(--border);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.gsb-logo {
+  width: 22px; height: 22px;
+  background: var(--acc-bg);
+  border: 1px solid var(--acc-b);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--acc); font-size: 12px;
+}
+.gsb-name { font-size: 11px; font-weight: 700; color: var(--t1); letter-spacing: .5px; text-transform: uppercase; font-family: var(--mono); }
+
+.gsb-status {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  margin-right: 0;
+  flex-shrink: 0;
+}
+.gsb-state-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.gsb-state-dot.ok   { background: var(--ok);   box-shadow: 0 0 6px var(--ok); animation: dotpulse 2s infinite; }
+.gsb-state-dot.warn { background: var(--warn);  box-shadow: 0 0 6px var(--warn); animation: dotpulse 1.5s infinite; }
+.gsb-state-dot.crit { background: var(--crit);  box-shadow: 0 0 8px var(--crit); animation: dotpulse .8s infinite; }
+@keyframes dotpulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.gsb-state-label { font-size: 10px; font-weight: 700; font-family: var(--mono); letter-spacing: .3px; }
+
+.gsb-metrics {
+  display: flex; align-items: center; gap: 0;
+  flex: 1;
+}
+.gsb-metric {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  font-family: var(--mono); font-size: 10px;
+  flex-shrink: 0;
+}
+.gsb-metric-label { color: var(--t3); font-size: 9px; letter-spacing: .3px; }
+.gsb-metric-val   { color: var(--t1); font-weight: 600; font-size: 10px; }
+
+.gsb-alarms {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.gsb-alarms:hover { background: rgba(255,255,255,.02); }
+.alarm-count {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 3px;
+  font-family: var(--mono); letter-spacing: .2px;
+}
+.ac-crit { background: var(--crit-bg); color: var(--crit); border: 1px solid var(--crit-b); }
+.ac-warn { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-b); }
+.ac-info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-b); }
+
+.gsb-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 12px;
+  padding-left: 14px;
+}
+.gsb-clock { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--t1); letter-spacing: 2px; }
+.gsb-date  { font-family: var(--mono); font-size: 9px; color: var(--t3); letter-spacing: 1px; text-transform: uppercase; }
+.gsb-uptime { font-family: var(--mono); font-size: 10px; color: var(--t3); padding-left: 12px; border-left: 1px solid var(--border); }
+
+/* ═══════════════════════════════
+   ALARM BAR — persistent top
+═══════════════════════════════ */
+.alarm-bar {
+  background: var(--crit-bg);
+  border-bottom: 1px solid var(--crit-b);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 32px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.alarm-bar.hidden { display: none; }
+.alarm-bar-icon { color: var(--crit); font-size: 14px; flex-shrink: 0; animation: dotpulse .8s infinite; }
+.alarm-bar-items { display: flex; gap: 10px; flex: 1; overflow: hidden; }
+.alarm-bar-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--crit);
+  font-family: var(--mono); white-space: nowrap;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: var(--r);
+  border: 1px solid var(--crit-b);
+  background: rgba(211,47,47,.06);
+  flex-shrink: 0;
+}
+.alarm-bar-item:hover { background: rgba(211,47,47,.12); }
+.alarm-bar-dismiss {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 10px; color: var(--t3);
+  cursor: pointer; font-family: var(--mono);
+  padding: 2px 8px; border-radius: var(--r);
+  border: 1px solid var(--border);
+}
+.alarm-bar-dismiss:hover { color: var(--t1); border-color: var(--border2); }
+
+/* ═══════════════════════════════
+   CONTEXT BAR — building / zone / mode
+═══════════════════════════════ */
+.ctx-bar {
+  height: 38px;
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 0;
+  flex-shrink: 0;
+}
+.ctx-building {
+  display: flex; align-items: center; gap: 6px;
+  padding-right: 10px;
+  border-right: 1px solid var(--border);
+  margin-right: 10px;
+}
+.ctx-building-name { font-size: 12px; font-weight: 600; color: var(--t1); }
+.ctx-building-sub  { font-size: 10px; color: var(--t3); font-family: var(--mono); }
+
+.ctx-tabs { display: flex; gap: 2px; }
+.ctx-tab {
+  padding: 5px 12px;
+  font-size: 11px; font-weight: 500;
+  color: var(--t2);
+  border-radius: var(--r);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .12s;
+  font-family: var(--mono);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.ctx-tab:hover { background: var(--bg3); color: var(--t1); }
+.ctx-tab.on { background: var(--acc-bg); color: var(--acc); border-color: var(--acc-b); }
+
+.ctx-zone-sel {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 8px;
+}
+.zone-btn {
+  font-size: 9px; font-weight: 500;
+  padding: 2px 8px; border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--t2);
+  cursor: pointer; font-family: var(--mono);
+  transition: all .12s;
+}
+.zone-btn:hover { border-color: var(--border2); color: var(--t1); }
+.zone-btn.on { background: var(--bg3); color: var(--t1); border-color: var(--border2); }
+
+/* ═══════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════ */
+.layout {
+  display: flex;
+  height: calc(100vh - 38px - 32px - 38px);
+  overflow: hidden;
+  position: relative;
+}
+.layout.no-alarm { height: calc(100vh - 38px - 38px); }
+
+/* ═══════════════════════════════
+   LEFT ALARM PANEL — persistent
+═══════════════════════════════ */
+.alarm-panel {
+  width: 240px;
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.ap-header {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.ap-title {
+  font-size: 10px; font-weight: 700;
+  color: var(--t2); text-transform: uppercase;
+  letter-spacing: 1.5px; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.ap-count {
+  font-size: 10px; font-family: var(--mono);
+  padding: 1px 6px; border-radius: 3px;
+  background: var(--crit-bg); color: var(--crit);
+  border: 1px solid var(--crit-b);
+}
+.ap-filters {
+  display: flex; gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ap-filter {
+  font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 3px;
+  cursor: pointer; font-family: var(--mono);
+  border: 1px solid var(--border);
+  color: var(--t3);
+  transition: all .1s;
+  letter-spacing: .3px;
+}
+.ap-filter:hover { color: var(--t1); border-color: var(--border2); }
+.ap-filter.on { color: var(--t1); border-color: var(--border2); background: var(--bg3); }
+.ap-filter.crit { color: var(--crit); border-color: var(--crit-b); background: var(--crit-bg); }
+.ap-filter.warn { color: var(--warn); border-color: var(--warn-b); background: var(--warn-bg); }
+
+.ap-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.ap-list::-webkit-scrollbar { width: 3px; }
+.ap-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.alarm-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+  position: relative;
+}
+.alarm-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+}
+.alarm-item.crit::before { background: var(--crit); }
+.alarm-item.warn::before { background: var(--warn); }
+.alarm-item.info::before { background: var(--info); }
+.alarm-item:hover { background: var(--bg2); }
+.alarm-item.active { background: var(--bg3); }
+.ai-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 3px; }
+.ai-sys {
+  font-size: 9px; font-weight: 700;
+  font-family: var(--mono); letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 1px 5px; border-radius: 2px;
+}
+.ai-sys.crit { background: var(--crit-bg); color: var(--crit); border: 1px solid var(--crit-b); }
+.ai-sys.warn { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-b); }
+.ai-sys.info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-b); }
+.ai-time { font-size: 9px; color: var(--t3); font-family: var(--mono); flex-shrink: 0; }
+.ai-msg  { font-size: 11px; color: var(--t1); font-weight: 500; line-height: 1.3; }
+.ai-loc  { font-size: 10px; color: var(--t3); margin-top: 2px; font-family: var(--mono); }
+.ai-new  {
+  position: absolute; top: 8px; right: 36px;
+  font-size: 8px; font-weight: 700;
+  background: var(--crit); color: #fff;
+  padding: 1px 5px; border-radius: 2px;
+  font-family: var(--mono); letter-spacing: .5px;
+  animation: dotpulse .8s infinite;
+}
+
+/* ═══════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════ */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 14px;
+  background: var(--bg);
+}
+.content-scroll::-webkit-scrollbar { width: 4px; }
+.content-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ═══════════════════════════════
+   SIDE DRAWER — detail panel
+═══════════════════════════════ */
+.drawer {
+  width: 320px;
+  background: var(--bg1);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  transform: translateX(100%);
+  transition: transform .2s ease;
+  overflow: hidden;
+  z-index: 200;
+  box-shadow: -4px 0 20px rgba(0,0,0,.5);
+}
+.drawer.open { transform: translateX(0); }
+.dr-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-shrink: 0;
+}
+.dr-title { font-size: 12px; font-weight: 600; color: var(--t1); }
+.dr-sub   { font-size: 10px; color: var(--t3); font-family: var(--mono); margin-top: 2px; }
+.dr-close {
+  width: 24px; height: 24px;
+  border-radius: var(--r); border: 1px solid var(--border2);
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--t2); font-size: 14px;
+  flex-shrink: 0;
+}
+.dr-close:hover { color: var(--t1); background: var(--bg3); }
+.dr-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
+.dr-body::-webkit-scrollbar { width: 3px; }
+.dr-body::-webkit-scrollbar-thumb { background: var(--border2); }
+.dr-section { margin-bottom: 14px; }
+.dr-section-title {
+  font-size: 9px; font-weight: 700;
+  color: var(--t3); text-transform: uppercase;
+  letter-spacing: 1.5px; font-family: var(--mono);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
+.dr-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 0; border-bottom: 1px solid rgba(30,45,61,.5);
+  font-size: 11px;
+}
+.dr-row:last-child { border-bottom: none; }
+.dr-row-label { color: var(--t2); }
+.dr-row-val   { color: var(--t1); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.dr-gauge-wrap { display: flex; justify-content: center; margin: 10px 0; }
+.dr-history { }
+.dr-hist-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid rgba(30,45,61,.5);
+  font-size: 10px;
+}
+.dr-hist-item:last-child { border-bottom: none; }
+.dr-hist-time { color: var(--t3); font-family: var(--mono); flex-shrink: 0; width: 70px; }
+.dr-hist-msg  { color: var(--t1); }
+
+/* ═══════════════════════════════
+   SYSTEM MODULES
+═══════════════════════════════ */
+.sys-grid-primary { display: grid; grid-template-columns: 1fr 1fr; min-width: 0; gap: 10px; margin-bottom: 10px; }
+.sys-grid-secondary { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 10px; }
+.sys-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; }
+
+.sys-module {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+  overflow: hidden;
+}
+.sys-module::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.sys-module.ok::before   { background: var(--ok); }
+.sys-module.warn::before { background: var(--warn); }
+.sys-module.crit::before { background: var(--crit); }
+.sys-module.off::before  { background: var(--border2); }
+
+.sys-module:hover { border-color: var(--border2); background: var(--bg3); }
+.sys-module.active { border-color: var(--acc-b); background: var(--acc-bg); }
+
+.sm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sm-name {
+  font-size: 10px; font-weight: 700;
+  color: var(--t2); text-transform: uppercase;
+  letter-spacing: 1.2px; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.sm-status {
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 3px;
+  font-family: var(--mono); letter-spacing: .4px;
+}
+.sm-status.ok   { background: var(--ok-bg);   color: var(--ok);   border: 1px solid var(--ok-b); }
+.sm-status.warn { background: var(--warn-bg);  color: var(--warn); border: 1px solid var(--warn-b); }
+.sm-status.crit { background: var(--crit-bg);  color: var(--crit); border: 1px solid var(--crit-b); }
+.sm-status.off  { background: var(--bg3);      color: var(--t3);   border: 1px solid var(--border); }
+
+.sm-primary { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+.sm-val  { font-family: var(--mono); font-size: 22px; font-weight: 400; color: var(--t1); letter-spacing: -1px; line-height: 1; }
+.sm-unit { font-family: var(--mono); font-size: 12px; color: var(--t2); font-weight: 300; }
+.sm-label { font-size: 11px; color: var(--t2); margin-bottom: 8px; }
+
+.sm-spark { display: block; width: 100%; height: 26px; margin-bottom: 5px; }
+
+.sm-metrics { display: flex; gap: 10px; }
+.sm-metric { flex: 1; }
+.sm-metric-label { font-size: 9px; color: var(--t3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .5px; }
+.sm-metric-val   { font-size: 12px; font-weight: 500; font-family: var(--mono); color: var(--t1); margin-top: 1px; }
+
+.sm-trend { font-size: 10px; font-family: var(--mono); margin-top: 4px; }
+.trend-up   { color: var(--warn); }
+.trend-down { color: var(--ok); }
+.trend-ok   { color: var(--ok); }
+
+/* Primary modules (bigger) */
+.sys-module.primary .sm-val { font-size: 28px; }
+.sys-module.primary .sm-spark { height: 30px; }
+
+/* ═══════════════════════════════
+   KPI STRIP (secondary info)
+═══════════════════════════════ */
+.kpi-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; }
+.kpi-s {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 8px 10px;
+}
+.kpi-s-label { font-size: 9px; color: var(--t3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.kpi-s-val   { font-family: var(--mono); font-size: 16px; font-weight: 400; color: var(--t1); letter-spacing: -.5px; line-height: 1; }
+.kpi-s-unit  { font-size: 10px; color: var(--t2); }
+.kpi-s-sub   { font-size: 9px; color: var(--t3); margin-top: 3px; font-family: var(--mono); }
+
+/* ═══════════════════════════════
+   GAUGE (canvas)
+═══════════════════════════════ */
+.gauge-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 10px; }
+.gauge-row-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 10px; }
+.gc {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 12px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.gc-title { font-size: 9px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 1.2px; font-family: var(--mono); margin-bottom: 8px; }
+.gc canvas { display: block; }
+.gc-read { display: flex; align-items: baseline; gap: 3px; margin-top: 6px; }
+.gc-val  { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--t1); letter-spacing: -1px; }
+.gc-unit { font-family: var(--mono); font-size: 10px; color: var(--t3); }
+.gc-sub  { font-size: 9px; color: var(--t3); font-family: var(--mono); margin-top: 2px; text-align: center; }
+
+/* ═══════════════════════════════
+   CHART PANEL
+═══════════════════════════════ */
+.chart-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.cp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cp-title {
+  font-size: 10px; font-weight: 700;
+  color: var(--t2); text-transform: uppercase;
+  letter-spacing: 1.2px; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.cp-meta { font-size: 9px; color: var(--t3); font-family: var(--mono); }
+.cp-actions { display: flex; gap: 4px; }
+.cp-action {
+  font-size: 9px; padding: 2px 8px; border-radius: 3px;
+  border: 1px solid var(--border); background: var(--bg3);
+  color: var(--t3); cursor: pointer; font-family: var(--mono);
+  transition: all .1s;
+}
+.cp-action:hover { color: var(--t1); border-color: var(--border2); }
+.cp-action.on { color: var(--acc); border-color: var(--acc-b); background: var(--acc-bg); }
+.chart-wrap { position: relative; height: 130px; }
+.chart-wrap.tall { height: 180px; }
+
+/* ═══════════════════════════════
+   STATUS TABLE
+═══════════════════════════════ */
+.status-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.sp-header {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; font-weight: 700;
+  color: var(--t2); text-transform: uppercase;
+  letter-spacing: 1.2px; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.sp-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px;
+  border-bottom: 1px solid rgba(30,45,61,.5);
+  transition: background .1s;
+  cursor: pointer;
+}
+.sp-row:last-child { border-bottom: none; }
+.sp-row:hover { background: var(--bg3); }
+.sp-name { font-size: 12px; color: var(--t1); display: flex; align-items: center; gap: 8px; }
+.sp-val  { font-family: var(--mono); font-size: 11px; color: var(--t1); font-weight: 500; }
+.sp-badge {
+  font-size: 9px; font-weight: 700;
+  padding: 1px 7px; border-radius: 3px;
+  font-family: var(--mono); letter-spacing: .4px;
+}
+.b-ok   { background: var(--ok-bg);   color: var(--ok);   border: 1px solid var(--ok-b); }
+.b-warn { background: var(--warn-bg); color: var(--warn);  border: 1px solid var(--warn-b); }
+.b-crit { background: var(--crit-bg); color: var(--crit);  border: 1px solid var(--crit-b); }
+.b-info { background: var(--info-bg); color: var(--info);  border: 1px solid var(--info-b); }
+.b-off  { background: var(--bg3);     color: var(--t3);    border: 1px solid var(--border); }
+
+/* ═══════════════════════════════
+   LUX BARS
+═══════════════════════════════ */
+.lux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.lux-row { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 8px 10px; }
+.lux-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.lux-name { font-size: 11px; color: var(--t1); display: flex; align-items: center; gap: 5px; }
+.lux-val  { font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.lux-track { width: 100%; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
+.lux-fill  { height: 100%; border-radius: 3px; transition: width 1.2s ease, background .5s; }
+.lux-scale { display: flex; justify-content: space-between; font-size: 8px; color: var(--t3); font-family: var(--mono); }
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+#toasts {
+  position: fixed; bottom: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 6px;
+  z-index: 9999; pointer-events: none;
+}
+.toast {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 10px 12px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--t1); min-width: 260px; max-width: 320px;
+  display: flex; align-items: flex-start; gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  animation: toast-in .2s ease;
+  pointer-events: all;
+}
+.toast.out { animation: toast-out .2s ease forwards; }
+.toast-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.toast-body { flex: 1; }
+.toast-title { font-weight: 600; margin-bottom: 2px; }
+.toast-msg   { font-size: 10px; color: var(--t2); }
+.toast-bar   { height: 2px; border-radius: 1px; margin-top: 7px; animation: tbar linear forwards; }
+.t-crit .toast-bar { background: var(--crit); }
+.t-warn .toast-bar { background: var(--warn); }
+.t-ok   .toast-bar { background: var(--ok); }
+.t-info .toast-bar { background: var(--info); }
+@keyframes toast-in  { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
+@keyframes toast-out { to{opacity:0;transform:translateX(16px)} }
+@keyframes tbar { from{width:100%} to{width:0%} }
+
+/* ═══════════════════════════════
+   WIND ROSE + SOLAR PANELS
+═══════════════════════════════ */
+.spg { display: grid; grid-template-columns: repeat(8,1fr); gap: 3px; margin-top: 6px; }
+.spp { border-radius: 2px; padding: 4px 3px; text-align: center; font-size: 9px; font-family: var(--mono); }
+.spp.ok   { background: var(--ok-bg);   border: 1px solid var(--ok-b);   color: var(--ok); }
+.spp.err  { background: var(--warn-bg); border: 1px solid var(--warn-b); color: var(--warn); }
+.spp.off  { background: var(--bg3);     border: 1px solid var(--border); color: var(--t3); }
+
+/* ═══════════════════════════════
+   VENTILATION BARS
+═══════════════════════════════ */
+.vr { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.vl { font-size: 11px; color: var(--t2); width: 80px; flex-shrink: 0; font-family: var(--mono); }
+.vt { flex: 1; background: var(--bg3); border-radius: 2px; height: 12px; overflow: hidden; border: 1px solid var(--border); }
+.vf { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 5px; font-size: 8px; font-weight: 700; font-family: var(--mono); transition: width 1.5s ease; }
+.vi { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.spin  { animation: rot .9s linear infinite; }
+.spins { animation: rot 2.5s linear infinite; }
+@keyframes rot { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+/* ═══════════════════════════════
+   SECTION HEADER
+═══════════════════════════════ */
+.sec-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sec-title {
+  font-size: 11px; font-weight: 700;
+  color: var(--t2); text-transform: uppercase;
+  letter-spacing: 1.5px; font-family: var(--mono);
+}
+.sec-actions { display: flex; gap: 6px; }
+.sec-action {
+  font-size: 9px; padding: 3px 10px; border-radius: var(--r);
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--t3); cursor: pointer; font-family: var(--mono);
+}
+.sec-action:hover { color: var(--t1); border-color: var(--border2); }
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 5px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 9px; color: var(--t3); font-family: var(--mono);
+  background: var(--bg1); flex-shrink: 0;
+}
+.footer a { color: var(--acc); text-decoration: none; opacity: .7; }
+.footer a:hover { opacity: 1; }
+
+/* ═══════════════════════════════
+   VIEW TABS
+═══════════════════════════════ */
+.view { display: none; }
+.view.on { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ── GLOBAL STATUS BAR ── -->
+<div class="gsb">
+  <div class="gsb-brand">
+    <div class="gsb-logo"><i class="ti ti-building-2"></i></div>
+    <span class="gsb-name">OSB</span>
+  </div>
+  <div class="gsb-status" id="gsb-status">
+    <div class="gsb-state-dot ok" id="gsb-dot"></div>
+    <span class="gsb-state-label" id="gsb-state" style="color:var(--ok)">OPERATIONAL</span>
+  </div>
+  <div class="gsb-metrics">
+    <div class="gsb-metric"><span class="gsb-metric-label">CONSUM</span><span class="gsb-metric-val" id="gsb-pwr">34.2 kW</span></div>
+    <div class="gsb-metric"><span class="gsb-metric-label">TEMP</span><span class="gsb-metric-val" id="gsb-tmp">21.8 °C</span></div>
+    <div class="gsb-metric"><span class="gsb-metric-label">SOLAR</span><span class="gsb-metric-val" id="gsb-sol">8.4 kW</span></div>
+    <div class="gsb-metric"><span class="gsb-metric-label">CO₂</span><span class="gsb-metric-val" id="gsb-co2">620 ppm</span></div>
+    <div class="gsb-metric"><span class="gsb-metric-label">UMID</span><span class="gsb-metric-val" id="gsb-hum">58%</span></div>
+  </div>
+  <div class="gsb-alarms" onclick="toggleAlarmPanel()">
+    <span class="alarm-count ac-crit" id="cnt-crit">▲ CRIT 2</span>
+    <span class="alarm-count ac-warn" id="cnt-warn">WARN 3</span>
+    <span class="alarm-count ac-info" id="cnt-info">INFO 1</span>
+  </div>
+  <div class="gsb-right">
+    <div>
+      <div class="gsb-clock" id="clk">--:--:--</div>
+      <div class="gsb-date" id="clkd">--- -- ----</div>
+    </div>
+    <div class="gsb-uptime">UP <span id="uptime">00:00:00</span></div>
+  </div>
+</div>
+
+<!-- ── ACTIVE ALARM BAR ── -->
+<div class="alarm-bar" id="alarm-bar">
+  <i class="ti ti-alert-triangle alarm-bar-icon"></i>
+  <div class="alarm-bar-items">
+    <div class="alarm-bar-item" onclick="openAlarmDetail(0)"><i class="ti ti-flame"></i>CRIT · Termică · Temp tur > 85°C</div>
+    <div class="alarm-bar-item" onclick="openAlarmDetail(1)"><i class="ti ti-bolt"></i>CRIT · Electric · Consum > 45 kW</div>
+  </div>
+  <div class="alarm-bar-dismiss" onclick="document.getElementById('alarm-bar').classList.add('hidden');adjustLayout()">Acknowledge</div>
+</div>
+
+<!-- ── CONTEXT BAR ── -->
+<div class="ctx-bar">
+  <div class="ctx-building">
+    <i class="ti ti-building-2" style="color:var(--acc);font-size:14px"></i>
+    <div>
+      <div class="ctx-building-name">Școala Generală — Corp A+B</div>
+      <div class="ctx-building-sub">Subsol · Parter · Etaj 1 · Etaj 2 · Curte ext. · Modbus TCP/IP</div>
+    </div>
+  </div>
+  <div class="ctx-tabs">
+    <div class="ctx-tab on" onclick="setView('overview',this)">Overview</div>
+    <div class="ctx-tab" onclick="setView('systems',this)">Systems</div>
+    <div class="ctx-tab" onclick="setView('analytics',this)">Analytics</div>
+    <div class="ctx-tab" onclick="setView('alarms',this)">Alarms</div>
+  </div>
+  <div class="ctx-zone-sel">
+    <div class="zone-btn on" onclick="setZone(this)">Toate</div>
+    <div class="zone-btn" onclick="setZone(this)">Subsol</div>
+    <div class="zone-btn" onclick="setZone(this)">Parter</div>
+    <div class="zone-btn" onclick="setZone(this)">Etaj 1</div>
+    <div class="zone-btn" onclick="setZone(this)">Etaj 2</div>
+    <div class="zone-btn" onclick="setZone(this)">Curte ext.</div>
+  </div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="layout" id="layout">
+
+  <!-- LEFT: ALARM PANEL -->
+  <div class="alarm-panel" id="alarm-panel">
+    <div class="ap-header">
+      <div class="ap-title"><i class="ti ti-bell-ringing" style="font-size:13px;color:var(--crit)"></i>Alarme active</div>
+      <span class="ap-count" id="ap-total">6</span>
+    </div>
+    <div class="ap-filters">
+      <div class="ap-filter on crit" onclick="filterAlarms('crit',this)">CRIT 2</div>
+      <div class="ap-filter on warn" onclick="filterAlarms('warn',this)">WARN 3</div>
+      <div class="ap-filter on" onclick="filterAlarms('info',this)">INFO 1</div>
+      <div class="ap-filter" onclick="filterAlarms('all',this)">ALL</div>
+    </div>
+    <div class="ap-list" id="ap-list">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- CENTER: MAIN CONTENT -->
+  <div class="main-content">
+    <div class="content-scroll" id="content-scroll">
+
+      <!-- ══ VIEW: OVERVIEW ══ -->
+      <div id="view-overview" class="view on">
+
+        <!-- PRIMARY SYSTEMS -->
+        <div class="sec-header">
+          <div class="sec-title">Sisteme critice</div>
+          <div class="sec-actions">
+            <div class="sec-action">Refresh</div>
+            <div class="sec-action">Export</div>
+          </div>
+        </div>
+
+        <div class="sys-grid-primary">
+          <!-- HVAC -->
+          <div class="sys-module primary ok" onclick="openDrawer('hvac')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-temperature" style="font-size:14px;color:var(--ok)"></i>HVAC — Climatizare</div>
+              <div class="sm-status ok">OPERATIONAL</div>
+            </div>
+            <div class="sm-primary">
+              <div class="sm-val" id="mod-temp">21.8</div>
+              <div class="sm-unit">°C interior</div>
+            </div>
+            <div class="sm-label">Target: 22°C · Mode: HEATING · CO₂: <span id="mod-co2-label">620</span> ppm</div>
+            <canvas class="sm-spark" id="sp-hvac"></canvas>
+            <div class="sm-metrics">
+              <div class="sm-metric">
+                <div class="sm-metric-label">Umiditate</div>
+                <div class="sm-metric-val" id="mod-hum">58%</div>
+              </div>
+              <div class="sm-metric">
+                <div class="sm-metric-label">CO₂</div>
+                <div class="sm-metric-val" id="mod-co2">620 ppm</div>
+              </div>
+              <div class="sm-metric">
+                <div class="sm-metric-label">Ventilație</div>
+                <div class="sm-metric-val">85%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENERGY -->
+          <div class="sys-module primary warn" onclick="openDrawer('energy')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-bolt" style="font-size:14px;color:var(--warn)"></i>Energie — Consum</div>
+              <div class="sm-status warn">ATENȚIE</div>
+            </div>
+            <div class="sm-primary">
+              <div class="sm-val" id="mod-pwr">34.2</div>
+              <div class="sm-unit">kW total</div>
+            </div>
+            <div class="sm-label">68% din limita 50 kW · Solar activ: <span id="mod-sol-label">8.4</span> kW</div>
+            <canvas class="sm-spark" id="sp-energy"></canvas>
+            <div class="sm-metrics">
+              <div class="sm-metric">
+                <div class="sm-metric-label">Solar</div>
+                <div class="sm-metric-val" id="mod-sol">8.4 kW</div>
+              </div>
+              <div class="sm-metric">
+                <div class="sm-metric-label">Net</div>
+                <div class="sm-metric-val" id="mod-net">25.8 kW</div>
+              </div>
+              <div class="sm-metric">
+                <div class="sm-metric-label">Azi total</div>
+                <div class="sm-metric-val">318 kWh</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI STRIP -->
+        <div class="kpi-strip">
+          <div class="kpi-s">
+            <div class="kpi-s-label">Temp ext.</div>
+            <div class="kpi-s-val" id="kpi-text">14<span class="kpi-s-unit">°C</span></div>
+            <div class="kpi-s-sub">Parțial noros</div>
+          </div>
+          <div class="kpi-s">
+            <div class="kpi-s-label">Vânt</div>
+            <div class="kpi-s-val" id="kpi-wind">12<span class="kpi-s-unit">km/h</span></div>
+            <div class="kpi-s-sub" id="kpi-wind-dir">NV — Moderat</div>
+          </div>
+          <div class="kpi-s">
+            <div class="kpi-s-label">Presiune atm.</div>
+            <div class="kpi-s-val" id="kpi-press">1013<span class="kpi-s-unit">hPa</span></div>
+            <div class="kpi-s-sub" id="kpi-press-tr">↔ Stabil</div>
+          </div>
+          <div class="kpi-s">
+            <div class="kpi-s-label">Chilere active</div>
+            <div class="kpi-s-val">2<span class="kpi-s-unit">/3</span></div>
+            <div class="kpi-s-sub" style="color:var(--ok)">Cascadare auto</div>
+          </div>
+          <div class="kpi-s">
+            <div class="kpi-s-label">Pompe active</div>
+            <div class="kpi-s-val">5<span class="kpi-s-unit">/6</span></div>
+            <div class="kpi-s-sub" style="color:var(--ok)">OK</div>
+          </div>
+          <div class="kpi-s">
+            <div class="kpi-s-label">Temp tur term.</div>
+            <div class="kpi-s-val" id="kpi-ttur">68<span class="kpi-s-unit">°C</span></div>
+            <div class="kpi-s-sub" style="color:var(--warn)">Setpoint 70°C</div>
+          </div>
+        </div>
+
+        <!-- SECONDARY SYSTEMS -->
+        <div class="sec-header" style="margin-top:4px">
+          <div class="sec-title">Sisteme secundare</div>
+        </div>
+        <div class="sys-grid-secondary">
+          <div class="sys-module ok" onclick="openDrawer('solar')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-sun" style="color:var(--ok)"></i>Solar</div>
+              <div class="sm-status ok">OK</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val" id="mod-solv">8.4</div><div class="sm-unit">kW</div></div>
+            <div class="sm-label">14/16 panouri</div>
+            <div class="sm-trend trend-ok">↑ 42.1 kWh azi</div>
+          </div>
+          <div class="sys-module warn" onclick="openDrawer('termica')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-flame" style="color:var(--warn)"></i>Termică</div>
+              <div class="sm-status warn">ATENȚIE</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val">68</div><div class="sm-unit">°C</div></div>
+            <div class="sm-label">Tur · Setpoint 70°C</div>
+            <div class="sm-trend trend-up">▲ sub setpoint</div>
+          </div>
+          <div class="sys-module ok" onclick="openDrawer('chiller')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-snowflake" style="color:var(--ok)"></i>Chilere</div>
+              <div class="sm-status ok">OK</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val">7.2</div><div class="sm-unit">°C</div></div>
+            <div class="sm-label">Tur CH1 · 2/3 active</div>
+            <div class="sm-trend trend-ok">Delta 5.2°C</div>
+          </div>
+          <div class="sys-module ok" onclick="openDrawer('pompe')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-ripple" style="color:var(--ok)"></i>Pompe</div>
+              <div class="sm-status ok">OK</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val" id="mod-rpm">1450</div><div class="sm-unit">rpm</div></div>
+            <div class="sm-label">Prim. 1 · 5/6 active</div>
+            <div class="sm-trend trend-ok">Presiune 2.4 bar</div>
+          </div>
+        </div>
+
+        <div class="sys-grid-3">
+          <div class="sys-module ok" onclick="openDrawer('incendiu')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-fire-extinguisher" style="color:var(--ok)"></i>Antiincendiu</div>
+              <div class="sm-status ok">OK</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val" style="font-size:20px">32/32</div></div>
+            <div class="sm-label">Detectori fum operaționali</div>
+          </div>
+          <div class="sys-module ok" onclick="openDrawer('efractie')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-shield" style="color:var(--ok)"></i>Efracție</div>
+              <div class="sm-status ok">ARMAT</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val" style="font-size:20px">8/8</div></div>
+            <div class="sm-label">Senzori mișcare OK</div>
+          </div>
+          <div class="sys-module ok" onclick="openDrawer('acces')">
+            <div class="sm-header">
+              <div class="sm-name"><i class="ti ti-id-badge" style="color:var(--ok)"></i>Control Acces</div>
+              <div class="sm-status ok">ONLINE</div>
+            </div>
+            <div class="sm-primary"><div class="sm-val" style="font-size:20px">248</div></div>
+            <div class="sm-label">Prezențe azi · 8/8 uși IP</div>
+          </div>
+        </div>
+
+      </div><!-- /overview -->
+
+      <!-- ══ VIEW: SYSTEMS ══ -->
+      <div id="view-systems" class="view">
+        <div class="sec-header">
+          <div class="sec-title">Detalii sisteme</div>
+        </div>
+        <!-- HVAC gauges -->
+        <div class="sec-header" style="margin-top:0;border-bottom:none;margin-bottom:4px">
+          <div class="sec-title" style="color:var(--ok)">HVAC</div>
+        </div>
+        <div class="gauge-row">
+          <div class="gc"><div class="gc-title">Temperatură interior</div><canvas id="g-temp" width="140" height="140"></canvas><div class="gc-read"><span class="gc-val" id="gv-temp">21.8</span><span class="gc-unit">°C</span></div><div class="gc-sub">Target 22°C</div></div>
+          <div class="gc"><div class="gc-title">CO₂ interior</div><canvas id="g-co2" width="140" height="140"></canvas><div class="gc-read"><span class="gc-val" id="gv-co2">620</span><span class="gc-unit">ppm</span></div><div class="gc-sub" id="gs-co2">Aer curat</div></div>
+          <div class="gc"><div class="gc-title">Umiditate relativă</div><canvas id="g-hum" width="140" height="140"></canvas><div class="gc-read"><span class="gc-val" id="gv-hum">58</span><span class="gc-unit">%</span></div><div class="gc-sub" style="color:var(--ok)">Confort</div></div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header"><div class="cp-title"><i class="ti ti-chart-line" style="color:var(--ok)"></i>Temperatură + CO₂ 12h</div><div class="cp-meta">Threshold: 22°C / 1000 ppm</div></div>
+          <div class="chart-wrap tall"><canvas id="c-hvac"></canvas></div>
+        </div>
+
+        <!-- ENERGY -->
+        <div class="sec-header" style="margin-top:8px;margin-bottom:4px;border-bottom:none">
+          <div class="sec-title" style="color:var(--warn)">ENERGIE</div>
+        </div>
+        <div class="gauge-row-2">
+          <div class="gc"><div class="gc-title">Consum total</div><canvas id="g-pwr" width="140" height="140"></canvas><div class="gc-read"><span class="gc-val" id="gv-pwr">34.2</span><span class="gc-unit">kW</span></div><div class="gc-sub">Max: 50 kW</div></div>
+          <div class="gc"><div class="gc-title">Producție solară</div><canvas id="g-sol" width="140" height="140"></canvas><div class="gc-read"><span class="gc-val" id="gv-sol">8.4</span><span class="gc-unit">kW</span></div><div class="gc-sub">Max: 14 kW</div></div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header"><div class="cp-title"><i class="ti ti-chart-area" style="color:var(--warn)"></i>Consum vs Solar 12h</div><div class="cp-actions"><div class="cp-action on">12h</div><div class="cp-action">24h</div><div class="cp-action">7d</div></div></div>
+          <div class="chart-wrap tall"><canvas id="c-energy"></canvas></div>
+        </div>
+
+        <!-- VENTILATIE -->
+        <div class="sec-header" style="margin-top:8px;margin-bottom:8px;border-bottom:none">
+          <div class="sec-title">VENTILAȚIE</div>
+        </div>
+        <div class="status-panel">
+          <div class="sp-header"><i class="ti ti-wind" style="color:var(--acc)"></i>Debite ventilație pe zone</div>
+          <div style="padding:10px 12px">
+            <div class="vr"><div class="vi spin" style="color:var(--acc);border-color:var(--acc-b)"><i class="ti ti-propeller"></i></div><div class="vl">Cls. 1–4</div><div class="vt"><div class="vf" style="width:85%;background:var(--acc);color:#020d1e">85%</div></div></div>
+            <div class="vr"><div class="vi spin" style="color:var(--ok);border-color:var(--ok-b)"><i class="ti ti-propeller"></i></div><div class="vl">Cls. 5–8</div><div class="vt"><div class="vf" style="width:70%;background:var(--ok);color:#010a03">70%</div></div></div>
+            <div class="vr"><div class="vi spins" style="color:var(--warn);border-color:var(--warn-b)"><i class="ti ti-propeller"></i></div><div class="vl">Sala sport</div><div class="vt"><div class="vf" style="width:45%;background:var(--warn);color:#0a0500">45%</div></div></div>
+            <div class="vr"><div class="vi spin" style="color:var(--ok);border-color:var(--ok-b)"><i class="ti ti-propeller"></i></div><div class="vl">Cantină</div><div class="vt"><div class="vf" style="width:90%;background:var(--ok);color:#010a03">90%</div></div></div>
+            <div class="vr"><div class="vi" style="color:var(--t3);opacity:.4"><i class="ti ti-propeller"></i></div><div class="vl">Secretariat</div><div class="vt"><div class="vf" style="width:0%"></div></div></div>
+          </div>
+        </div>
+
+        <!-- LUMINI LUX -->
+        <div class="sec-header" style="margin-top:8px;margin-bottom:8px;border-bottom:none">
+          <div class="sec-title">ILUMINAT — LUX</div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header"><div class="cp-title"><i class="ti ti-bulb" style="color:var(--warn)"></i>Intensitate luminoasă pe zone</div><div class="cp-meta">0 – 1000 lx · Confort: 300–750 lx</div></div>
+          <div class="lux-grid" id="lux-grid" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- ══ VIEW: ANALYTICS ══ -->
+      <div id="view-analytics" class="view">
+        <div class="sec-header">
+          <div class="sec-title">Analytics — Tendințe & Anomalii</div>
+          <div class="sec-actions">
+            <div class="sec-action">Export CSV</div>
+            <div class="sec-action">Print</div>
+          </div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header">
+            <div class="cp-title"><i class="ti ti-chart-line" style="color:var(--ok)"></i>Temperatură interior 12h cu threshold</div>
+            <div class="cp-meta">Normal: 19–24°C · Spike detection: ON</div>
+          </div>
+          <div class="chart-wrap tall"><canvas id="c-temp-an"></canvas></div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header">
+            <div class="cp-title"><i class="ti ti-chart-area" style="color:var(--warn)"></i>Consum energie 12h cu threshold</div>
+            <div class="cp-meta">Limita: 50 kW · Warning: 42 kW</div>
+          </div>
+          <div class="chart-wrap tall"><canvas id="c-pwr-an"></canvas></div>
+        </div>
+        <div class="chart-panel">
+          <div class="cp-header">
+            <div class="cp-title"><i class="ti ti-gauge" style="color:var(--acc)"></i>Presiune atmosferică 12h</div>
+          </div>
+          <div class="chart-wrap"><canvas id="c-press-an"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ══ VIEW: ALARMS ══ -->
+      <div id="view-alarms" class="view">
+        <div class="sec-header">
+          <div class="sec-title">Jurnal alarme — toate evenimentele</div>
+          <div class="sec-actions">
+            <div class="sec-action">Acknowledge all</div>
+            <div class="sec-action">Export</div>
+          </div>
+        </div>
+        <div class="status-panel">
+          <div class="sp-header"><i class="ti ti-bell" style="color:var(--crit)"></i>Alarme active</div>
+          <div class="sp-row" onclick="openAlarmDetail(0)"><div class="sp-name"><span style="color:var(--crit);font-size:9px;font-family:var(--mono);border:1px solid var(--crit-b);background:var(--crit-bg);padding:1px 5px;border-radius:2px">CRIT</span>Termică · Temp tur > 85°C</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">14:22:11</span></div>
+          <div class="sp-row" onclick="openAlarmDetail(1)"><div class="sp-name"><span style="color:var(--crit);font-size:9px;font-family:var(--mono);border:1px solid var(--crit-b);background:var(--crit-bg);padding:1px 5px;border-radius:2px">CRIT</span>Electric · Consum > 45 kW</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">14:18:05</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--warn);font-size:9px;font-family:var(--mono);border:1px solid var(--warn-b);background:var(--warn-bg);padding:1px 5px;border-radius:2px">WARN</span>HVAC · CO₂ Corp A Etaj 2 > 850 ppm</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">13:55:30</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--warn);font-size:9px;font-family:var(--mono);border:1px solid var(--warn-b);background:var(--warn-bg);padding:1px 5px;border-radius:2px">WARN</span>Solar · Panoul P8 — defect</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">13:40:12</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--warn);font-size:9px;font-family:var(--mono);border:1px solid var(--warn-b);background:var(--warn-bg);padding:1px 5px;border-radius:2px">WARN</span>Ventilație · Sala sport — debit scăzut</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">12:10:44</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--info);font-size:9px;font-family:var(--mono);border:1px solid var(--info-b);background:var(--info-bg);padding:1px 5px;border-radius:2px">INFO</span>Acces · Card necunoscut — Server room</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">09:05:44</span></div>
+        </div>
+        <div class="status-panel">
+          <div class="sp-header"><i class="ti ti-history" style="color:var(--t2)"></i>Istoric alarme (ultimele 24h)</div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--ok);font-size:9px;font-family:var(--mono);padding:1px 5px">RESOLVED</span>Termică · Presiune scăzută</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">08:30:00</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--ok);font-size:9px;font-family:var(--mono);padding:1px 5px">RESOLVED</span>HVAC · Umiditate crescută Cantină</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">07:15:22</span></div>
+          <div class="sp-row"><div class="sp-name"><span style="color:var(--ok);font-size:9px;font-family:var(--mono);padding:1px 5px">RESOLVED</span>Electric · Supratensiune momentană</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">06:44:10</span></div>
+        </div>
+      </div>
+
+    </div><!-- /content-scroll -->
+    <div class="footer">
+      <span>OpenSmartBuilding · Enterprise BMS · Modbus TCP/IP · <a href="https://github.com/MariusMihalache/OpenSmartBuilding" target="_blank">GitHub</a></span>
+      <span>Sync: <span id="ft" style="color:var(--acc)">--:--:--</span></span>
+      <span><a href="https://blog.hubinfratech.ro" target="_blank">HubInfraTech</a> · MIT License</span>
+    </div>
+  </div><!-- /main-content -->
+
+  <!-- RIGHT: DETAIL DRAWER -->
+  <div class="drawer" id="drawer">
+    <div class="dr-header">
+      <div>
+        <div class="dr-title" id="dr-title">Detalii sistem</div>
+        <div class="dr-sub" id="dr-sub">—</div>
+      </div>
+      <div class="dr-close" onclick="closeDrawer()"><i class="ti ti-x"></i></div>
+    </div>
+    <div class="dr-body" id="dr-body"></div>
+  </div>
+
+</div><!-- /layout -->
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+'use strict';
+
+/* ═══ CLOCK + UPTIME ═══ */
+var WD = ['Dum','Lun','Mar','Mie','Joi','Vin','Sâm'];
+var MO = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
+var startTime = Date.now();
+function pad(n) { return String(n).padStart(2,'0'); }
+function tickClock() {
+  var n = new Date();
+  var h = pad(n.getHours()), m = pad(n.getMinutes()), s = pad(n.getSeconds());
+  document.getElementById('clk').textContent = h+':'+m+':'+s;
+  document.getElementById('clkd').textContent = WD[n.getDay()]+' '+pad(n.getDate())+' '+MO[n.getMonth()]+' '+n.getFullYear();
+  document.getElementById('ft').textContent = h+':'+m+':'+s;
+  var elapsed = Math.floor((Date.now() - startTime) / 1000);
+  var uh = Math.floor(elapsed/3600), um = Math.floor((elapsed%3600)/60), us = elapsed%60;
+  document.getElementById('uptime').textContent = pad(uh)+':'+pad(um)+':'+pad(us);
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+/* ═══ ALARM DATA ═══ */
+var ALARMS = [
+  { id:0, sev:'crit', sys:'TERMICĂ',   msg:'Temp tur depășește 85°C',     loc:'Centrală termică · Subsol', time:'14:22:11', isNew:true,
+    history: [{t:'14:22:11',m:'Alarmă declanșată automat'},{t:'14:20:00',m:'Temp tur: 82°C — warning'},{t:'14:15:00',m:'Temp tur: 78°C — normal'}] },
+  { id:1, sev:'crit', sys:'ELECTRIC',  msg:'Consum total > 45 kW',        loc:'Tablou general · Subsol',   time:'14:18:05', isNew:true,
+    history: [{t:'14:18:05',m:'Prag critic depășit: 45.2 kW'},{t:'14:10:00',m:'Consum: 42.1 kW — warning'},{t:'14:00:00',m:'Consum normal: 34 kW'}] },
+  { id:2, sev:'warn', sys:'HVAC',      msg:'CO₂ > 850 ppm Corp A Etaj 2', loc:'Etaj 2 · Cls. 7', time:'13:55:30', isNew:false,
+    history: [{t:'13:55:30',m:'CO₂: 862 ppm'},{t:'13:40:00',m:'CO₂: 820 ppm'},{t:'13:00:00',m:'CO₂: 640 ppm — normal'}] },
+  { id:3, sev:'warn', sys:'SOLAR',     msg:'Panou P8 — eroare invertor',   loc:'Acoperiș · Exterior',          time:'13:40:12', isNew:false,
+    history: [{t:'13:40:12',m:'Eroare: invertor offline'},{t:'13:39:00',m:'Producție P8: 0W'},{t:'13:38:00',m:'Producție P8: 180W'}] },
+  { id:4, sev:'warn', sys:'VENTILAȚIE',msg:'Debit scăzut sala sport',      loc:'Parter · Sala sport',      time:'12:10:44', isNew:false,
+    history: [{t:'12:10:44',m:'Debit: 38% (min: 40%)'},{t:'12:00:00',m:'Debit: 45%'},{t:'11:00:00',m:'Debit: 85% — normal'}] },
+  { id:5, sev:'info', sys:'ACCES',     msg:'Card necunoscut — Server room', loc:'Server room · Subsol',     time:'09:05:44', isNew:false,
+    history: [{t:'09:05:44',m:'Card ID: 0x4F2A — refuzat'},{t:'09:05:40',m:'Tentativă acces detectată'}] },
+];
+
+/* ═══ BUILD ALARM LIST ═══ */
+function adjustLayout() {
+  var layout = document.getElementById('layout');
+  var gsb = 38, alarmBar = document.getElementById('alarm-bar');
+  var abH = alarmBar.classList.contains('hidden') ? 0 : 32;
+  var ctx = 38, footer = 28;
+  layout.style.height = 'calc(100vh - ' + (gsb + abH + ctx + footer) + 'px)';
+}
+adjustLayout();
+
+function buildAlarmList() {
+  var list = document.getElementById('ap-list');
+  list.innerHTML = '';
+  ALARMS.forEach(function(a) {
+    var div = document.createElement('div');
+    div.className = 'alarm-item ' + a.sev;
+    div.onclick = function() { openAlarmDetail(a.id); };
+    div.innerHTML =
+      '<div class="ai-top">' +
+        '<span class="ai-sys ' + a.sev + '">' + a.sys + '</span>' +
+        '<span class="ai-time">' + a.time + '</span>' +
+      '</div>' +
+      '<div class="ai-msg">' + a.msg + '</div>' +
+      '<div class="ai-loc"><i class="ti ti-map-pin" style="font-size:10px"></i> ' + a.loc + '</div>' +
+      (a.isNew ? '<div class="ai-new">NEW</div>' : '');
+    list.appendChild(div);
+  });
+  document.getElementById('ap-total').textContent = ALARMS.length;
+}
+buildAlarmList();
+
+/* ═══ ALARM PANEL TOGGLE ═══ */
+function toggleAlarmPanel() {
+  var ap = document.getElementById('alarm-panel');
+  ap.style.display = ap.style.display === 'none' ? '' : 'none';
+}
+function filterAlarms(type, btn) {
+  // visual only
+}
+
+/* ═══ ALARM DETAIL DRAWER ═══ */
+function openAlarmDetail(id) {
+  var a = ALARMS.find(function(x) { return x.id === id; });
+  if (!a) return;
+  document.getElementById('dr-title').textContent = a.sys + ' — ' + a.msg;
+  document.getElementById('dr-sub').textContent = a.loc + ' · ' + a.time;
+
+  var sevColor = a.sev === 'crit' ? 'var(--crit)' : a.sev === 'warn' ? 'var(--warn)' : 'var(--info)';
+  var body = '<div class="dr-section">' +
+    '<div class="dr-section-title">Detalii alarmă</div>' +
+    '<div class="dr-row"><span class="dr-row-label">Severitate</span><span class="dr-row-val" style="color:'+sevColor+'">'+a.sev.toUpperCase()+'</span></div>' +
+    '<div class="dr-row"><span class="dr-row-label">Sistem</span><span class="dr-row-val">'+a.sys+'</span></div>' +
+    '<div class="dr-row"><span class="dr-row-label">Locație</span><span class="dr-row-val">'+a.loc+'</span></div>' +
+    '<div class="dr-row"><span class="dr-row-label">Timp detectat</span><span class="dr-row-val">'+a.time+'</span></div>' +
+    '<div class="dr-row"><span class="dr-row-label">Status</span><span class="dr-row-val" style="color:var(--crit)">ACTIV</span></div>' +
+    '</div>' +
+    '<div class="dr-section">' +
+    '<div class="dr-section-title">Istoric eveniment</div>';
+
+  a.history.forEach(function(h) {
+    body += '<div class="dr-hist-item"><span class="dr-hist-time">'+h.t+'</span><span class="dr-hist-msg">'+h.m+'</span></div>';
+  });
+  body += '</div>' +
+    '<div class="dr-section">' +
+    '<div class="dr-section-title">Acțiuni recomandate</div>' +
+    '<div style="font-size:11px;color:var(--t2);line-height:1.7">' +
+    '1. Verificați echipamentul la fața locului<br>' +
+    '2. Contactați tehnicianul responsabil<br>' +
+    '3. Documentați intervenția în jurnal' +
+    '</div></div>' +
+    '<div style="margin-top:12px;display:flex;gap:6px">' +
+    '<button onclick="closeDrawer()" style="flex:1;padding:7px;border-radius:4px;border:1px solid var(--ok-b);background:var(--ok-bg);color:var(--ok);cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:700">ACKNOWLEDGE</button>' +
+    '<button onclick="closeDrawer()" style="flex:1;padding:7px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--t2);cursor:pointer;font-family:var(--mono);font-size:10px">Închide</button>' +
+    '</div>';
+
+  document.getElementById('dr-body').innerHTML = body;
+  document.getElementById('drawer').classList.add('open');
+}
+
+function openDrawer(sys) {
+  var drawers = {
+    hvac:     { title:'HVAC — Climatizare', sub:'Valori live · Parter–Etaj 2 · Modbus TCP' },
+    energy:   { title:'Energie — Consum & Producție', sub:'Tablou general · Subsol' },
+    solar:    { title:'Solar — Fotovoltaic', sub:'Acoperiș · 16 panouri fotovoltaice' },
+    termica:  { title:'Instalație Termică', sub:'Centrală termică · Subsol' },
+    chiller:  { title:'Chilere — Răcire', sub:'Sala tehnică · Subsol' },
+    pompe:    { title:'Grupuri de Pompare', sub:'Subsol · 6 grupuri' },
+    incendiu: { title:'Antiincendiu', sub:'Sistem integrat · Subsol–Etaj 2 · 48 detectori' },
+    efractie: { title:'Sistem Efracție', sub:'Armat · Toate nivelurile · 0 alarme' },
+    acces:    { title:'Control Acces IP', sub:'Modbus TCP · Subsol–Etaj 2 · 8 uși' },
+  };
+  var d = drawers[sys] || { title: sys, sub: '' };
+  document.getElementById('dr-title').textContent = d.title;
+  document.getElementById('dr-sub').textContent = d.sub;
+
+  var rows = {
+    hvac:    [['Temp curentă','21.8°C'],['Setpoint','22°C'],['Mod','HEATING'],['CO₂','620 ppm'],['Umiditate','58%'],['Ventilație','85%']],
+    energy:  [['Consum total','34.2 kW'],['Limita','50 kW'],['Solar','8.4 kW'],['Net consum','25.8 kW'],['Azi total','318 kWh'],['Factor solar','24.6%']],
+    solar:   [['Putere inst.','8.4 kW'],['Panouri OK','14/16'],['Produs azi','42.1 kWh'],['Total lună','318 kWh'],['Erori','P8 — invertor']],
+    termica: [['Temp tur','68°C'],['Temp retur','52°C'],['Setpoint','70°C'],['Presiune','1.6 bar'],['Gaz azi','38 m³'],['Status','ATENȚIE']],
+    chiller: [['CH1 tur','7.2°C'],['CH2 tur','7.8°C'],['CH3','Standby'],['Retur','12.4°C'],['Delta','5.2°C'],['Active','2/3']],
+    pompe:   [['Prim. 1','1450 rpm'],['Prim. 2','1380 rpm'],['Prim. 3','Standby'],['Sec. 1','960 rpm'],['Sanitară','1200 rpm'],['Presiune','2.4 bar']],
+    incendiu:[['Detectori fum','32/32'],['Detectori temp.','16/16'],['Sprinklere','6.2 bar'],['Ieșiri urgență','6/6 libere'],['Ultima testare','Ieri 09:00']],
+    efractie:[['Senzori mișcare','8/8'],['Senzori uși','12/12'],['CCTV','6/6 online'],['Stare','ARMAT'],['Ultima alarmă','Nicio alarmă']],
+    acces:   [['Uși online','8/8'],['Prezențe azi','248'],['Acces refuzat','3'],['Ultima intrare','08:14:32'],['Protocol','Modbus TCP']],
+  };
+
+  var body = '<div class="dr-section"><div class="dr-section-title">Valori live</div>';
+  (rows[sys] || []).forEach(function(r) {
+    body += '<div class="dr-row"><span class="dr-row-label">'+r[0]+'</span><span class="dr-row-val">'+r[1]+'</span></div>';
+  });
+  body += '</div><div class="dr-section"><div class="dr-section-title">Note operaționale</div><div style="font-size:10px;color:var(--t2);line-height:1.8">Sistem monitorizat în timp real via Modbus TCP/IP.<br>Interval actualizare: 2.5 secunde.<br>Ultima sincronizare: acum câteva secunde.</div></div>';
+
+  document.getElementById('dr-body').innerHTML = body;
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+}
+
+/* ═══ VIEW NAVIGATION ═══ */
+var TITLES = {
+  overview: 'Overview — toate sistemele',
+  systems: 'Systems — detalii tehnice',
+  analytics: 'Analytics — tendințe',
+  alarms: 'Alarms — jurnal complet'
+};
+function setView(name, btn) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
+  document.querySelectorAll('.ctx-tab').forEach(function(b) { b.classList.remove('on'); });
+  document.getElementById('view-' + name).classList.add('on');
+  if (btn) btn.classList.add('on');
+  closeDrawer();
+  if (name === 'systems') {
+    setTimeout(function() {
+      buildLuxGrid();
+      redrawGauges();
+    }, 60);
+  }
+  if (name === 'analytics') {
+    setTimeout(buildAnalyticsCharts, 60);
+  }
+}
+function setZone(btn) {
+  document.querySelectorAll('.zone-btn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+/* ═══ GAUGE ENGINE ═══ */
+function drawGauge(id, cfg) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var cx = W/2, cy = H/2, R = Math.min(W,H)/2 - 12;
+  var val = cfg.value, mn = cfg.min, mx = cfg.max;
+  var color = cfg.color || '#1e88e5';
+  var ticks = cfg.ticks || 10;
+  var sub = cfg.sub || 5;
+  var zones = cfg.zones || [];
+  ctx.clearRect(0, 0, W, H);
+  function d2r(deg) { return (deg - 90) * Math.PI / 180; }
+  function v2a(v) { return 225 + (Math.max(mn, Math.min(mx, v)) - mn) / (mx - mn) * 270; }
+  var sa = d2r(225), ea = d2r(225 + 270);
+
+  ctx.beginPath(); ctx.arc(cx, cy, R + 8, 0, Math.PI * 2);
+  ctx.strokeStyle = '#1e2d3d'; ctx.lineWidth = 1; ctx.stroke();
+
+  zones.forEach(function(z) {
+    ctx.beginPath(); ctx.arc(cx, cy, R, d2r(v2a(z.from)), d2r(v2a(z.to)));
+    ctx.strokeStyle = z.color + '44'; ctx.lineWidth = 8; ctx.lineCap = 'butt'; ctx.stroke();
+  });
+
+  ctx.beginPath(); ctx.arc(cx, cy, R, sa, ea);
+  ctx.strokeStyle = '#1c2533'; ctx.lineWidth = 8; ctx.lineCap = 'butt'; ctx.stroke();
+
+  ctx.beginPath(); ctx.arc(cx, cy, R, sa, d2r(v2a(val)));
+  ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.lineCap = 'butt'; ctx.stroke();
+
+  for (var i = 0; i <= ticks; i++) {
+    var pct = i / ticks, a = d2r(225 + pct * 270);
+    ctx.beginPath();
+    ctx.moveTo(cx + (R + 6) * Math.cos(a), cy + (R + 6) * Math.sin(a));
+    ctx.lineTo(cx + (R + 1) * Math.cos(a), cy + (R + 1) * Math.sin(a));
+    ctx.strokeStyle = '#243447'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke();
+    if (i < ticks) {
+      for (var j = 1; j < sub; j++) {
+        var sp = (i + j/sub)/ticks, sa2 = d2r(225 + sp * 270);
+        ctx.beginPath();
+        ctx.moveTo(cx + (R + 5) * Math.cos(sa2), cy + (R + 5) * Math.sin(sa2));
+        ctx.lineTo(cx + (R + 3) * Math.cos(sa2), cy + (R + 3) * Math.sin(sa2));
+        ctx.strokeStyle = '#1e2d3d'; ctx.lineWidth = 0.8; ctx.stroke();
+      }
+    }
+  }
+
+  ctx.font = '500 8px "JetBrains Mono",monospace';
+  ctx.fillStyle = '#3d5a75'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  [[0, mn], [0.5, Math.round((mn+mx)/2)], [1, mx]].forEach(function(p) {
+    var a = d2r(225 + p[0] * 270), lr = R - 13;
+    ctx.fillText(String(p[1]), cx + lr * Math.cos(a), cy + lr * Math.sin(a));
+  });
+
+  var na = d2r(v2a(val));
+  var nx = cx + (R - 14) * Math.cos(na), ny = cy + (R - 14) * Math.sin(na);
+  var bl = na + Math.PI/2, br = na - Math.PI/2;
+  ctx.beginPath();
+  ctx.moveTo(nx, ny);
+  ctx.lineTo(cx + 4 * Math.cos(bl), cy + 4 * Math.sin(bl));
+  ctx.lineTo(cx - 8 * Math.cos(na), cy - 8 * Math.sin(na));
+  ctx.lineTo(cx + 4 * Math.cos(br), cy + 4 * Math.sin(br));
+  ctx.closePath(); ctx.fillStyle = '#e8f0f8'; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(cx - 8 * Math.cos(na), cy - 8 * Math.sin(na));
+  ctx.lineTo(cx + 3 * Math.cos(bl), cy + 3 * Math.sin(bl));
+  ctx.lineTo(cx + 3 * Math.cos(br), cy + 3 * Math.sin(br));
+  ctx.closePath(); ctx.fillStyle = '#243447'; ctx.fill();
+
+  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fillStyle = '#111820'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, 1.5, 0, Math.PI * 2); ctx.fillStyle = '#090d12'; ctx.fill();
+}
+
+var GC = {
+  'g-temp': { value:21.8, min:15, max:30,   color:'#00c853', ticks:5,  sub:4, zones:[{from:15,to:18,color:'#1e88e5'},{from:18,to:25,color:'#00c853'},{from:25,to:30,color:'#d32f2f'}] },
+  'g-co2':  { value:620,  min:400,max:1500,  color:'#a78bfa', ticks:5,  sub:4, zones:[{from:400,to:800,color:'#00c853'},{from:800,to:1000,color:'#ff8f00'},{from:1000,to:1500,color:'#d32f2f'}] },
+  'g-hum':  { value:58,   min:0,  max:100,   color:'#1e88e5', ticks:5,  sub:4, zones:[{from:0,to:30,color:'#ff8f00'},{from:30,to:65,color:'#00c853'},{from:65,to:100,color:'#ff8f00'}] },
+  'g-pwr':  { value:34.2, min:0,  max:50,    color:'#ff8f00', ticks:5,  sub:5, zones:[{from:0,to:30,color:'#00c853'},{from:30,to:42,color:'#ff8f00'},{from:42,to:50,color:'#d32f2f'}] },
+  'g-sol':  { value:8.4,  min:0,  max:14,    color:'#fbbf24', ticks:7,  sub:4, zones:[{from:0,to:3,color:'#3d5a75'},{from:3,to:10,color:'#00c853'},{from:10,to:14,color:'#fbbf24'}] },
+};
+
+function redrawGauges() {
+  Object.keys(GC).forEach(function(id) {
+    var c = document.getElementById(id);
+    if (c) {
+      var sec = c.closest('.view');
+      if (sec && sec.classList.contains('on')) drawGauge(id, GC[id]);
+    }
+  });
+}
+
+/* ═══ SPARKLINES ═══ */
+var sparkHist = {
+  hvac:   [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8],
+  energy: [18,22,28,32,35,36,34,33,34,34,33,34],
+};
+function drawSpark(id, data, color) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth || 200, H = canvas.height || 32;
+  canvas.width = W;
+  ctx.clearRect(0, 0, W, H);
+  if (!data || data.length < 2) return;
+  var mn = Math.min.apply(null, data), mx = Math.max.apply(null, data), range = mx - mn || 1;
+  var step = W / (data.length - 1);
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color + '35'); grad.addColorStop(1, color + '00');
+  ctx.beginPath();
+  data.forEach(function(v, i) {
+    var x = i * step, y = H - ((v - mn) / range) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath();
+  data.forEach(function(v, i) {
+    var x = i * step, y = H - ((v - mn) / range) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
+  // threshold line
+  if (color === '#ff8f00') {
+    var thr = H - ((42 - mn) / range) * (H - 4) - 2;
+    ctx.beginPath(); ctx.moveTo(0, thr); ctx.lineTo(W, thr);
+    ctx.strokeStyle = '#d32f2f44'; ctx.lineWidth = 1; ctx.setLineDash([3,3]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  var lx = (data.length - 1) * step;
+  var ly = H - ((data[data.length-1] - mn) / range) * (H - 4) - 2;
+  ctx.beginPath(); ctx.arc(lx, ly, 2.5, 0, Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+}
+function redrawSparks() {
+  drawSpark('sp-hvac',   sparkHist.hvac,   '#00c853');
+  drawSpark('sp-energy', sparkHist.energy, '#ff8f00');
+}
+setTimeout(redrawSparks, 150);
+window.addEventListener('resize', redrawSparks);
+
+/* ═══ LUX BARS ═══ */
+var luxData = [
+  {name:'Cls. 1',    lux:520,on:true}, {name:'Cls. 2',     lux:480,on:true},
+  {name:'Cls. 3',    lux:0,  on:false},{name:'Laborator',  lux:650,on:true},
+  {name:'Bibliotecă',lux:0,  on:false},{name:'Cantină',    lux:390,on:true},
+  {name:'Sala sport',lux:0,  on:false},{name:'Hol A',      lux:210,on:true},
+  {name:'Hol B',     lux:0,  on:false},{name:'Secretariat',lux:440,on:true},
+];
+function luxColor(l) { return l===0?'#1e2d3d':l<200?'#3d5a75':l<350?'#ff8f00':l<600?'#00c853':'#1e88e5'; }
+function luxLabel(l) { return l===0?'OFF':l<200?'Insuficient':l<350?'Redus':l<600?'Confort':'Intens'; }
+function buildLuxGrid() {
+  var g = document.getElementById('lux-grid');
+  if (!g) return;
+  g.innerHTML = '';
+  luxData.forEach(function(z) {
+    var pct = Math.round((z.lux/1000)*100), col = luxColor(z.lux), lbl = luxLabel(z.lux);
+    var d = document.createElement('div'); d.className = 'lux-row';
+    d.innerHTML = '<div class="lux-header"><div class="lux-name"><i class="ti ti-bulb" style="font-size:12px;color:'+(z.on?'#ff8f00':'#1e2d3d')+'"></i>'+z.name+'</div><span class="lux-val" style="color:'+col+'">'+( z.lux>0?z.lux+' lx':'—')+'</span></div><div class="lux-track"><div class="lux-fill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="lux-scale"><span>0</span><span style="color:'+col+'">'+lbl+'</span><span>1000 lx</span></div>';
+    g.appendChild(d);
+  });
+}
+
+/* ═══ CHARTS ═══ */
+Chart.defaults.color = '#3d5a75';
+Chart.defaults.borderColor = 'rgba(30,45,61,.4)';
+Chart.defaults.font.family = "'JetBrains Mono',monospace";
+Chart.defaults.font.size = 9;
+var HL = ['06','07','08','09','10','11','12','13','14','15','16','17'];
+var DT = {
+  temp: [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8],
+  ener: [18,22,28,32,35,36,34,33,34,34,33,34],
+  sol:  [0,.5,2,5,7,8.4,8.2,7.5,6,4,2,.8],
+  co2:  [580,590,610,630,650,680,660,640,630,620,615,620],
+  pr:   [1015,1014,1013,1013,1012,1013,1014,1013,1013,1012,1013,1013],
+};
+function mkFill(c) {
+  return function(ctx) {
+    var g = ctx.chart.ctx.createLinearGradient(0,0,0,180);
+    g.addColorStop(0,c+'25'); g.addColorStop(1,c+'00'); return g;
+  };
+}
+function mkAnnotations(min, max, warn, crit) {
+  return {
+    plugins: {
+      annotation: {
+        annotations: {
+          warn: { type:'line', yMin:warn, yMax:warn, borderColor:'#ff8f0066', borderWidth:1, borderDash:[4,4] },
+          crit: { type:'line', yMin:crit, yMax:crit, borderColor:'#d32f2f66', borderWidth:1, borderDash:[4,4] },
+        }
+      }
+    }
+  };
+}
+function mkL(id, ds, unit, mn, mx) {
+  var el = document.getElementById(id); if (!el) return;
+  new Chart(el, {
+    type:'line',
+    data:{ labels:HL, datasets:ds.map(function(d){ return Object.assign({},d,{borderWidth:1.5,pointRadius:0,tension:.4}); }) },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:ds.length>1, labels:{ boxWidth:8, padding:10, color:'#3d5a75' } } },
+      scales:{
+        x:{ grid:{color:'rgba(30,45,61,.4)'}, border:{display:false}, ticks:{color:'#3d5a75',maxRotation:0,maxTicksLimit:6} },
+        y:{ min:mn, max:mx, grid:{color:'rgba(30,45,61,.4)'}, border:{display:false}, ticks:{color:'#3d5a75',maxTicksLimit:5,callback:function(v){return v+(unit||'');}} }
+      }
+    }
+  });
+}
+
+mkL('c-hvac', [
+  {label:'Temp °C', data:DT.temp, borderColor:'#00c853', backgroundColor:mkFill('#00c853'), fill:true},
+  {label:'CO2/10', data:DT.co2.map(function(v){return v/10;}), borderColor:'#a78bfa', borderDash:[4,3]}
+], '', 15, 80);
+mkL('c-energy', [
+  {label:'Consum kW', data:DT.ener, borderColor:'#ff8f00', backgroundColor:mkFill('#ff8f00'), fill:true},
+  {label:'Solar kW', data:DT.sol, borderColor:'#fbbf24'}
+], ' kW', 0, 55);
+
+var analyticsBuilt = false;
+function buildAnalyticsCharts() {
+  if (analyticsBuilt) return;
+  analyticsBuilt = true;
+  mkL('c-temp-an', [
+    {label:'Temp °C', data:DT.temp, borderColor:'#00c853', backgroundColor:mkFill('#00c853'), fill:true},
+    {label:'Max norm.', data:DT.temp.map(function(){return 24;}), borderColor:'#ff8f0044', borderDash:[4,4]},
+    {label:'Min norm.', data:DT.temp.map(function(){return 19;}), borderColor:'#1e88e544', borderDash:[4,4]},
+  ], '°C', 15, 28);
+  mkL('c-pwr-an', [
+    {label:'Consum kW', data:DT.ener, borderColor:'#ff8f00', backgroundColor:mkFill('#ff8f00'), fill:true},
+    {label:'Limita', data:DT.ener.map(function(){return 50;}), borderColor:'#d32f2f55', borderDash:[4,4]},
+    {label:'Warning', data:DT.ener.map(function(){return 42;}), borderColor:'#ff8f0055', borderDash:[4,4]},
+  ], ' kW', 0, 55);
+  mkL('c-press-an', [
+    {label:'hPa', data:DT.pr, borderColor:'#a78bfa', backgroundColor:mkFill('#a78bfa'), fill:true},
+  ], ' hPa', 1005, 1025);
+}
+
+/* ═══ TOAST ═══ */
+var toastState = {};
+function showToast(type, title, msg, dur) {
+  dur = dur || 5000;
+  var c = document.getElementById('toasts');
+  if (!c) return;
+  var colors = {crit:'#d32f2f',warn:'#ff8f00',ok:'#00c853',info:'#1e88e5'};
+  var icons  = {crit:'ti-alert-triangle',warn:'ti-alert-circle',ok:'ti-circle-check',info:'ti-info-circle'};
+  var t = document.createElement('div');
+  t.className = 'toast t-' + type;
+  t.innerHTML = '<i class="ti '+(icons[type]||'ti-info-circle')+' toast-icon" style="color:'+(colors[type]||'#1e88e5')+'"></i><div class="toast-body"><div class="toast-title">'+title+'</div><div class="toast-msg">'+msg+'</div><div class="toast-bar" style="animation-duration:'+dur+'ms"></div></div>';
+  c.appendChild(t);
+  setTimeout(function(){ t.classList.add('out'); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },220); }, dur);
+}
+function checkThresholds(v) {
+  function chk(key, cond, type, title, msg) {
+    var now = cond ? 1 : 0;
+    if (now && toastState[key] !== 1) showToast(type, title, msg);
+    toastState[key] = now;
+  }
+  chk('co2hi',  v.co2 > 900,   'warn', 'CO₂ Ridicat',     'CO₂ depășește 900 ppm — verificați ventilația');
+  chk('pwrhi',  v.pwr > 42,    'crit', 'Consum Critic',    'Consum depășește 42 kW — ' + v.pwr.toFixed(1) + ' kW');
+  chk('windhi', v.wind > 40,   'warn', 'Vânt Puternic',    'Viteză vânt ' + v.wind + ' km/h — verificați solar');
+  chk('presslo',v.pr  < 1008,  'warn', 'Presiune Scăzută', 'Presiune atmosferică ' + v.pr + ' hPa — posibil furtună');
+  chk('solmax', v.sol > 10,    'ok',   'Solar la Maxim',   'Producție solară: ' + v.sol.toFixed(1) + ' kW');
+}
+
+/* ═══ GSB STATUS ═══ */
+function updateGSBStatus(alarms) {
+  var dot = document.getElementById('gsb-dot');
+  var lbl = document.getElementById('gsb-state');
+  var hasCrit = alarms.some(function(a){ return a.sev === 'crit'; });
+  var hasWarn = alarms.some(function(a){ return a.sev === 'warn'; });
+  if (hasCrit) {
+    dot.className = 'gsb-state-dot crit';
+    lbl.textContent = 'ALARM ACTIV'; lbl.style.color = 'var(--crit)';
+  } else if (hasWarn) {
+    dot.className = 'gsb-state-dot warn';
+    lbl.textContent = 'AVERTIZARE'; lbl.style.color = 'var(--warn)';
+  } else {
+    dot.className = 'gsb-state-dot ok';
+    lbl.textContent = 'OPERATIONAL'; lbl.style.color = 'var(--ok)';
+  }
+  document.getElementById('cnt-crit').textContent = 'CRIT ' + alarms.filter(function(a){return a.sev==='crit';}).length;
+  document.getElementById('cnt-warn').textContent = 'WARN ' + alarms.filter(function(a){return a.sev==='warn';}).length;
+  document.getElementById('cnt-info').textContent = 'INFO ' + alarms.filter(function(a){return a.sev==='info';}).length;
+}
+updateGSBStatus(ALARMS);
+
+/* ═══ LIVE DATA ═══ */
+var tick = 0;
+setInterval(function() {
+  tick++;
+  var t   = (21.8 + Math.sin(tick*.3)*.4).toFixed(1);
+  var p   = (34   + Math.sin(tick*.5)*1.5).toFixed(1);
+  var s   = (8.4  + Math.sin(tick*.4)*.3).toFixed(1);
+  var h   = Math.round(58 + Math.sin(tick*.2)*2);
+  var w   = Math.round(12 + Math.sin(tick*.6)*4);
+  var pr  = Math.round(1013 + Math.sin(tick*.05)*2);
+  var co2 = Math.round(620 + Math.sin(tick*.1)*40);
+  var rpm = Math.round(1450 + Math.sin(tick*.2)*30);
+  var ttur= Math.round(68 + Math.sin(tick*.08)*.8);
+  var net = (parseFloat(p) - parseFloat(s)).toFixed(1);
+
+  function g(id) { return document.getElementById(id); }
+  function st(id, v) { var el=g(id); if(el) el.textContent=v; }
+  function sh(id, v) { var el=g(id); if(el) el.innerHTML=v; }
+
+  // GSB
+  st('gsb-pwr', p + ' kW');
+  st('gsb-tmp', t + ' °C');
+  st('gsb-sol', s + ' kW');
+  st('gsb-co2', co2 + ' ppm');
+  st('gsb-hum', h + '%');
+
+  // modules
+  st('mod-temp', t); st('mod-co2-label', co2); st('mod-hum', h+'%'); st('mod-co2', co2+' ppm');
+  st('mod-pwr', p); st('mod-sol-label', s); st('mod-sol', s+' kW'); st('mod-net', net+' kW');
+  st('mod-solv', s); st('mod-rpm', rpm);
+
+  // KPI strip
+  st('kpi-wind', w); st('kpi-press', pr); st('kpi-ttur', ttur);
+  st('kpi-wind-dir', w<15?'Calm':w<30?'NV — Moderat':'NV — Puternic');
+  st('kpi-press-tr', pr>1014?'↑ Creștere':pr<1012?'↓ Scădere':'↔ Stabil');
+
+  // gauge readouts
+  st('gv-temp', t); st('gv-co2', co2); st('gv-hum', h);
+  st('gv-pwr', p); st('gv-sol', s);
+  st('gs-co2', co2<800?'Aer curat':co2<1000?'Atenție!':'ALERTĂ');
+
+  // sparklines
+  sparkHist.hvac.push(parseFloat(t)); if(sparkHist.hvac.length>20) sparkHist.hvac.shift();
+  sparkHist.energy.push(parseFloat(p)); if(sparkHist.energy.length>20) sparkHist.energy.shift();
+  redrawSparks();
+
+  // gauge configs
+  GC['g-temp'].value = parseFloat(t);
+  GC['g-co2'].value  = co2;
+  GC['g-hum'].value  = h;
+  GC['g-pwr'].value  = parseFloat(p);
+  GC['g-sol'].value  = parseFloat(s);
+
+  // lux fluctuation
+  var luxSec = document.getElementById('view-systems');
+  if (luxSec && luxSec.classList.contains('on')) {
+    luxData.forEach(function(z) { if(z.on&&z.lux>0) z.lux=Math.max(100,Math.min(900,Math.round(z.lux+(Math.random()-.5)*12))); });
+    buildLuxGrid();
+  }
+
+  redrawGauges();
+  checkThresholds({ co2:co2, pwr:parseFloat(p), wind:w, pr:pr, sol:parseFloat(s) });
+}, 2500);
+</script>
+</body>
+</html>
