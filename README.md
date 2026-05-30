@@ -25,13 +25,7 @@ Proiectul are două versiuni de interfață, ambele funcționale direct din brow
 
 **[▶ Demo live](https://mariusmihalache.github.io/OpenSmartBuilding/index.html)**
 
-Interfață dark în stilul Grafana cu:
-- Gauge-uri analogice cu ace, zone de alertă și tick-marks radiale
-- Sparklines pe cardurile KPI cu istoric live
-- Rose diagram pentru direcția vântului
-- Bare de intensitate luminoasă în lux pe zone
-- Notificări toast la depășirea pragurilor
-- Gauge-uri diferite pe fiecare secțiune: CO₂, RPM pompe, presiune, temperatură
+Interfață dark în stilul Grafana cu gauge-uri analogice cu ace și zone de alertă, sparklines pe carduri KPI, rose diagram pentru direcția vântului, bare de intensitate luminoasă în lux pe zone și notificări automate la depășirea pragurilor.
 
 ---
 
@@ -43,14 +37,14 @@ Reproiectare completă pentru utilizare operațională reală — concept contro
 
 **Ce aduce nou față de v1:**
 
-- **Global Status Bar** — bară persistentă sus cu status clădire, consum, temperatură, CO₂, umiditate și uptime
-- **Panou alarme permanent** — CRITICAL / WARNING / INFO cu ierarhie strictă, indicator NEW pe alarme noi
-- **Alarm Bar activă** — alarmele critice apar imediat vizibil cu buton Acknowledge
-- **Side Drawer** — click pe orice sistem deschide un panel lateral cu detalii, istoric și acțiuni. Dashboard-ul rămâne mereu vizibil
-- **4 view-uri**: Overview · Systems · Analytics · Alarms
-- **Selector etaje**: Subsol · Parter · Etaj 1 · Etaj 2 · Curte ext.
+- **Global Status Bar** — bară persistentă sus cu status clădire live, consum, temperatură, CO₂, umiditate și uptime sistem
+- **Panou alarme permanent** — ierarhie strictă CRITICAL / WARNING / INFO, vizibil tot timpul, cu indicator NEW pe alarme noi
+- **Alarm Bar activă** — alarmele critice apar imediat sub status bar cu buton Acknowledge
+- **Side Drawer** — click pe orice sistem deschide un panel lateral cu detalii tehnice, istoric eveniment și acțiuni recomandate. Dashboard-ul rămâne mereu vizibil
+- **4 view-uri operaționale**: Overview · Systems · Analytics · Alarms
+- **Selector niveluri clădire**: Subsol · Parter · Etaj 1 · Etaj 2 · Curte ext.
 - **Grafice cu threshold lines** — zone normale marcate, detectare vizuală anomalii
-- **Notificări automate** la depășirea pragurilor: CO₂, consum, vânt, presiune atmosferică
+- **Notificări automate** la depășirea pragurilor: CO₂, consum electric, vânt, presiune atmosferică
 
 ---
 
@@ -124,7 +118,7 @@ OpenSmartBuilding/
 ```javascript
 // Exemplu conectare Modbus TCP
 const modbus = new ModbusClient('192.168.1.100', 502);
-modbus.readHoldingRegisters(0, 10);
+modbus.readHoldingRegisters(0, 10); // citire 10 regiștri
 ```
 
 ---
