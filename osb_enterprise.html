@@ -240,6 +240,10 @@ body { background:var(--bg); color:var(--t1); font-family:var(--sans); font-size
   height: calc(100vh - 38px - 32px - 38px);
   overflow: hidden;
   position: relative;
+  transition: none;
+}
+.alarm-panel {
+  transition: width .2s ease;
 }
 .layout.no-alarm { height: calc(100vh - 38px - 38px); }
 
@@ -708,6 +712,235 @@ body { background:var(--bg); color:var(--t1); font-family:var(--sans); font-size
 ═══════════════════════════════ */
 .view { display: none; }
 .view.on { display: block; }
+
+/* ── P&ID SCHEMA ── */
+.pid-wrap {
+  position: relative;
+  width: 100%;
+  background: #07090d;
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+}
+.pid-svg { width: 100%; display: block; }
+.pid-header {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pid-title {
+  font-size: 10px; font-weight: 700; color: var(--t2);
+  text-transform: uppercase; letter-spacing: 1.2px; font-family: var(--mono);
+  display: flex; align-items: center; gap: 6px;
+}
+.pid-meta { font-size: 9px; color: var(--t3); font-family: var(--mono); }
+
+/* P&ID SVG STYLES */
+.p-pipe-hot  { stroke: #8b1a1a; stroke-width: 4; fill: none; stroke-linecap: round; }
+.p-pipe-cold { stroke: #1a3a6b; stroke-width: 4; fill: none; stroke-linecap: round; }
+.p-pipe-gas  { stroke: #7a5c00; stroke-width: 3; fill: none; stroke-dasharray: 8,4; stroke-linecap: round; }
+.p-pipe-ins  { stroke: #2d1a00; stroke-width: 7; fill: none; stroke-linecap: round; opacity: 0.5; }
+.p-flow-hot  { stroke: #ef5350; stroke-width: 2; fill: none; stroke-dasharray: 10,8; stroke-linecap: round; }
+.p-flow-cold { stroke: #42a5f5; stroke-width: 2; fill: none; stroke-dasharray: 10,8; stroke-linecap: round; }
+
+.p-eq-body   { fill: #111820; stroke: #243447; stroke-width: 1.5; }
+.p-eq-hot    { fill: #1a0a00; stroke: #8b1a1a; stroke-width: 1.5; }
+.p-eq-cold   { fill: #071428; stroke: #1a3a6b; stroke-width: 1.5; }
+.p-eq-steel  { fill: #141c28; stroke: #2d4058; stroke-width: 1.5; }
+.p-eq-ok     { fill: #001a0a; stroke: #00401a; stroke-width: 1.5; }
+.p-eq-warn   { fill: #1a0e00; stroke: #3d2400; stroke-width: 1.5; }
+
+.p-lbl       { font-family: 'JetBrains Mono', 'DM Mono', monospace; fill: #3d5a75; font-size: 9px; }
+.p-lbl-val   { font-family: 'JetBrains Mono', 'DM Mono', monospace; font-size: 10px; font-weight: 700; }
+.p-lbl-eq    { font-family: 'JetBrains Mono', 'DM Mono', monospace; fill: #7a9ab8; font-size: 8px; font-weight: 700; }
+.p-lbl-title { font-family: 'JetBrains Mono', 'DM Mono', monospace; fill: #3d5a75; font-size: 8px; }
+
+.p-sensor    { fill: #0d1219; stroke: #ff8f00; stroke-width: 1.5; cursor: pointer; }
+.p-sensor-t  { fill: #ff8f00; font-size: 8px; font-weight: 700; font-family: monospace; }
+
+.p-clickable { cursor: pointer; transition: opacity 0.15s; }
+.p-clickable:hover { opacity: 0.85; }
+
+/* flow animation */
+.fh1 { animation: fh 2s linear infinite; }
+.fh2 { animation: fh 2s linear infinite 0.5s; }
+.fh3 { animation: fh 2s linear infinite 1s; }
+.fc1 { animation: fc 2.5s linear infinite; }
+.fc2 { animation: fc 2.5s linear infinite 0.8s; }
+@keyframes fh { to { stroke-dashoffset: -36; } }
+@keyframes fc { to { stroke-dashoffset: 36; } }
+
+
+/* ── CONTROL PANEL P&ID ── */
+.pid-wrap { position:relative; overflow:visible; }
+.pid-ctrl-panel {
+  background:rgba(6,9,14,.97);
+  border:1px solid #1e2d3d;
+  border-radius:8px;
+  width:100%;
+  overflow:hidden;
+}
+.pid-ctrl-header {
+  padding:10px 12px 8px;
+  background:#0a0f18;
+  border-bottom:1px solid #1e2d3d;
+  display:flex;align-items:center;gap:6px;
+}
+.pid-ctrl-header-title {
+  font-size:9px;font-weight:700;color:#3d5a75;
+  text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);
+}
+.pid-ctrl-body { padding:8px; overflow-y:auto; max-height:calc(100vh - 200px); }
+.pid-ctrl-body::-webkit-scrollbar{width:3px}
+.pid-ctrl-body::-webkit-scrollbar-thumb{background:#1e2d3d;border-radius:2px}
+
+/* API Status pill */
+.api-pill {
+  display:flex;align-items:center;gap:5px;
+  padding:4px 8px;border-radius:20px;
+  font-size:9px;font-family:var(--mono);font-weight:600;
+  margin-bottom:8px;border:1px solid;
+  letter-spacing:.3px;
+}
+.api-dot { width:5px;height:5px;border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0; }
+
+/* Equipment card */
+.eq-card {
+  background:#0d1219;
+  border:1px solid #1e2d3d;
+  border-radius:6px;
+  margin-bottom:6px;
+  overflow:hidden;
+  transition:border-color .15s;
+}
+.eq-card:hover { border-color:#243447; }
+.eq-card-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;
+  cursor:pointer;
+  border-bottom:1px solid transparent;
+}
+.eq-card.expanded .eq-card-header { border-bottom-color:#1e2d3d; }
+.eq-card-left { display:flex;align-items:center;gap:7px; }
+.eq-card-icon { font-size:14px; }
+.eq-card-name { font-size:10px;font-weight:600;color:#7a9ab8;font-family:var(--mono); }
+.eq-card-sub  { font-size:8px;color:#3d5a75;font-family:var(--mono);margin-top:1px; }
+.eq-card-badge {
+  font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;
+  font-family:var(--mono);letter-spacing:.3px;border:1px solid;
+  white-space:nowrap;
+}
+.eq-card-body { padding:8px 10px; }
+
+/* Toggle switch */
+.toggle-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px; }
+.toggle-label { font-size:10px;color:#7a9ab8;font-family:var(--mono); }
+.toggle-wrap { display:flex;align-items:center;gap:6px; }
+.toggle-switch {
+  width:36px;height:18px;border-radius:9px;
+  border:1px solid #1e2d3d;background:#0a0f18;
+  position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.toggle-switch.on  { background:#001a0a;border-color:#00401a; }
+.toggle-switch.warn{ background:#1a0e00;border-color:#3d2400; }
+.toggle-switch.on .toggle-knob  { left:20px;background:var(--ok); }
+.toggle-switch.warn .toggle-knob{ left:20px;background:var(--warn); }
+.toggle-knob {
+  position:absolute;width:12px;height:12px;border-radius:50%;
+  background:#3d5a75;top:2px;left:2px;transition:all .2s;
+}
+.toggle-state { font-size:9px;font-weight:700;font-family:var(--mono);min-width:42px;text-align:right; }
+
+/* Setpoint row */
+.sp-row {
+  display:flex;align-items:center;gap:6px;
+  background:#07090d;border-radius:4px;padding:6px 8px;
+  border:1px solid #1e2d3d;margin-bottom:6px;
+}
+.sp-label { font-size:9px;color:#3d5a75;font-family:var(--mono);flex:1; }
+.sp-controls { display:flex;align-items:center;gap:4px; }
+.sp-btn {
+  width:20px;height:20px;border-radius:3px;
+  border:1px solid #1e2d3d;background:#0d1219;
+  color:#7a9ab8;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;transition:all .12s;font-family:var(--mono);
+  flex-shrink:0;
+}
+.sp-btn:hover { border-color:#1e88e5;color:#1e88e5;background:#071428; }
+.sp-val {
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  color:var(--t1);min-width:38px;text-align:center;
+  background:#0a0f18;border:1px solid #1e2d3d;border-radius:3px;
+  padding:2px 4px;
+}
+.sp-unit { font-size:9px;color:#3d5a75;font-family:var(--mono); }
+
+/* Action buttons */
+.action-row { display:flex;gap:5px;margin-bottom:6px; }
+.act-btn {
+  flex:1;padding:5px 6px;border-radius:4px;border:1px solid;
+  font-size:9px;font-weight:700;font-family:var(--mono);
+  cursor:pointer;text-align:center;letter-spacing:.3px;
+  transition:all .15s;text-transform:uppercase;
+}
+.act-open  { background:#071428;color:#1e88e5;border-color:#0d2a50; }
+.act-open:hover  { background:#0d1f3c;border-color:#1e88e5; }
+.act-close { background:#1a0e00;color:var(--warn);border-color:#3d2400; }
+.act-close:hover { background:#261500;border-color:var(--warn); }
+.act-on    { background:#001a0a;color:var(--ok);border-color:#00401a; }
+.act-on:hover    { background:#002a10;border-color:var(--ok); }
+.act-off   { background:var(--rose-bg);color:var(--ros);border-color:var(--ros-b); }
+.act-off:hover   { background:#2a0a0a;border-color:var(--ros); }
+
+/* EV position bar */
+.ev-bar-wrap { margin-bottom:6px; }
+.ev-bar-label { display:flex;justify-content:space-between;font-size:8px;color:#3d5a75;font-family:var(--mono);margin-bottom:3px; }
+.ev-bar-track { width:100%;height:6px;background:#0a0f18;border-radius:3px;overflow:hidden;border:1px solid #1e2d3d; }
+.ev-bar-fill  { height:100%;border-radius:3px;transition:width .8s ease; }
+
+/* Mode selector */
+.mode-row { display:flex;gap:4px;margin-bottom:6px; }
+.mode-btn {
+  flex:1;padding:4px 5px;border-radius:3px;border:1px solid #1e2d3d;
+  font-size:8px;font-weight:700;font-family:var(--mono);cursor:pointer;
+  text-align:center;transition:all .15s;color:#3d5a75;background:#07090d;
+}
+.mode-btn.selected { background:#071428;color:#1e88e5;border-color:#0d2a50; }
+.mode-btn:hover { color:#7a9ab8;border-color:#243447; }
+
+/* Command log */
+.cmd-log-wrap { margin-top:2px; }
+.cmd-log-title { font-size:8px;color:#1e2d3d;font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px; }
+.cmd-log {
+  background:#07090d;border:1px solid #1e2d3d;border-radius:4px;
+  padding:5px 7px;height:72px;overflow-y:auto;
+  font-family:var(--mono);font-size:9px;
+}
+.cmd-log::-webkit-scrollbar{width:2px}
+.cmd-log::-webkit-scrollbar-thumb{background:#1e2d3d}
+.log-e { padding:1px 0;border-bottom:1px solid rgba(30,45,61,.3);display:flex;gap:5px; }
+.log-e:last-child{border-bottom:none}
+.log-ts { color:#1e2d3d;flex-shrink:0; }
+.log-ok { color:var(--ok); } .log-warn { color:var(--warn); } .log-err { color:var(--ros); } .log-info { color:#1e88e5; }
+
+
+/* API status indicator */
+.api-status {
+  display:flex;align-items:center;gap:5px;
+  padding:5px 8px;border-radius:3px;
+  background:var(--amber-bg);border:1px solid var(--amber-b);
+  font-size:9px;font-family:var(--mono);color:var(--amber);
+  margin-bottom:8px;
+}
+.api-dot { width:5px;height:5px;border-radius:50%;background:var(--amber); animation:pulse 1.5s infinite; }
+
+
+/* ── FULL WIDTH MODE for Sala Tehnica ── */
+.alarm-panel.hidden-panel { display: none !important; }
+.layout.full-width { }
+.layout.full-width .alarm-panel { display: none !important; }
+
 </style>
 </head>
 <body>
@@ -767,6 +1000,7 @@ body { background:var(--bg); color:var(--t1); font-family:var(--sans); font-size
     <div class="ctx-tab" onclick="setView('systems',this)">Systems</div>
     <div class="ctx-tab" onclick="setView('analytics',this)">Analytics</div>
     <div class="ctx-tab" onclick="setView('alarms',this)">Alarms</div>
+    <div class="ctx-tab" onclick="setView('sala',this)">Sală Tehnică</div>
   </div>
   <div class="ctx-zone-sel">
     <div class="zone-btn on" onclick="setZone(this)">Toate</div>
@@ -1092,6 +1326,847 @@ body { background:var(--bg); color:var(--t1); font-family:var(--sans); font-size
         </div>
       </div>
 
+
+      <!-- ══ VIEW: SALA TEHNICA ══ -->
+      <div id="view-sala" class="view">
+        <div class="sec-header">
+          <div class="sec-title">Sală Tehnică — Schema P&ID interactivă</div>
+          <div class="sec-actions">
+            <div class="sec-action" onclick="togglePidFlow()">Flux animat</div>
+            <div class="sec-action" onclick="togglePidLabels()">Etichete</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 240px;gap:10px;align-items:start;margin-bottom:10px">
+          <div class="pid-wrap">
+            <div class="pid-header">
+              <div class="pid-title"><i class="ti ti-tool" style="color:var(--acc)"></i>Schema P&ID — Instalație termică · Click pe echipamente</div>
+              <div class="pid-meta" id="pid-time">--:--:--  |  Modbus TCP · 192.168.1.100:502</div>
+            </div>
+          <svg class="pid-svg" viewBox="0 0 1000 620" id="pid-svg" style="min-height:520px;width:100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr-hot" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#8b1a1a"/>
+              </marker>
+              <marker id="arr-cold" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#1a3a6b"/>
+              </marker>
+              <filter id="glow-hot">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="glow-ok">
+                <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <linearGradient id="grad-cazan" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#1a0f00;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#0a0500;stop-opacity:1"/>
+              </linearGradient>
+              <linearGradient id="grad-steel" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#1e2d3d;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#0d1219;stop-opacity:1"/>
+              </linearGradient>
+              <linearGradient id="grad-pump" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#0a1f0a;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#051005;stop-opacity:1"/>
+              </linearGradient>
+            </defs>
+
+            <!-- ═══ BACKGROUND GRID ═══ -->
+            <rect width="1000" height="620" fill="#07090d"/>
+            <g stroke="#0f1520" stroke-width="0.5" opacity="0.6">
+              <line x1="0" y1="50" x2="1000" y2="50"/>
+              <line x1="0" y1="100" x2="1000" y2="100"/>
+              <line x1="0" y1="150" x2="1000" y2="150"/>
+              <line x1="0" y1="200" x2="1000" y2="200"/>
+              <line x1="0" y1="250" x2="1000" y2="250"/>
+              <line x1="0" y1="300" x2="1000" y2="300"/>
+              <line x1="0" y1="350" x2="1000" y2="350"/>
+              <line x1="0" y1="400" x2="1000" y2="400"/>
+              <line x1="0" y1="450" x2="1000" y2="450"/>
+              <line x1="0" y1="500" x2="1000" y2="500"/>
+              <line x1="0" y1="550" x2="1000" y2="550"/>
+              <line x1="50" y1="0" x2="50" y2="620"/>
+              <line x1="150" y1="0" x2="150" y2="620"/>
+              <line x1="250" y1="0" x2="250" y2="620"/>
+              <line x1="350" y1="0" x2="350" y2="620"/>
+              <line x1="450" y1="0" x2="450" y2="620"/>
+              <line x1="550" y1="0" x2="550" y2="620"/>
+              <line x1="650" y1="0" x2="650" y2="620"/>
+              <line x1="750" y1="0" x2="750" y2="620"/>
+              <line x1="850" y1="0" x2="850" y2="620"/>
+              <line x1="950" y1="0" x2="950" y2="620"/>
+            </g>
+
+            <!-- ═══ TITLU SCHEMA ═══ -->
+            <text x="500" y="22" text-anchor="middle" class="p-lbl" style="font-size:11px;fill:#1e2d3d;letter-spacing:2px">P&ID — INSTALAȚIE TERMICĂ · OPENSMARTBUILDING · REV.01</text>
+
+            <!-- ═══════════════════════════
+                 CONDUCTE PRINCIPALE
+            ═══════════════════════════ -->
+
+            <!-- Insulation layer (drawn first, behind pipes) -->
+            <!-- TUR principal -->
+            <path d="M 155,180 H 420 H 560 H 720" class="p-pipe-ins"/>
+            <!-- RETUR principal -->
+            <path d="M 155,380 H 420 H 560 H 720" class="p-pipe-ins" style="stroke:#1a1000"/>
+
+            <!-- TUR principal (rosu) -->
+            <path d="M 155,180 H 420" class="p-pipe-hot" style="stroke-width:5"/>
+            <path d="M 420,180 H 560" class="p-pipe-hot" style="stroke-width:5"/>
+            <path d="M 560,180 H 720" class="p-pipe-hot" style="stroke-width:5"/>
+
+            <!-- RETUR principal (albastru) -->
+            <path d="M 155,380 H 420" class="p-pipe-cold" style="stroke-width:5"/>
+            <path d="M 420,380 H 560" class="p-pipe-cold" style="stroke-width:5"/>
+            <path d="M 560,380 H 720" class="p-pipe-cold" style="stroke-width:5"/>
+
+            <!-- Flow animation TUR -->
+            <path d="M 155,180 H 420 H 560 H 720" class="p-flow-hot fh1" id="pid-flow-h1"/>
+            <!-- Flow animation RETUR -->
+            <path d="M 720,380 H 560 H 420 H 155" class="p-flow-cold fc1" id="pid-flow-c1"/>
+
+            <!-- CAZAN 1 → TUR (vertical sus) -->
+            <path d="M 80,120 V 180" class="p-pipe-hot" style="stroke-width:4"/>
+            <path d="M 80,380 V 440" class="p-pipe-cold" style="stroke-width:4"/>
+            <!-- CAZAN 2 → TUR -->
+            <path d="M 155,120 V 180" class="p-pipe-hot" style="stroke-width:4"/>
+            <path d="M 155,380 V 440" class="p-pipe-cold" style="stroke-width:4"/>
+
+            <!-- Zone branches - vertical drops from TUR distribuitor -->
+            <path d="M 750,180 V 260" class="p-pipe-hot" style="stroke-width:3.5"/>
+            <path d="M 800,180 V 260" class="p-pipe-hot" style="stroke-width:3.5"/>
+            <path d="M 850,180 V 260" class="p-pipe-hot" style="stroke-width:3.5"/>
+            <path d="M 900,180 V 260" class="p-pipe-hot" style="stroke-width:3.5"/>
+
+            <!-- Zone returns -->
+            <path d="M 750,320 V 380" class="p-pipe-cold" style="stroke-width:3.5"/>
+            <path d="M 800,320 V 380" class="p-pipe-cold" style="stroke-width:3.5"/>
+            <path d="M 850,320 V 380" class="p-pipe-cold" style="stroke-width:3.5"/>
+            <path d="M 900,320 V 380" class="p-pipe-cold" style="stroke-width:3.5"/>
+
+            <!-- Flow zone tur -->
+            <path d="M 750,180 V 280" class="p-flow-hot fh2" id="pid-flow-z"/>
+            <path d="M 800,180 V 280" class="p-flow-hot fh3"/>
+            <path d="M 850,180 V 280" class="p-flow-hot fh1"/>
+            <path d="M 900,180 V 280" class="p-flow-hot fh2"/>
+
+            <!-- GAS pipe (galben dashed) -->
+            <path d="M 30,560 H 80 V 440" class="p-pipe-gas"/>
+            <path d="M 80,440 H 155 V 440" class="p-pipe-gas"/>
+
+            <!-- Vas expansiune → retur -->
+            <path d="M 430,480 V 380" class="p-pipe-cold" style="stroke-width:3"/>
+
+            <!-- ═══════════════════════════
+                 CAZAN 1
+            ═══════════════════════════ -->
+            <g class="p-clickable" onclick="pidClick('caz1')" id="pid-caz1">
+              <!-- body -->
+              <rect x="40" y="300" width="80" height="140" rx="4" fill="url(#grad-cazan)" stroke="#8b1a1a" stroke-width="1.5"/>
+              <!-- top dome -->
+              <ellipse cx="80" cy="300" rx="40" ry="16" fill="url(#grad-cazan)" stroke="#8b1a1a" stroke-width="1.5"/>
+              <!-- bottom dome -->
+              <ellipse cx="80" cy="440" rx="40" ry="16" fill="url(#grad-cazan)" stroke="#8b1a1a" stroke-width="1.5"/>
+              <!-- front panel detail -->
+              <rect x="48" y="320" width="64" height="90" rx="2" fill="#0d0500" stroke="#3d1a00" stroke-width="0.5"/>
+              <!-- control display -->
+              <rect x="52" y="325" width="40" height="24" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="72" y="335" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853">●  ACTIV</text>
+              <text x="72" y="344" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853" id="pid-c1t">68°C</text>
+              <!-- burner indicator -->
+              <circle cx="100" cy="336" r="6" fill="#1a0500" stroke="#ff4400" stroke-width="1"/>
+              <text x="100" y="340" text-anchor="middle" style="font-size:8px;fill:#ff6600">🔥</text>
+              <!-- flanges -->
+              <rect x="36" y="170" width="88" height="12" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <rect x="36" y="436" width="88" height="12" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <!-- insulation rings -->
+              <ellipse cx="80" cy="340" rx="42" ry="6" fill="none" stroke="#2d1a00" stroke-width="3" opacity="0.6"/>
+              <ellipse cx="80" cy="380" rx="42" ry="6" fill="none" stroke="#2d1a00" stroke-width="3" opacity="0.6"/>
+              <!-- label plate -->
+              <rect x="44" y="420" width="72" height="14" rx="2" fill="#0d0500" stroke="#3d1a00" stroke-width="0.5"/>
+              <text x="80" y="430" text-anchor="middle" class="p-lbl-eq">CAZ-01</text>
+              <!-- tag bubble -->
+              <circle cx="120" cy="310" r="12" fill="#07090d" stroke="#8b1a1a" stroke-width="1"/>
+              <text x="120" y="314" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#ef5350">B-01</text>
+            </g>
+            <text x="80" y="160" text-anchor="middle" class="p-lbl-title">CAZAN 1</text>
+            <text x="80" y="170" text-anchor="middle" class="p-lbl" style="fill:#8b1a1a">CONDENSARE</text>
+
+            <!-- ═══ CAZAN 2 ═══ -->
+            <g class="p-clickable" onclick="pidClick('caz2')" id="pid-caz2">
+              <rect x="115" y="300" width="80" height="140" rx="4" fill="#111820" stroke="#243447" stroke-width="1.5"/>
+              <ellipse cx="155" cy="300" rx="40" ry="16" fill="#111820" stroke="#243447" stroke-width="1.5"/>
+              <ellipse cx="155" cy="440" rx="40" ry="16" fill="#111820" stroke="#243447" stroke-width="1.5"/>
+              <rect x="123" y="320" width="64" height="90" rx="2" fill="#0d1117" stroke="#1e2d3d" stroke-width="0.5"/>
+              <rect x="127" y="325" width="40" height="24" rx="2" fill="#1a0e00" stroke="#3d2400" stroke-width="0.5"/>
+              <text x="147" y="335" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#ff8f00">●  STANDBY</text>
+              <text x="147" y="344" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#ff8f00">—</text>
+              <circle cx="175" cy="336" r="6" fill="#1a1000" stroke="#443300" stroke-width="1"/>
+              <rect x="111" y="170" width="88" height="12" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <rect x="111" y="436" width="88" height="12" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <ellipse cx="155" cy="340" rx="42" ry="6" fill="none" stroke="#1e2730" stroke-width="3" opacity="0.6"/>
+              <ellipse cx="155" cy="380" rx="42" ry="6" fill="none" stroke="#1e2730" stroke-width="3" opacity="0.6"/>
+              <rect x="119" y="420" width="72" height="14" rx="2" fill="#0d1117" stroke="#1e2d3d" stroke-width="0.5"/>
+              <text x="155" y="430" text-anchor="middle" class="p-lbl-eq">CAZ-02</text>
+              <circle cx="195" cy="310" r="12" fill="#07090d" stroke="#243447" stroke-width="1"/>
+              <text x="195" y="314" text-anchor="middle" class="p-lbl" style="font-size:7px">B-02</text>
+            </g>
+            <text x="155" y="160" text-anchor="middle" class="p-lbl-title">CAZAN 2</text>
+            <text x="155" y="170" text-anchor="middle" class="p-lbl" style="fill:#3d5a75">STANDBY</text>
+
+            <!-- ═══ POMPE PRIMARE ═══ -->
+            <!-- P1 -->
+            <g class="p-clickable" onclick="pidClick('p1')">
+              <!-- volute -->
+              <circle cx="270" cy="180" r="28" fill="url(#grad-pump)" stroke="#00401a" stroke-width="1.5"/>
+              <!-- inner circle -->
+              <circle cx="270" cy="180" r="18" fill="#001408" stroke="#00c853" stroke-width="1"/>
+              <!-- impeller blades -->
+              <g id="pid-p1-imp" style="transform-origin:270px 180px">
+                <line x1="270" y1="166" x2="270" y2="194" stroke="#00c853" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="256" y1="180" x2="284" y2="180" stroke="#00c853" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="260" y1="170" x2="280" y2="190" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+                <line x1="280" y1="170" x2="260" y2="190" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              </g>
+              <circle cx="270" cy="180" r="5" fill="#00c853"/>
+              <!-- inlet/outlet flanges -->
+              <rect x="238" y="174" width="12" height="12" rx="1" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <rect x="298" y="174" width="12" height="12" rx="1" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <!-- motor housing -->
+              <rect x="255" y="204" width="30" height="40" rx="3" fill="#071a07" stroke="#00401a" stroke-width="1"/>
+              <rect x="258" y="240" width="24" height="8" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="0.5"/>
+              <!-- tag -->
+              <circle cx="310" cy="160" r="12" fill="#07090d" stroke="#00401a" stroke-width="1"/>
+              <text x="310" y="164" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853">P-01</text>
+              <!-- status badge -->
+              <rect x="244" y="152" width="52" height="14" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="270" y="162" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853">1450 rpm</text>
+            </g>
+            <text x="270" y="260" text-anchor="middle" class="p-lbl-title">P-01 PRIMARĂ</text>
+
+            <!-- P2 -->
+            <g class="p-clickable" onclick="pidClick('p2')">
+              <circle cx="270" cy="380" r="28" fill="url(#grad-pump)" stroke="#00401a" stroke-width="1.5"/>
+              <circle cx="270" cy="380" r="18" fill="#001408" stroke="#00c853" stroke-width="1"/>
+              <g id="pid-p2-imp" style="transform-origin:270px 380px">
+                <line x1="270" y1="366" x2="270" y2="394" stroke="#00c853" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="256" y1="380" x2="284" y2="380" stroke="#00c853" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="260" y1="370" x2="280" y2="390" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+                <line x1="280" y1="370" x2="260" y2="390" stroke="#00c853" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              </g>
+              <circle cx="270" cy="380" r="5" fill="#00c853"/>
+              <rect x="238" y="374" width="12" height="12" rx="1" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <rect x="298" y="374" width="12" height="12" rx="1" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <rect x="255" y="404" width="30" height="40" rx="3" fill="#071a07" stroke="#00401a" stroke-width="1"/>
+              <circle cx="310" cy="360" r="12" fill="#07090d" stroke="#00401a" stroke-width="1"/>
+              <text x="310" y="364" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853">P-02</text>
+              <rect x="244" y="352" width="52" height="14" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="270" y="362" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#00c853">960 rpm</text>
+            </g>
+            <text x="270" y="460" text-anchor="middle" class="p-lbl-title">P-02 SECUNDARĂ</text>
+
+            <!-- ═══ DISTRIBUITOR / COLECTOR ═══ -->
+            <!-- TUR distribuitor -->
+            <g class="p-clickable" onclick="pidClick('dist')">
+              <rect x="720" y="168" width="220" height="24" rx="4" fill="url(#grad-cazan)" stroke="#8b1a1a" stroke-width="1.5"/>
+              <!-- connection ports -->
+              <circle cx="750" cy="180" r="5" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <circle cx="800" cy="180" r="5" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <circle cx="850" cy="180" r="5" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <circle cx="900" cy="180" r="5" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <text x="830" y="158" text-anchor="middle" class="p-lbl-eq" style="fill:#8b1a1a">DISTRIBUITOR TUR</text>
+            </g>
+            <!-- RETUR colector -->
+            <g class="p-clickable" onclick="pidClick('dist')">
+              <rect x="720" y="368" width="220" height="24" rx="4" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="750" cy="380" r="5" fill="#020a18" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="800" cy="380" r="5" fill="#020a18" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="850" cy="380" r="5" fill="#020a18" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="900" cy="380" r="5" fill="#020a18" stroke="#1a3a6b" stroke-width="1.5"/>
+              <text x="830" y="406" text-anchor="middle" class="p-lbl-eq" style="fill:#1a3a6b">COLECTOR RETUR</text>
+            </g>
+
+            <!-- ═══ ELECTROVANE cu ACTUATORI ═══ -->
+            <!-- EV-1 -->
+            <g class="p-clickable" onclick="pidClick('ev1')">
+              <!-- valve body ISA symbol -->
+              <polygon points="740,260 760,280 740,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <polygon points="760,260 740,280 760,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <line x1="750" y1="260" x2="750" y2="240" stroke="#1e88e5" stroke-width="1.5"/>
+              <!-- actuator -->
+              <rect x="738" y="218" width="24" height="22" rx="2" fill="#071428" stroke="#1e88e5" stroke-width="1.5"/>
+              <rect x="741" y="221" width="18" height="10" rx="1" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="750" y="229" text-anchor="middle" class="p-lbl" style="font-size:6px;fill:#00c853">AUTO</text>
+              <!-- tag -->
+              <circle cx="775" cy="280" r="11" fill="#07090d" stroke="#1e88e5" stroke-width="1"/>
+              <text x="775" y="284" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5">EV1</text>
+            </g>
+            <text x="750" y="315" text-anchor="middle" class="p-lbl-title">Cls. 1-4</text>
+            <text x="750" y="325" text-anchor="middle" class="p-lbl" style="fill:#00c853;font-size:8px" id="pid-z1t">22.0°C</text>
+
+            <!-- EV-2 -->
+            <g class="p-clickable" onclick="pidClick('ev2')">
+              <polygon points="790,260 810,280 790,300" fill="#4a0d0d" stroke="#d32f2f" stroke-width="1.5"/>
+              <polygon points="810,260 790,280 810,300" fill="#4a0d0d" stroke="#d32f2f" stroke-width="1.5"/>
+              <line x1="800" y1="260" x2="800" y2="240" stroke="#d32f2f" stroke-width="1.5"/>
+              <rect x="788" y="218" width="24" height="22" rx="2" fill="#1a0505" stroke="#d32f2f" stroke-width="1.5"/>
+              <rect x="791" y="221" width="18" height="10" rx="1" fill="#1a0e00" stroke="#3d2400" stroke-width="0.5"/>
+              <text x="800" y="229" text-anchor="middle" class="p-lbl" style="font-size:6px;fill:#ff8f00">MAN</text>
+              <circle cx="825" cy="280" r="11" fill="#07090d" stroke="#d32f2f" stroke-width="1"/>
+              <text x="825" y="284" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#d32f2f">EV2</text>
+            </g>
+            <text x="800" y="315" text-anchor="middle" class="p-lbl-title">Sal. Sport</text>
+            <text x="800" y="325" text-anchor="middle" class="p-lbl" style="fill:#ff8f00;font-size:8px" id="pid-z2t">18.2°C</text>
+
+            <!-- EV-3 -->
+            <g class="p-clickable" onclick="pidClick('ev3')">
+              <polygon points="840,260 860,280 840,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <polygon points="860,260 840,280 860,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <line x1="850" y1="260" x2="850" y2="240" stroke="#1e88e5" stroke-width="1.5"/>
+              <rect x="838" y="218" width="24" height="22" rx="2" fill="#071428" stroke="#1e88e5" stroke-width="1.5"/>
+              <rect x="841" y="221" width="18" height="10" rx="1" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="850" y="229" text-anchor="middle" class="p-lbl" style="font-size:6px;fill:#00c853">AUTO</text>
+              <circle cx="875" cy="280" r="11" fill="#07090d" stroke="#1e88e5" stroke-width="1"/>
+              <text x="875" y="284" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5">EV3</text>
+            </g>
+            <text x="850" y="315" text-anchor="middle" class="p-lbl-title">Cantină</text>
+            <text x="850" y="325" text-anchor="middle" class="p-lbl" style="fill:#00c853;font-size:8px" id="pid-z3t">21.5°C</text>
+
+            <!-- EV-4 -->
+            <g class="p-clickable" onclick="pidClick('ev4')">
+              <polygon points="890,260 910,280 890,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <polygon points="910,260 890,280 910,300" fill="#0d2a4a" stroke="#1e88e5" stroke-width="1.5"/>
+              <line x1="900" y1="260" x2="900" y2="240" stroke="#1e88e5" stroke-width="1.5"/>
+              <rect x="888" y="218" width="24" height="22" rx="2" fill="#071428" stroke="#1e88e5" stroke-width="1.5"/>
+              <rect x="891" y="221" width="18" height="10" rx="1" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+              <text x="900" y="229" text-anchor="middle" class="p-lbl" style="font-size:6px;fill:#00c853">AUTO</text>
+              <circle cx="925" cy="280" r="11" fill="#07090d" stroke="#1e88e5" stroke-width="1"/>
+              <text x="925" y="284" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5">EV4</text>
+            </g>
+            <text x="900" y="315" text-anchor="middle" class="p-lbl-title">Corp B</text>
+            <text x="900" y="325" text-anchor="middle" class="p-lbl" style="fill:#00c853;font-size:8px" id="pid-z4t">20.8°C</text>
+
+            <!-- ═══ VAS EXPANSIUNE ═══ -->
+            <g class="p-clickable" onclick="pidClick('vas')">
+              <ellipse cx="430" cy="510" rx="40" ry="55" fill="url(#grad-steel)" stroke="#2d4058" stroke-width="1.5"/>
+              <ellipse cx="430" cy="488" rx="38" ry="8" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <!-- membrane -->
+              <path d="M 392,510 Q 430,490 468,510" fill="none" stroke="#1e2d3d" stroke-width="2" stroke-dasharray="4,3"/>
+              <!-- connection -->
+              <rect x="422" y="454" width="16" height="12" rx="2" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <!-- pressure gauge -->
+              <circle cx="468" cy="498" r="10" fill="#07090d" stroke="#1e88e5" stroke-width="1.5"/>
+              <text x="468" y="502" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5" id="pid-pres">1.6b</text>
+              <!-- tag -->
+              <circle cx="395" cy="490" r="12" fill="#07090d" stroke="#2d4058" stroke-width="1"/>
+              <text x="395" y="494" text-anchor="middle" class="p-lbl" style="font-size:7px">VE-01</text>
+              <text x="430" y="575" text-anchor="middle" class="p-lbl-title">VAS EXPANSIUNE</text>
+              <text x="430" y="585" text-anchor="middle" class="p-lbl" style="fill:#1e88e5;font-size:8px">60L · 1.6 bar</text>
+            </g>
+
+            <!-- ═══ SENZORI TEMPERATURA pe conducte ═══ -->
+            <!-- Senzor T° tur dupa cazane -->
+            <g class="p-clickable" onclick="pidClick('sensor-tur')">
+              <circle cx="360" cy="180" r="9" class="p-sensor"/>
+              <text x="360" y="175" text-anchor="middle" class="p-lbl" style="fill:#ff8f00;font-size:8px;font-weight:700">T°</text>
+              <text x="360" y="162" text-anchor="middle" class="p-lbl-val" style="fill:#ef5350;font-size:9px" id="pid-tur">68°C</text>
+              <line x1="360" y1="171" x2="360" y2="180" stroke="#ff8f00" stroke-width="1"/>
+            </g>
+            <!-- Senzor T° retur -->
+            <g class="p-clickable" onclick="pidClick('sensor-ret')">
+              <circle cx="360" cy="380" r="9" class="p-sensor" style="stroke:#1a3a6b"/>
+              <text x="360" y="375" text-anchor="middle" class="p-lbl" style="fill:#1a3a6b;font-size:8px;font-weight:700">T°</text>
+              <text x="360" y="362" text-anchor="middle" class="p-lbl-val" style="fill:#42a5f5;font-size:9px" id="pid-ret">52°C</text>
+              <line x1="360" y1="371" x2="360" y2="380" stroke="#1a3a6b" stroke-width="1"/>
+            </g>
+            <!-- Senzor presiune -->
+            <g class="p-clickable" onclick="pidClick('sensor-bar')">
+              <circle cx="560" cy="280" r="9" class="p-sensor" style="stroke:#1e88e5"/>
+              <text x="560" y="275" text-anchor="middle" class="p-lbl" style="fill:#1e88e5;font-size:8px;font-weight:700">P</text>
+              <text x="560" y="262" text-anchor="middle" class="p-lbl-val" style="fill:#1e88e5;font-size:9px" id="pid-bar">1.6b</text>
+              <line x1="560" y1="271" x2="560" y2="280" stroke="#1e88e5" stroke-width="1"/>
+            </g>
+
+            <!-- ═══ MANOMETRE ═══ -->
+            <!-- Manometru tur principal -->
+            <circle cx="480" cy="160" r="14" fill="#07090d" stroke="#2d4058" stroke-width="1.5"/>
+            <circle cx="480" cy="160" r="10" fill="#0d1219" stroke="#1e2d3d" stroke-width="0.5"/>
+            <path d="M 474,166 A 8 8 0 0 1 486,166" fill="none" stroke="#1e2d3d" stroke-width="2"/>
+            <path d="M 474,166 A 8 8 0 0 1 481,158" fill="none" stroke="#ef5350" stroke-width="2"/>
+            <text x="480" y="178" text-anchor="middle" class="p-lbl" style="font-size:7px">MAN-01</text>
+            <line x1="480" y1="174" x2="480" y2="180" stroke="#2d4058" stroke-width="1"/>
+
+            <!-- Manometru retur -->
+            <circle cx="480" cy="400" r="14" fill="#07090d" stroke="#2d4058" stroke-width="1.5"/>
+            <circle cx="480" cy="400" r="10" fill="#0d1219" stroke="#1e2d3d" stroke-width="0.5"/>
+            <path d="M 474,406 A 8 8 0 0 1 486,406" fill="none" stroke="#1e2d3d" stroke-width="2"/>
+            <path d="M 474,406 A 8 8 0 0 1 478,398" fill="none" stroke="#42a5f5" stroke-width="2"/>
+            <text x="480" y="418" text-anchor="middle" class="p-lbl" style="font-size:7px">MAN-02</text>
+            <line x1="480" y1="380" x2="480" y2="386" stroke="#2d4058" stroke-width="1"/>
+
+            <!-- ═══ GAS LEGEND ═══ -->
+            <line x1="30" y1="560" x2="60" y2="560" stroke="#7a5c00" stroke-width="2" stroke-dasharray="6,3"/>
+            <text x="65" y="564" class="p-lbl" style="fill:#7a5c00">GAZE NATURALE</text>
+            <line x1="30" y1="575" x2="60" y2="575" stroke="#8b1a1a" stroke-width="3"/>
+            <text x="65" y="579" class="p-lbl" style="fill:#8b1a1a">TUR (agent cald)</text>
+            <line x1="30" y1="590" x2="60" y2="590" stroke="#1a3a6b" stroke-width="3"/>
+            <text x="65" y="594" class="p-lbl" style="fill:#1a3a6b">RETUR (agent rece)</text>
+
+
+            <!-- ═══ BUTELIE EGALIZARE PRESIUNI ═══ -->
+            <!-- Main cylinder body -->
+            <g class="p-clickable" onclick="pidClick('butelie')" id="pid-butelie-grp">
+              <!-- Insulation outer -->
+              <rect x="492" y="88" width="56" height="264" rx="8" fill="#1a0f00" stroke="#2d1a00" stroke-width="1" opacity="0.6"/>
+              <!-- Main body -->
+              <rect x="498" y="95" width="44" height="250" rx="6" fill="url(#grad-steel)" stroke="#2d4058" stroke-width="1.5"/>
+              <!-- Top dome -->
+              <ellipse cx="520" cy="95" rx="22" ry="10" fill="#1e2d3d" stroke="#2d4058" stroke-width="1.5"/>
+              <!-- Bottom dome -->
+              <ellipse cx="520" cy="345" rx="22" ry="10" fill="#1e2d3d" stroke="#2d4058" stroke-width="1.5"/>
+
+              <!-- Degazor top -->
+              <rect x="514" y="76" width="12" height="20" rx="3" fill="#141c28" stroke="#2d4058" stroke-width="1"/>
+              <circle cx="520" cy="74" r="6" fill="#07090d" stroke="#1e88e5" stroke-width="1.5"/>
+              <text x="520" y="68" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5">DEG</text>
+
+              <!-- Thermometer -->
+              <rect x="540" y="200" width="6" height="50" rx="3" fill="#07090d" stroke="#ff8f00" stroke-width="1"/>
+              <circle cx="543" cy="253" r="5" fill="#1a0e00" stroke="#ff8f00" stroke-width="1"/>
+              <rect x="541" y="220" width="4" height="30" rx="2" fill="#ff8f00" opacity="0.8"/>
+              <text x="555" y="230" class="p-lbl" style="font-size:8px;fill:#ff8f00;font-weight:700" id="pid-but-t">65°C</text>
+
+              <!-- Pressure gauge -->
+              <circle cx="543" cy="170" r="10" fill="#07090d" stroke="#1e88e5" stroke-width="1.5"/>
+              <circle cx="543" cy="170" r="7" fill="#0a0f18" stroke="#1e2d3d" stroke-width="0.5"/>
+              <path d="M 538,174 A 6 6 0 0 1 548,174" fill="none" stroke="#1e2d3d" stroke-width="2"/>
+              <path d="M 538,174 A 6 6 0 0 1 543,167" fill="none" stroke="#1e88e5" stroke-width="2"/>
+              <text x="555" y="173" class="p-lbl" style="font-size:8px;fill:#1e88e5" id="pid-but-p">1.6b</text>
+
+              <!-- CONNECTION PORTS — 4 total ISA standard -->
+              <!-- Port 1: TUR PRIMAR in (top-left) -->
+              <rect x="476" y="118" width="22" height="10" rx="2" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <circle cx="476" cy="123" r="4" fill="#07090d" stroke="#8b1a1a" stroke-width="1.5"/>
+              <text x="460" y="120" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#ef5350">TUR PR→</text>
+
+              <!-- Port 2: TUR SECUNDAR out (top-right) -->
+              <rect x="542" y="118" width="22" height="10" rx="2" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+              <circle cx="564" cy="123" r="4" fill="#07090d" stroke="#8b1a1a" stroke-width="1.5"/>
+              <text x="580" y="120" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#ef5350">→TUR SEC</text>
+
+              <!-- Port 3: RET SECUNDAR in (bottom-left) -->
+              <rect x="476" y="312" width="22" height="10" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="476" cy="317" r="4" fill="#07090d" stroke="#1a3a6b" stroke-width="1.5"/>
+              <text x="460" y="315" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#42a5f5">←RET SEC</text>
+
+              <!-- Port 4: RET PRIMAR out (bottom-right) -->
+              <rect x="542" y="312" width="22" height="10" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+              <circle cx="564" cy="317" r="4" fill="#07090d" stroke="#1a3a6b" stroke-width="1.5"/>
+              <text x="580" y="315" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#42a5f5">RET PR→</text>
+
+              <!-- Drain valve bottom -->
+              <rect x="514" y="353" width="12" height="18" rx="2" fill="#07090d" stroke="#2d4058" stroke-width="1"/>
+              <polygon points="516,368 524,368 520,375" fill="#1e2d3d" stroke="#2d4058" stroke-width="1"/>
+              <text x="520" y="385" text-anchor="middle" class="p-lbl" style="font-size:7px">DREN</text>
+
+              <!-- Level indicator strips -->
+              <rect x="500" y="130" width="6" height="190" rx="2" fill="#0a0f18" stroke="#1e2d3d" stroke-width="0.5"/>
+              <rect x="500" y="220" width="6" height="100" rx="2" fill="#1a0800" opacity="0.7"/>
+
+              <!-- Insulation bands -->
+              <rect x="492" y="140" width="56" height="6" rx="2" fill="none" stroke="#2d1a00" stroke-width="2" opacity="0.5"/>
+              <rect x="492" y="200" width="56" height="6" rx="2" fill="none" stroke="#2d1a00" stroke-width="2" opacity="0.5"/>
+              <rect x="492" y="260" width="56" height="6" rx="2" fill="none" stroke="#2d1a00" stroke-width="2" opacity="0.5"/>
+              <rect x="492" y="300" width="56" height="6" rx="2" fill="none" stroke="#2d1a00" stroke-width="2" opacity="0.5"/>
+
+              <!-- Label plate -->
+              <rect x="500" y="355" width="40" height="14" rx="2" fill="#07090d" stroke="#1e2d3d" stroke-width="0.5"/>
+              <text x="520" y="365" text-anchor="middle" class="p-lbl-eq">BUT-01</text>
+
+              <!-- Tag bubble -->
+              <circle cx="494" cy="148" r="12" fill="#07090d" stroke="#1e88e5" stroke-width="1"/>
+              <text x="494" y="152" text-anchor="middle" class="p-lbl" style="font-size:7px;fill:#1e88e5">H-01</text>
+
+              <!-- Title -->
+              <text x="520" y="55" text-anchor="middle" class="p-lbl-title">BUTELIE</text>
+              <text x="520" y="65" text-anchor="middle" class="p-lbl" style="fill:#1e88e5;font-size:8px">EGALIZARE</text>
+            </g>
+
+            <!-- Pipes connecting butelie to circuits -->
+            <!-- TUR primar → butelie port1 -->
+            <path d="M 420,180 H 476" class="p-pipe-hot" style="stroke-width:4"/>
+            <path d="M 420,180 H 476" class="p-flow-hot fh2"/>
+            <!-- butelie port2 → distribuitor -->
+            <path d="M 564,123 H 600 V 180 H 720" class="p-pipe-hot" style="stroke-width:4"/>
+            <path d="M 564,123 H 600 V 180 H 720" class="p-flow-hot fh3"/>
+            <!-- RETUR distribuitor → butelie port3 -->
+            <path d="M 720,380 H 600 V 317 H 564" class="p-pipe-cold" style="stroke-width:4"/>
+            <path d="M 720,380 H 600 V 317 H 564" class="p-flow-cold fc1"/>
+            <!-- butelie port4 → cazan retur -->
+            <path d="M 476,317 H 420 V 380 H 155" class="p-pipe-cold" style="stroke-width:4"/>
+            <path d="M 476,317 H 420 V 380 H 155" class="p-flow-cold fc2"/>
+
+            <!-- Sensor T° on butelie tur -->
+            <circle cx="450" cy="180" r="8" class="p-sensor"/>
+            <text x="450" y="175" text-anchor="middle" class="p-lbl" style="fill:#ff8f00;font-size:7px;font-weight:700">T°</text>
+            <text x="450" y="162" text-anchor="middle" class="p-lbl-val" style="fill:#ef5350;font-size:9px" id="pid-tur2">68°C</text>
+
+            <!-- ═══ TITLE BLOCK ═══ -->
+            <rect x="700" y="520" width="290" height="90" rx="2" fill="#07090d" stroke="#1e2d3d" stroke-width="1"/>
+            <line x1="700" y1="545" x2="990" y2="545" stroke="#1e2d3d" stroke-width="0.5"/>
+            <line x1="700" y1="565" x2="990" y2="565" stroke="#1e2d3d" stroke-width="0.5"/>
+            <line x1="840" y1="545" x2="840" y2="610" stroke="#1e2d3d" stroke-width="0.5"/>
+            <text x="845" y="537" class="p-lbl" style="font-size:8px;fill:#3d5a75">PROIECT</text>
+            <text x="845" y="558" class="p-lbl" style="font-size:9px;fill:#7a9ab8">OpenSmartBuilding</text>
+            <text x="845" y="578" class="p-lbl" style="font-size:8px;fill:#3d5a75">SCHEMA</text>
+            <text x="845" y="595" class="p-lbl" style="font-size:8px;fill:#7a9ab8">P&amp;ID TERMICĂ</text>
+            <text x="845" y="607" class="p-lbl" style="font-size:7px;fill:#1e2d3d">REV.01 · MIT LICENSE</text>
+            <text x="705" y="537" class="p-lbl" style="font-size:8px">SCARA</text>
+            <text x="705" y="555" class="p-lbl" style="fill:#7a9ab8">NTS</text>
+            <text x="705" y="575" class="p-lbl" style="font-size:8px">DATA</text>
+            <text x="705" y="590" class="p-lbl" id="pid-date">2026</text>
+            <text x="705" y="607" class="p-lbl" style="font-size:7px">HubInfraTech</text>
+          </svg>
+          </div>
+
+          <div style="overflow-y:auto;max-height:calc(100vh - 180px)">
+          <!-- ═══ CONTROL PANEL ═══ -->
+          <div class="pid-ctrl-panel" id="pid-ctrl">
+            <div class="pid-ctrl-header">
+              <i class="ti ti-adjustments-horizontal" style="font-size:13px;color:var(--acc)"></i>
+              <span class="pid-ctrl-header-title">Panou control acționări</span>
+            </div>
+            <div class="pid-ctrl-body">
+
+              <!-- API STATUS -->
+              <div class="api-pill" id="api-pill" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)">
+                <div class="api-dot" id="api-dot" style="background:var(--amber)"></div>
+                <span id="api-txt">Backend offline · Simulare</span>
+              </div>
+
+              <!-- ── CAZAN 1 ── -->
+              <div class="eq-card expanded" id="card-caz1">
+                <div class="eq-card-header" onclick="toggleCard('caz1')">
+                  <div class="eq-card-left">
+                    <span class="eq-card-icon" style="color:#ef5350">🔥</span>
+                    <div>
+                      <div class="eq-card-name">CAZ-01</div>
+                      <div class="eq-card-sub">Condensare · Gaz natural</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-caz1" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">ACTIV</span>
+                </div>
+                <div class="eq-card-body" id="body-caz1">
+                  <div class="toggle-row">
+                    <span class="toggle-label">Pornit / Oprit</span>
+                    <div class="toggle-wrap">
+                      <div class="toggle-switch on" id="tog-caz1" onclick="ctrlToggle('caz1')"><div class="toggle-knob"></div></div>
+                      <span class="toggle-state ok" id="tog-caz1-lbl">ON</span>
+                    </div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint tur</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('caz1',-1)">−</div>
+                      <div class="sp-val" id="sp-caz1">70°C</div>
+                      <div class="sp-btn" onclick="adjSP('caz1',+1)">+</div>
+                      <span class="sp-unit"></span>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('caz1','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('caz1','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('caz1','ECON',this)">ECONOMIE</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── CAZAN 2 ── -->
+              <div class="eq-card" id="card-caz2">
+                <div class="eq-card-header" onclick="toggleCard('caz2')">
+                  <div class="eq-card-left">
+                    <span class="eq-card-icon" style="color:#3d5a75">🔥</span>
+                    <div>
+                      <div class="eq-card-name">CAZ-02</div>
+                      <div class="eq-card-sub">Cascadă · Standby</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-caz2" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)">STANDBY</span>
+                </div>
+                <div class="eq-card-body" id="body-caz2" style="display:none">
+                  <div class="toggle-row">
+                    <span class="toggle-label">Pornit / Oprit</span>
+                    <div class="toggle-wrap">
+                      <div class="toggle-switch" id="tog-caz2" onclick="ctrlToggle('caz2')"><div class="toggle-knob"></div></div>
+                      <span class="toggle-state" id="tog-caz2-lbl" style="color:var(--t3)">OFF</span>
+                    </div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint tur</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('caz2',-1)">−</div>
+                      <div class="sp-val" id="sp-caz2">70°C</div>
+                      <div class="sp-btn" onclick="adjSP('caz2',+1)">+</div>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('caz2','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('caz2','CASCADA',this)">CASCADĂ</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── POMPE ── -->
+              <div class="eq-card expanded" id="card-p1">
+                <div class="eq-card-header" onclick="toggleCard('p1')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-ripple eq-card-icon" style="color:var(--ok);font-size:15px"></i>
+                    <div>
+                      <div class="eq-card-name">P-01 Primară</div>
+                      <div class="eq-card-sub">Circuit primar · Wilo</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-p1" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">ACTIV</span>
+                </div>
+                <div class="eq-card-body" id="body-p1">
+                  <div class="toggle-row">
+                    <span class="toggle-label">Pornit / Oprit</span>
+                    <div class="toggle-wrap">
+                      <div class="toggle-switch on" id="tog-p1" onclick="ctrlToggle('p1')"><div class="toggle-knob"></div></div>
+                      <span class="toggle-state ok" id="tog-p1-lbl">ON</span>
+                    </div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Viteză pompă</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('p1',-50)">−</div>
+                      <div class="sp-val" id="sp-p1">1450</div>
+                      <div class="sp-btn" onclick="adjSP('p1',+50)">+</div>
+                      <span class="sp-unit">rpm</span>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('p1','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('p1','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('p1','DP',this)">ΔP CONST</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── BUTELIE EGALIZARE ── -->
+              <div class="eq-card expanded" id="card-but">
+                <div class="eq-card-header" onclick="toggleCard('but')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-cylinder eq-card-icon" style="color:var(--sky);font-size:15px"></i>
+                    <div>
+                      <div class="eq-card-name">BUT-01</div>
+                      <div class="eq-card-sub">Butelie egalizare · 60L</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-but" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">OK</span>
+                </div>
+                <div class="eq-card-body" id="body-but">
+                  <div class="sp-row">
+                    <span class="sp-label">Temp butelie</span>
+                    <div class="sp-controls">
+                      <div class="sp-val" id="sp-but" style="color:#ef5350;border-color:#3d1a00;background:#1a0800">65°C</div>
+                      <span class="sp-unit">live</span>
+                    </div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Degazor</span>
+                    <div class="toggle-wrap">
+                      <div class="toggle-switch on" id="tog-degaz" onclick="ctrlToggle('degaz')"><div class="toggle-knob"></div></div>
+                      <span class="toggle-state ok" id="tog-degaz-lbl" style="font-size:9px">AUTO</span>
+                    </div>
+                  </div>
+                  <div class="action-row">
+                    <div class="act-btn act-open" onclick="ctrlCmd('but','PURGE')">Purjare aer</div>
+                    <div class="act-btn act-close" onclick="ctrlCmd('but','DRAIN')">Golire</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── ELECTROVANE ── -->
+              <div style="font-size:8px;font-weight:700;color:#1e2d3d;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;margin:8px 0 4px;padding-top:4px;border-top:1px solid #1e2d3d">
+                Electrovane zone
+              </div>
+
+              <!-- EV-1 -->
+              <div class="eq-card expanded" id="card-ev1">
+                <div class="eq-card-header" onclick="toggleCard('ev1')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                    <div>
+                      <div class="eq-card-name">EV-1 · Cls. 1-4</div>
+                      <div class="eq-card-sub">Siemens SSB · AUTO</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-ev1" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+                </div>
+                <div class="eq-card-body" id="body-ev1">
+                  <div class="ev-bar-wrap">
+                    <div class="ev-bar-label"><span>Poziție</span><span id="ev1-pct">100%</span></div>
+                    <div class="ev-bar-track"><div class="ev-bar-fill" id="ev1-bar" style="width:100%;background:var(--ok)"></div></div>
+                  </div>
+                  <div class="action-row">
+                    <div class="act-btn act-open" onclick="ctrlEV('ev1',100)">Deschide</div>
+                    <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlEV('ev1',50)">50%</div>
+                    <div class="act-btn act-close" onclick="ctrlEV('ev1',0)">Închide</div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint zonă</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('ev1',-0.5)">−</div>
+                      <div class="sp-val" id="sp-ev1">22.0°C</div>
+                      <div class="sp-btn" onclick="adjSP('ev1',+0.5)">+</div>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('ev1','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('ev1','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('ev1','PROG',this)">PROGRAM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EV-2 -->
+              <div class="eq-card expanded" id="card-ev2">
+                <div class="eq-card-header" onclick="toggleCard('ev2')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-adjustments eq-card-icon" style="color:var(--warn);font-size:14px"></i>
+                    <div>
+                      <div class="eq-card-name">EV-2 · Sal. Sport</div>
+                      <div class="eq-card-sub">Siemens SSB · MANUAL</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-ev2" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)">MANUAL</span>
+                </div>
+                <div class="eq-card-body" id="body-ev2">
+                  <div class="ev-bar-wrap">
+                    <div class="ev-bar-label"><span>Poziție</span><span id="ev2-pct">100%</span></div>
+                    <div class="ev-bar-track"><div class="ev-bar-fill" id="ev2-bar" style="width:100%;background:var(--warn)"></div></div>
+                  </div>
+                  <div class="action-row">
+                    <div class="act-btn act-open" onclick="ctrlEV('ev2',100)">Deschide</div>
+                    <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlEV('ev2',50)">50%</div>
+                    <div class="act-btn act-close" onclick="ctrlEV('ev2',0)">Închide</div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint zonă</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('ev2',-0.5)">−</div>
+                      <div class="sp-val" id="sp-ev2">20.0°C</div>
+                      <div class="sp-btn" onclick="adjSP('ev2',+0.5)">+</div>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn" onclick="setMode('ev2','AUTO',this)">AUTO</div>
+                    <div class="mode-btn selected" onclick="setMode('ev2','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('ev2','PROG',this)">PROGRAM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EV-3 -->
+              <div class="eq-card" id="card-ev3">
+                <div class="eq-card-header" onclick="toggleCard('ev3')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                    <div>
+                      <div class="eq-card-name">EV-3 · Cantină</div>
+                      <div class="eq-card-sub">Siemens SSB · AUTO</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-ev3" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+                </div>
+                <div class="eq-card-body" id="body-ev3" style="display:none">
+                  <div class="ev-bar-wrap">
+                    <div class="ev-bar-label"><span>Poziție</span><span id="ev3-pct">100%</span></div>
+                    <div class="ev-bar-track"><div class="ev-bar-fill" id="ev3-bar" style="width:100%;background:var(--ok)"></div></div>
+                  </div>
+                  <div class="action-row">
+                    <div class="act-btn act-open" onclick="ctrlEV('ev3',100)">Deschide</div>
+                    <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlEV('ev3',50)">50%</div>
+                    <div class="act-btn act-close" onclick="ctrlEV('ev3',0)">Închide</div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint zonă</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('ev3',-0.5)">−</div>
+                      <div class="sp-val" id="sp-ev3">21.0°C</div>
+                      <div class="sp-btn" onclick="adjSP('ev3',+0.5)">+</div>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('ev3','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('ev3','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('ev3','PROG',this)">PROGRAM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EV-4 -->
+              <div class="eq-card" id="card-ev4">
+                <div class="eq-card-header" onclick="toggleCard('ev4')">
+                  <div class="eq-card-left">
+                    <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                    <div>
+                      <div class="eq-card-name">EV-4 · Corp B</div>
+                      <div class="eq-card-sub">Siemens SSB · AUTO</div>
+                    </div>
+                  </div>
+                  <span class="eq-card-badge" id="badge-ev4" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+                </div>
+                <div class="eq-card-body" id="body-ev4" style="display:none">
+                  <div class="ev-bar-wrap">
+                    <div class="ev-bar-label"><span>Poziție</span><span id="ev4-pct">100%</span></div>
+                    <div class="ev-bar-track"><div class="ev-bar-fill" id="ev4-bar" style="width:100%;background:var(--ok)"></div></div>
+                  </div>
+                  <div class="action-row">
+                    <div class="act-btn act-open" onclick="ctrlEV('ev4',100)">Deschide</div>
+                    <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlEV('ev4',50)">50%</div>
+                    <div class="act-btn act-close" onclick="ctrlEV('ev4',0)">Închide</div>
+                  </div>
+                  <div class="sp-row">
+                    <span class="sp-label">Setpoint zonă</span>
+                    <div class="sp-controls">
+                      <div class="sp-btn" onclick="adjSP('ev4',-0.5)">−</div>
+                      <div class="sp-val" id="sp-ev4">21.0°C</div>
+                      <div class="sp-btn" onclick="adjSP('ev4',+0.5)">+</div>
+                    </div>
+                  </div>
+                  <div class="mode-row">
+                    <div class="mode-btn selected" onclick="setMode('ev4','AUTO',this)">AUTO</div>
+                    <div class="mode-btn" onclick="setMode('ev4','MAN',this)">MANUAL</div>
+                    <div class="mode-btn" onclick="setMode('ev4','PROG',this)">PROGRAM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COMMAND LOG -->
+              <div class="cmd-log-wrap" style="margin-top:8px">
+                <div class="cmd-log-title">Log comenzi</div>
+                <div class="cmd-log" id="pid-cmdlog">
+                  <div class="log-e"><span class="log-ts">--:--:--</span><span class="log-info">Sistem pornit · simulare activă</span></div>
+                </div>
+              </div>
+
+            </div><!-- /pid-ctrl-body -->
+          </div><!-- /pid-ctrl-panel -->
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px">
+          <div class="kpi-s"><div class="kpi-s-label">Temp tur</div><div class="kpi-s-val hot" id="ps-tur">68<span class="kpi-s-unit">°C</span></div><div class="kpi-s-sub">CAZ-01 activ</div></div>
+          <div class="kpi-s"><div class="kpi-s-label">Temp retur</div><div class="kpi-s-val" style="color:var(--acc);" id="ps-ret">52<span class="kpi-s-unit">°C</span></div><div class="kpi-s-sub">Delta: 16°C</div></div>
+          <div class="kpi-s"><div class="kpi-s-label">Presiune</div><div class="kpi-s-val" style="color:var(--sky);" id="ps-bar">1.6<span class="kpi-s-unit">bar</span></div><div class="kpi-s-sub">Normal</div></div>
+          <div class="kpi-s"><div class="kpi-s-label">Electrovane</div><div class="kpi-s-val ok">3<span class="kpi-s-unit">/4</span></div><div class="kpi-s-sub">EV2 — manual</div></div>
+        </div>
+      </div><!-- /view-sala -->
+
     </div><!-- /content-scroll -->
     <div class="footer">
       <span>OpenSmartBuilding · Enterprise BMS · Modbus TCP/IP · <a href="https://github.com/MariusMihalache/OpenSmartBuilding" target="_blank">GitHub</a></span>
@@ -1289,14 +2364,28 @@ function setView(name, btn) {
   document.getElementById('view-' + name).classList.add('on');
   if (btn) btn.classList.add('on');
   closeDrawer();
+
+  // Hide alarm panel on Sala Tehnica for full width
+  var ap = document.getElementById('alarm-panel');
+  var layout = document.getElementById('layout');
+  if (name === 'sala') {
+    if (ap) ap.style.display = 'none';
+    if (layout) layout.style.gridTemplateColumns = '1fr auto';
+  } else {
+    if (ap) ap.style.display = '';
+    if (layout) layout.style.gridTemplateColumns = '';
+  }
+
   if (name === 'systems') {
-    setTimeout(function() {
-      buildLuxGrid();
-      redrawGauges();
-    }, 60);
+    setTimeout(function() { buildLuxGrid(); redrawGauges(); }, 60);
   }
   if (name === 'analytics') {
     setTimeout(buildAnalyticsCharts, 60);
+  }
+  if (name === 'sala') {
+    setTimeout(function() {
+      var pidFrame2 = 0;
+    }, 60);
   }
 }
 function setZone(btn) {
@@ -1656,6 +2745,349 @@ setInterval(function() {
   redrawGauges();
   checkThresholds({ co2:co2, pwr:parseFloat(p), wind:w, pr:pr, sol:parseFloat(s) });
 }, 2500);
+
+/* ═══ P&ID FUNCTIONS ═══ */
+var pidFlowOn = true;
+var pidLabelsOn = true;
+var pidFrame = 0;
+
+function togglePidFlow() {
+  pidFlowOn = !pidFlowOn;
+  var flows = ['pid-flow-h1','pid-flow-c1','pid-flow-z'];
+  flows.forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) el.style.display = pidFlowOn ? '' : 'none';
+  });
+}
+
+function togglePidLabels() {
+  pidLabelsOn = !pidLabelsOn;
+}
+
+var PID_DRAWER = {
+  caz1: { title:'Cazan 1 — Condensare · CAZ-01', rows:[
+    ['Status','ACTIV','ok'],['Temp tur','68°C','hot'],['Temp retur','52°C','cold'],
+    ['Gaz','4.2 m³/h','warn'],['Putere','120 kW','acc'],['Eficiență','94%','ok'],['Protocol','Modbus RTU · ID 01','acc']
+  ]},
+  caz2: { title:'Cazan 2 — Condensare · CAZ-02', rows:[
+    ['Status','STANDBY','warn'],['Setpoint','70°C','hot'],['Tip pornire','Cascadă auto','acc'],
+    ['Putere','120 kW','acc'],['Protocol','Modbus RTU · ID 02','acc']
+  ]},
+  p1: { title:'Pompă primară P-01', rows:[
+    ['Status','ACTIV','ok'],['Viteză','1450 rpm','ok'],['Circuit','Primar · Caz-01','acc'],
+    ['Presiune refulare','2.4 bar','acc'],['Presiune aspirație','1.8 bar','acc'],['Tip','Wilo Stratos','acc']
+  ]},
+  p2: { title:'Pompă secundară P-02', rows:[
+    ['Status','ACTIV','ok'],['Viteză','960 rpm','ok'],['Circuit','Secundar · Zone','acc'],
+    ['Presiune','1.8 bar','acc'],['Tip','Wilo Stratos','acc']
+  ]},
+  dist: { title:'Distribuitor / Colector zone', rows:[
+    ['Circuite','4 zone active','ok'],['Presiune tur','2.4 bar','acc'],
+    ['Presiune retur','1.8 bar','acc'],['Delta P','0.6 bar','ok']
+  ]},
+  ev1: { title:'Electrovană EV-1 · Cls. 1-4', rows:[
+    ['Status','DESCHIS · AUTO','ok'],['Temp zonă','22.0°C','ok'],
+    ['Setpoint','22°C','acc'],['Actuator','Siemens SSB61','acc'],['Protocol','Modbus RTU','acc']
+  ]},
+  ev2: { title:'Electrovană EV-2 · Sala Sport', rows:[
+    ['Status','DESCHIS · MANUAL','warn'],['Temp zonă','18.2°C','warn'],
+    ['Setpoint','20°C','acc'],['Deviere','-1.8°C','warn'],['Actuator','Siemens SSB61','acc']
+  ]},
+  ev3: { title:'Electrovană EV-3 · Cantină', rows:[
+    ['Status','DESCHIS · AUTO','ok'],['Temp zonă','21.5°C','ok'],
+    ['Setpoint','21°C','acc'],['Actuator','Siemens SSB61','acc']
+  ]},
+  ev4: { title:'Electrovană EV-4 · Corp B', rows:[
+    ['Status','DESCHIS · AUTO','ok'],['Temp zonă','20.8°C','ok'],
+    ['Setpoint','21°C','acc'],['Actuator','Siemens SSB61','acc']
+  ]},
+  vas: { title:'Vas de expansiune · VE-01', rows:[
+    ['Volum','60 litri','acc'],['Presiune','1.6 bar','ok'],
+    ['Pre-presiune','1.2 bar','acc'],['Membrană','OK','ok'],['Tip','Reflex N 60','acc']
+  ]},
+  'sensor-tur': { title:'Senzor temperatură tur', rows:[
+    ['Valoare','68°C','hot'],['Poziție','Post-cazane','acc'],
+    ['Tip','PT100','acc'],['Protocol','Modbus RTU','acc']
+  ]},
+  'sensor-ret': { title:'Senzor temperatură retur', rows:[
+    ['Valoare','52°C','cold'],['Delta T','16°C','ok'],
+    ['Tip','PT100','acc'],['Protocol','Modbus RTU','acc']
+  ]},
+  'butelie': { title:'Butelie egalizare presiuni · BUT-01', rows:[
+    ['Tip','Separare hidraulică','acc'],['Volum','60 litri','acc'],
+    ['Temp','65°C','hot'],['Presiune','1.6 bar','acc'],
+    ['Degazor','AUTO · activ','ok'],['Conexiuni','4 (2×tur + 2×retur)','acc'],
+    ['Insulator','Vată minerală 50mm','acc'],['Status','OK · funcționare normală','ok']
+  ]},
+  'sensor-bar': { title:'Senzor presiune circuit', rows:[
+    ['Valoare','1.6 bar','acc'],['Tip','4-20mA','acc'],
+    ['Gamă','0-6 bar','acc'],['Status','Normal','ok']
+  ]},
+};
+
+function pidClick(id) {
+  var info = PID_DRAWER[id];
+  if(!info) return;
+  document.getElementById('dr-title').textContent = info.title;
+  document.getElementById('dr-sub').textContent = 'Schema P&ID · Click pentru detalii Modbus';
+  var body = '<div class="dr-section"><div class="dr-section-title">Parametri echipament</div>';
+  info.rows.forEach(function(r) {
+    var col = r[2]==='ok'?'var(--ok)':r[2]==='hot'?'#ef5350':r[2]==='cold'?'#42a5f5':r[2]==='warn'?'var(--warn)':'var(--sky)';
+    body += '<div class="dr-row"><span class="dr-row-label">'+r[0]+'</span><span class="dr-row-val" style="color:'+col+'">'+r[1]+'</span></div>';
+  });
+  body += '</div>';
+  body += '<div class="dr-section"><div class="dr-section-title">Integrare backend</div>';
+  body += '<div style="font-size:10px;color:var(--t2);font-family:var(--mono);line-height:1.8;background:var(--bg3);padding:8px;border-radius:4px;border:1px solid var(--border)">';
+  body += '// config.js -- modbus.read( 192.168.1.100 : 502 : 40001 )</div>';
+  body += '</div>';
+  document.getElementById('dr-body').innerHTML = body;
+  document.getElementById('drawer').classList.add('open');
+}
+
+/* Animate pump impellers in P&ID */
+function animatePID() {
+  pidFrame++;
+  var t = pidFrame * 0.06;
+  var p1 = document.getElementById('pid-p1-imp');
+  var p2 = document.getElementById('pid-p2-imp');
+  if(p1) p1.style.transform = 'rotate('+( t * 180/Math.PI % 360)+'deg)';
+  if(p2) p2.style.transform = 'rotate('+(-t * 120/Math.PI % 360)+'deg)';
+
+  /* update live values in P&ID */
+  if(pidFrame % 60 === 0) {
+    var tur  = Math.round(68 + Math.sin(pidFrame*.08)*.8);
+    var ret  = Math.round(52 + Math.sin(pidFrame*.06)*.5);
+    var bar  = (1.6 + Math.sin(pidFrame*.05)*.05).toFixed(2);
+    var z = [
+      (22   + Math.sin(pidFrame*.10)*.3).toFixed(1),
+      (18.2 + Math.sin(pidFrame*.08)*.4).toFixed(1),
+      (21.5 + Math.sin(pidFrame*.09)*.3).toFixed(1),
+      (20.8 + Math.sin(pidFrame*.07)*.3).toFixed(1),
+    ];
+    var g = function(id){return document.getElementById(id);};
+    if(g('pid-tur'))  g('pid-tur').textContent  = tur+'°C';
+    if(g('pid-ret'))  g('pid-ret').textContent  = ret+'°C';
+    if(g('pid-bar'))  g('pid-bar').textContent  = bar+'b';
+    if(g('pid-pres')) g('pid-pres').textContent = bar+'b';
+    if(g('pid-z1t'))  g('pid-z1t').textContent  = z[0]+'°C';
+    if(g('pid-z2t'))  g('pid-z2t').textContent  = z[1]+'°C';
+    if(g('pid-z3t'))  g('pid-z3t').textContent  = z[2]+'°C';
+    if(g('pid-z4t'))  g('pid-z4t').textContent  = z[3]+'°C';
+    if(g('pid-c1t'))  g('pid-c1t').textContent  = tur+'°C';
+    if(g('ps-tur'))   g('ps-tur').innerHTML  = tur+'<span class="kpi-s-unit">°C</span>';
+    if(g('ps-ret'))   g('ps-ret').innerHTML  = ret+'<span class="kpi-s-unit">°C</span>';
+    if(g('ps-bar'))   g('ps-bar').innerHTML  = bar+'<span class="kpi-s-unit">bar</span>';
+    var d = new Date();
+    if(g('pid-time')) { var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0'); g('pid-time').textContent=hh+':'+mm+':'+ss+'  |  Modbus TCP - 192.168.1.100:502'; }
+    if(g('pid-date')) g('pid-date').textContent = d.getFullYear();
+  }
+  requestAnimationFrame(animatePID);
+}
+animatePID();
+
+
+/* ═══ CONTROL FUNCTIONS ═══ */
+var API_BASE = 'http://192.168.1.100:8080/api';
+var API_ONLINE = false;
+
+function checkAPI() {
+  fetch(API_BASE + '/status', {signal: AbortSignal.timeout ? AbortSignal.timeout(2000) : undefined})
+    .then(function(r){ API_ONLINE=r.ok; setAPIStatus(true); })
+    .catch(function(){ API_ONLINE=false; setAPIStatus(false); });
+}
+checkAPI(); setInterval(checkAPI, 10000);
+
+function setAPIStatus(online) {
+  var pill=document.getElementById('api-pill');
+  var dot=document.getElementById('api-dot');
+  var txt=document.getElementById('api-txt');
+  if(!pill) return;
+  if(online){
+    pill.style.background='var(--ok-bg)'; pill.style.borderColor='var(--ok-b)'; pill.style.color='var(--ok)';
+    dot.style.background='var(--ok)'; txt.textContent='Backend online · Modbus TCP';
+  } else {
+    pill.style.background='var(--amber-bg)'; pill.style.borderColor='var(--amber-b)'; pill.style.color='var(--amber)';
+    dot.style.background='var(--amber)'; txt.textContent='Backend offline · Simulare';
+  }
+}
+
+function pidLog(msg, type) {
+  var log=document.getElementById('pid-cmdlog'); if(!log) return;
+  var n=new Date();
+  var ts=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+  var div=document.createElement('div'); div.className='log-e';
+  div.innerHTML='<span class="log-ts">'+ts+'</span><span class="log-'+(type||'ok')+'">'+msg+'</span>';
+  log.insertBefore(div, log.firstChild);
+  while(log.children.length>20) log.removeChild(log.lastChild);
+}
+
+function sendCmd(endpoint, payload) {
+  if(API_ONLINE){
+    return fetch(API_BASE+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){return r.json();})
+      .catch(function(e){pidLog('Eroare: '+e.message,'err');return null;});
+  }
+  return Promise.resolve({success:true, simulated:true});
+}
+
+/* Equipment state */
+var EQ={
+  caz1:{on:true,  sp:70, mode:'AUTO'},
+  caz2:{on:false, sp:70, mode:'AUTO'},
+  p1:  {on:true,  sp:1450, mode:'AUTO'},
+  p2:  {on:true,  sp:960,  mode:'AUTO'},
+  degaz:{on:true},
+  ev1: {pct:100, sp:22.0, mode:'AUTO'},
+  ev2: {pct:100, sp:20.0, mode:'MAN'},
+  ev3: {pct:100, sp:21.0, mode:'AUTO'},
+  ev4: {pct:100, sp:21.0, mode:'AUTO'},
+};
+
+/* Card toggle expand/collapse */
+function toggleCard(id) {
+  var body=document.getElementById('body-'+id);
+  var card=document.getElementById('card-'+id);
+  if(!body) return;
+  var isOpen = body.style.display!=='none';
+  body.style.display = isOpen ? 'none' : '';
+  if(isOpen) card.classList.remove('expanded');
+  else card.classList.add('expanded');
+}
+
+/* Toggle switch ON/OFF */
+function ctrlToggle(device) {
+  var eq=EQ[device]; if(!eq) return;
+  eq.on=!eq.on;
+  var tog=document.getElementById('tog-'+device);
+  var lbl=document.getElementById('tog-'+device+'-lbl');
+  var badge=document.getElementById('badge-'+device);
+  if(!tog) return;
+
+  if(eq.on){
+    tog.className='toggle-switch on'; lbl.textContent='ON'; lbl.style.color='var(--ok)';
+    if(badge){badge.textContent='ACTIV';badge.style.background='var(--ok-bg)';badge.style.color='var(--ok)';badge.style.borderColor='var(--ok-b)';}
+  } else {
+    tog.className='toggle-switch'; lbl.textContent='OFF'; lbl.style.color='var(--t3)';
+    if(badge){badge.textContent='OPRIT';badge.style.background='var(--rose-bg)';badge.style.color='var(--ros)';badge.style.borderColor='var(--ros-b)';}
+  }
+  sendCmd('/coil/write',{device:device,value:eq.on}).then(function(r){
+    if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' → '+(eq.on?'ON':'OFF')+(r.simulated?' (simulat)':''), eq.on?'ok':'warn');
+  });
+}
+
+/* Adjust setpoint +/- */
+function adjSP(device, delta) {
+  var eq=EQ[device]; if(!eq) return;
+  if(device.startsWith('ev')) {
+    eq.sp=parseFloat((eq.sp+delta).toFixed(1));
+    var el=document.getElementById('sp-'+device);
+    if(el) el.textContent=eq.sp.toFixed(1)+'°C';
+    sendCmd('/register/write',{device:device,register:40020,value:eq.sp}).then(function(r){
+      if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' setpoint → '+eq.sp+'°C'+(r.simulated?' (simulat)':''),'ok');
+    });
+  } else if(device==='p1'||device==='p2') {
+    eq.sp=Math.max(0,Math.min(2000,eq.sp+delta));
+    var el2=document.getElementById('sp-'+device);
+    if(el2) el2.textContent=eq.sp;
+    sendCmd('/register/write',{device:device,register:40030,value:eq.sp}).then(function(r){
+      if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' viteză → '+eq.sp+' rpm'+(r.simulated?' (simulat)':''),'ok');
+    });
+  } else {
+    eq.sp=Math.max(40,Math.min(90,eq.sp+delta));
+    var el3=document.getElementById('sp-'+device);
+    if(el3) el3.textContent=eq.sp+'°C';
+    sendCmd('/register/write',{device:device,register:40010,value:eq.sp}).then(function(r){
+      if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' setpoint → '+eq.sp+'°C'+(r.simulated?' (simulat)':''),'ok');
+    });
+  }
+}
+
+/* Set mode */
+function setMode(device, mode, btn) {
+  EQ[device].mode=mode;
+  var parent=btn.parentElement;
+  parent.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  pidLog(device.toUpperCase()+' mod → '+mode,'info');
+  sendCmd('/mode/write',{device:device,mode:mode}).then(function(){});
+}
+
+/* EV position control */
+function ctrlEV(device, pct) {
+  EQ[device].pct=pct;
+  var bar=document.getElementById(device+'-bar');
+  var pctEl=document.getElementById(device+'-pct');
+  var badge=document.getElementById('badge-'+device);
+  if(bar){
+    bar.style.width=pct+'%';
+    bar.style.background=pct===0?'var(--ros)':pct<50?'var(--warn)':'var(--ok)';
+  }
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(badge){
+    var txt=pct===0?'ÎNCHIS':pct===100?'DESCHIS':pct+'% DESCHIS';
+    var col=pct===0?'var(--ros)':pct<50?'var(--warn)':'var(--ok)';
+    var bg=pct===0?'var(--rose-bg)':pct<50?'var(--amber-bg)':'var(--ok-bg)';
+    var brd=pct===0?'var(--ros-b)':pct<50?'var(--amber-b)':'var(--ok-b)';
+    badge.textContent=txt; badge.style.color=col; badge.style.background=bg; badge.style.borderColor=brd;
+  }
+  sendCmd('/analog/write',{device:device,value:pct}).then(function(r){
+    if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' poziție → '+pct+'%'+(r.simulated?' (simulat)':''),pct===0?'warn':'ok');
+  });
+}
+
+/* Generic cmd */
+function ctrlCmd(device, cmd) {
+  sendCmd('/cmd',{device:device,cmd:cmd}).then(function(r){
+    if(r&&r.success) pidLog((r.simulated?'[SIM] ':'')+device.toUpperCase()+' → '+cmd+(r.simulated?' (simulat)':''),'ok');
+  });
+}
+
+/* Toggle PID flow */
+function togglePidFlow() {
+  var flows=['pid-flow-h1','pid-flow-c1','pid-flow-z'];
+  flows.forEach(function(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'':'none';});
+}
+function togglePidLabels() {}
+
+/* Animate pump impellers */
+function animatePID() {
+  pidFrame++;
+  var p1=document.getElementById('pid-p1-imp');
+  var p2=document.getElementById('pid-p2-imp');
+  if(p1) p1.style.transform='rotate('+(pidFrame*3%360)+'deg)';
+  if(p2) p2.style.transform='rotate('+(-pidFrame*2%360)+'deg)';
+
+  if(pidFrame%60===0){
+    var tur=Math.round(68+Math.sin(pidFrame*.08)*.8);
+    var ret=Math.round(52+Math.sin(pidFrame*.06)*.5);
+    var bar=(1.6+Math.sin(pidFrame*.05)*.05).toFixed(2);
+    var bt=Math.round(65+Math.sin(pidFrame*.07)*.6);
+    var z=[(22+Math.sin(pidFrame*.10)*.3).toFixed(1),(18.2+Math.sin(pidFrame*.08)*.4).toFixed(1),(21.5+Math.sin(pidFrame*.09)*.3).toFixed(1),(20.8+Math.sin(pidFrame*.07)*.3).toFixed(1)];
+    var g=function(id){return document.getElementById(id);};
+    if(g('pid-tur'))  g('pid-tur').textContent=tur+'°C';
+    if(g('pid-tur2')) g('pid-tur2').textContent=tur+'°C';
+    if(g('pid-ret'))  g('pid-ret').textContent=ret+'°C';
+    if(g('pid-bar'))  g('pid-bar').textContent=bar+'b';
+    if(g('pid-pres')) g('pid-pres').textContent=bar+'b';
+    if(g('pid-but-t')) g('pid-but-t').textContent=bt+'°C';
+    if(g('pid-but-p')) g('pid-but-p').textContent=bar+'b';
+    if(g('sp-but'))   g('sp-but').textContent=bt+'°C';
+    if(g('pid-z1t'))  g('pid-z1t').textContent=z[0]+'°C';
+    if(g('pid-z2t'))  g('pid-z2t').textContent=z[1]+'°C';
+    if(g('pid-z3t'))  g('pid-z3t').textContent=z[2]+'°C';
+    if(g('pid-z4t'))  g('pid-z4t').textContent=z[3]+'°C';
+    if(g('pid-c1t'))  g('pid-c1t').textContent=tur+'°C';
+    if(g('ps-tur'))   g('ps-tur').innerHTML=tur+'<span class="kpi-s-unit">°C</span>';
+    if(g('ps-ret'))   g('ps-ret').innerHTML=ret+'<span class="kpi-s-unit">°C</span>';
+    if(g('ps-bar'))   g('ps-bar').innerHTML=bar+'<span class="kpi-s-unit">bar</span>';
+    var d=new Date();
+    if(g('pid-time')){var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');g('pid-time').textContent=hh+':'+mm+':'+ss+'  |  Modbus TCP · 192.168.1.100:502';}
+    if(g('pid-date')) g('pid-date').textContent=d.getFullYear();
+  }
+  requestAnimationFrame(animatePID);
+}
+animatePID();
+
 </script>
 </body>
 </html>
