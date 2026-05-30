@@ -1,30 +1,31 @@
 🏢 OpenSmartBuilding
 
-OpenSmartBuilding este un sistem open-source de management pentru clădiri inteligente, cu monitorizare, automatizare și vizualizare în timp real.
+OpenSmartBuilding este un sistem web pentru managementul clădirilor inteligente, cu monitorizare și interfață de control în timp real.
 
 🌐 Live Demo
+https://mariusmihalache.github.io/OpenSmartBuilding/index.html
+https://mariusmihalache.github.io/OpenSmartBuilding/osb_enterprise.html
+🚀 Instalare Locală
 
-Linkurile live funcționează dacă GitHub Pages este activat pentru acest repository (Settings → Pages → Source → main branch → /(root)).
-
-Pagina Principală: https://mariusmihalache.github.io/OpenSmartBuilding/index.html
-Dashboard: https://mariusmihalache.github.io/OpenSmartBuilding/dashboard.html
-Login: https://mariusmihalache.github.io/OpenSmartBuilding/login.html
-Setări: https://mariusmihalache.github.io/OpenSmartBuilding/settings.html
-🚀 Cum să rulezi local
-Clonează repository-ul:
+Clonează proiectul:
 
 git clone https://github.com/MariusMihalache/OpenSmartBuilding.git
 cd OpenSmartBuilding
 
-Deschide fișierele HTML în browser:
+Deschide în browser:
 
-Pe Windows: start index.html
-Pe Linux / Mac: open index.html
+Windows:
 
-📂 Structura proiectului
+start index.html
+
+Mac / Linux:
+
+open index.html
+📂 Structură
 
 OpenSmartBuilding/
 ├── index.html
+├── osb_enterprise.html
 ├── dashboard.html
 ├── login.html
 ├── settings.html
@@ -32,19 +33,10 @@ OpenSmartBuilding/
 ├── js/
 └── assets/
 
-🛠️ Tehnologii folosite
-HTML, CSS, JavaScript
-GitHub Pages pentru hosting live
-Eventual Node.js pentru backend (dacă este implementat)
-🤝 Contribuții
-
-Contribuțiile sunt binevenite!
-
-Fork repository-ul
-Creează un branch nou
-Fă commit la modificări
-Push la branch
-Deschide un Pull Request
+🛠️ Tehnologii
+HTML5, CSS3, JavaScript
+GitHub Pages (hosting)
+Node.js (opțional server local)
 📄 Licență
 
 MIT License
