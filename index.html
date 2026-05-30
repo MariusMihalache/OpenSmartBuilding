@@ -3,887 +3,1211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenSmartBuilding — Building Management System</title>
+<title>OpenSmartBuilding — Hyperion Enterprise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-:root {
-  --bg-base: #0d0f14;
-  --bg-panel: #13151c;
-  --bg-card: #181b24;
-  --bg-hover: #1f2330;
-  --border: #2a2d3a;
-  --border-light: #333648;
-  --text-primary: #e2e4eb;
-  --text-secondary: #9599a8;
-  --text-muted: #5a5e6e;
-  --green: #73bf69;
-  --green-dim: #1a2e1a;
-  --green-border: #2d4e2a;
-  --blue: #5794f2;
-  --blue-dim: #0f1d3a;
-  --blue-border: #1e3a6e;
-  --orange: #ff9830;
-  --orange-dim: #2d1f0a;
-  --orange-border: #4d3510;
-  --red: #f2495c;
-  --red-dim: #2d0f14;
-  --red-border: #4d1520;
-  --yellow: #fade2a;
-  --yellow-dim: #2a2400;
-  --teal: #64b5f6;
-  --purple: #b877d9;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Inter', sans-serif;
-  --radius: 6px;
-  --radius-lg: 10px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+:root{
+  --bg:#0d1117;--sf:#161b22;--up:#1c2333;
+  --b1:#21262d;--b2:#30363d;
+  --t1:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --blue:#3b82f6;--blu-bg:#0d1f3c;--blu-b:#1e3a5f;
+  --grn:#22c55e;--grn-bg:#0a1f0e;--grn-b:#14532d;
+  --amb:#f59e0b;--amb-bg:#1c1500;--amb-b:#3d2c00;
+  --ros:#f43f5e;--ros-bg:#1f0a0e;--ros-b:#4a1020;
+  --sky:#38bdf8;--sky-bg:#071520;
+  --vio:#a78bfa;--vio-bg:#130f20;
+  --tel:#2dd4bf;
+  --mono:'DM Mono',monospace;--sans:'Inter',sans-serif;
+  --r:6px;--r2:8px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body {
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.5;
-}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:13px;line-height:1.5}
+.app{display:flex;height:100vh}
 
-/* LAYOUT */
-.layout { display: flex; height: 100vh; overflow: hidden; }
+/* ── SIDEBAR ── */
+.sb{width:200px;background:var(--bg);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--b2)}
+.sb-brand{padding:16px 14px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.sb-ico{width:30px;height:30px;background:var(--blu-bg);border:1px solid var(--blu-b);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:15px;flex-shrink:0}
+.sb-name{font-size:12px;font-weight:600;color:var(--t1)}
+.sb-ver{font-size:9px;color:var(--t3);font-family:var(--mono);margin-top:1px}
+.sb-sec{padding:14px 14px 4px;font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono)}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 14px;margin:1px 6px;border-radius:var(--r);cursor:pointer;color:var(--t2);font-size:12px;font-weight:400;text-decoration:none;border:1px solid transparent;transition:all .12s}
+.ni:hover{background:var(--sf);color:var(--t1)}
+.ni.on{background:var(--blu-bg);color:#93c5fd;border-color:var(--blu-b);font-weight:500}
+.ni i{font-size:15px;flex-shrink:0}
+.nd{width:5px;height:5px;border-radius:50%;background:var(--b1);flex-shrink:0;margin-left:auto}
+.nd.ok{background:var(--grn)}.nd.w{background:var(--amb)}
+.sb-foot{margin-top:auto;padding:12px 14px;border-top:1px solid var(--b1);font-size:9px;color:var(--t3);font-family:var(--mono)}
+.sb-foot a{color:var(--blue);text-decoration:none;display:block;margin-bottom:3px;opacity:.7}
+.sb-foot a:hover{opacity:1}
 
-/* SIDEBAR */
-.sidebar {
-  width: 220px;
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow-y: auto;
-}
-.sidebar-logo {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.logo-text {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--blue);
-  letter-spacing: .5px;
-}
-.logo-sub {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-top: 2px;
-  letter-spacing: .3px;
-}
-.sidebar-section {
-  padding: 12px 8px 4px;
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: var(--font-mono);
-}
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 12px;
-  border-radius: var(--radius);
-  margin: 1px 6px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  transition: all .15s;
-  text-decoration: none;
-}
-.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
-.nav-item.active { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
-.nav-item i { font-size: 16px; flex-shrink: 0; }
-.nav-badge {
-  margin-left: auto;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 10px;
-  background: var(--green-dim);
-  color: var(--green);
-  font-family: var(--font-mono);
-}
-.nav-badge.warn { background: var(--orange-dim); color: var(--orange); }
-.nav-badge.alarm { background: var(--red-dim); color: var(--red); }
-.sidebar-footer {
-  margin-top: auto;
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-.sidebar-footer a {
-  color: var(--blue);
-  text-decoration: none;
-  display: block;
-  margin-bottom: 3px;
-}
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
-/* MAIN */
-.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+/* ── TOPBAR ── */
+.top{background:var(--bg);border-bottom:1px solid var(--b1);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.top-l .ttl{font-size:13px;font-weight:600;color:var(--t1);letter-spacing:-.2px}
+.top-l .sub{font-size:10px;color:var(--t3);font-family:var(--mono);margin-top:1px}
+.top-r{display:flex;align-items:center;gap:14px}
 
-/* TOPBAR */
-.topbar {
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ── CLOCK ── */
+.clk{display:flex;flex-direction:column;align-items:flex-end}
+.clk-time{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--t1);letter-spacing:2px;line-height:1;font-variant-numeric:tabular-nums}
+.clk-date{font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;margin-top:2px;text-transform:uppercase}
+.live{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:600;color:var(--grn);background:var(--grn-bg);border:1px solid var(--grn-b);border-radius:20px;padding:4px 10px;font-family:var(--mono);letter-spacing:.8px}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--grn);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.rsel{background:var(--sf);border:1px solid var(--b2);color:var(--t2);font-size:10px;padding:5px 10px;border-radius:var(--r);font-family:var(--mono);cursor:pointer;outline:none}
+
+/* ── CONTENT ── */
+.cnt{flex:1;overflow-y:auto;padding:16px 20px}
+.cnt::-webkit-scrollbar{width:4px}.cnt::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.sec{display:none}.sec.on{display:block}
+
+/* ── KPI ── */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:var(--sf);border:1px solid var(--b1);border-radius:var(--r2);padding:13px 14px;position:relative;overflow:hidden;transition:border-color .15s}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r2) var(--r2) 0 0}
+.kpi:hover{border-color:var(--b2)}
+.kb::before{background:var(--blue)}.kg::before{background:var(--grn)}.ka::before{background:var(--amb)}
+.ks::before{background:var(--sky)}.kr::before{background:var(--ros)}.kv::before{background:var(--vio)}.kt::before{background:var(--tel)}
+.klbl{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.kval{font-family:var(--mono);font-size:26px;font-weight:400;color:var(--t1);line-height:1;letter-spacing:-1px}
+.ku{font-size:12px;color:var(--t2);font-weight:300;margin-left:1px}
+.ksub{font-size:9px;color:var(--t3);margin-top:4px;font-family:var(--mono)}
+.ktr{font-size:9px;margin-top:2px;font-family:var(--mono)}
+.cg{color:var(--grn)}.ca{color:var(--amb)}.cb{color:var(--blue)}.cs{color:var(--sky)}
+.cr{color:var(--ros)}.cv{color:var(--vio)}.ct{color:var(--tel)}.cm{color:var(--t2)}
+
+/* ── PANELS ── */
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.pnl{background:var(--sf);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 16px;overflow:hidden}
+.phd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ptit{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.pact{font-size:9px;color:var(--t3);background:var(--up);border:1px solid var(--b2);border-radius:4px;padding:2px 8px;cursor:pointer;font-family:var(--mono)}
+.cw{position:relative;height:140px}
+
+/* ── STATUS ── */
+.sr{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1)}
+.sr:last-child{border-bottom:none}
+.sn{font-size:12px;color:var(--t1);display:flex;align-items:center;gap:7px}
+.bdg{font-size:9px;font-weight:600;padding:2px 8px;border-radius:4px;font-family:var(--mono);letter-spacing:.4px}
+.bok{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-b)}
+.bwn{background:var(--amb-bg);color:var(--amb);border:1px solid var(--amb-b)}
+.bin{background:var(--blu-bg);color:#93c5fd;border:1px solid var(--blu-b)}
+.bof{background:var(--up);color:var(--t3);border:1px solid var(--b2)}
+.bro{background:var(--ros-bg);color:var(--ros);border:1px solid var(--ros-b)}
+.bvo{background:var(--vio-bg);color:var(--vio);border:1px solid #2e1d5e}
+
+/* ── VENT ── */
+.vr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.vlb{font-size:11px;color:var(--t2);width:90px;flex-shrink:0;font-family:var(--mono)}
+.vtr{flex:1;background:var(--up);border-radius:2px;height:14px;overflow:hidden;border:1px solid var(--b1)}
+.vfi{height:100%;border-radius:1px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:9px;font-weight:600;font-family:var(--mono);transition:width 1.5s ease}
+.vic{width:20px;height:20px;border-radius:50%;border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.spin{animation:rot .9s linear infinite}.spins{animation:rot 2.5s linear infinite}
+@keyframes rot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── SOLAR PANELS ── */
+.spg{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+.spp{border-radius:3px;padding:5px;text-align:center;font-size:9px;font-family:var(--mono)}
+.spp.ok{background:var(--grn-bg);border:1px solid var(--grn-b);color:var(--grn)}
+.spp.er{background:var(--amb-bg);border:1px solid var(--amb-b);color:var(--amb)}
+.spp.of{background:var(--up);border:1px solid var(--b1);color:var(--t3)}
+
+/* ── PUMPS ── */
+.ppg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ppc{background:var(--up);border:1px solid var(--b1);border-radius:var(--r);padding:10px;text-align:center;transition:border-color .15s}
+.ppc:hover{border-color:var(--b2)}
+.ppi{font-size:18px;margin-bottom:3px;display:inline-block}
+.ppn{font-size:9px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.ppv{font-size:14px;font-weight:500;font-family:var(--mono);color:var(--t1)}
+.pps{font-size:8px;font-family:var(--mono);margin-top:3px}
+
+/* ── GAUGE ── */
+.grow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.grow2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
+.gc{background:var(--sf);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 12px 12px;display:flex;flex-direction:column;align-items:center}
+.gtit{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono);margin-bottom:10px}
+.gc canvas{display:block}
+.gread{display:flex;align-items:baseline;gap:3px;margin-top:8px}
+.gval{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--t1);letter-spacing:-1px}
+.gunt{font-family:var(--mono);font-size:10px;color:var(--t3);font-weight:300}
+.gsub{font-size:9px;color:var(--t3);font-family:var(--mono);margin-top:2px;text-align:center}
+
+/* ── LUX ── */
+.lxg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.lxr{background:var(--up);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px}
+.lxh{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.lxn{font-size:11px;color:var(--t1);font-weight:500;display:flex;align-items:center;gap:6px}
+.lxv{font-family:var(--mono);font-size:12px;font-weight:500}
+.lxt{width:100%;height:8px;background:var(--b1);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.lxf{height:100%;border-radius:4px;transition:width 1.2s ease,background .5s}
+.lxs{display:flex;justify-content:space-between;font-size:8px;color:var(--t3);font-family:var(--mono)}
+
+/* ── ALARM ── */
+.abr{background:var(--ros-bg);border:1px solid var(--ros-b);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ros);font-family:var(--mono);font-weight:500;animation:alm 2s ease-in-out infinite}
+@keyframes alm{0%,100%{border-color:var(--ros-b)}50%{border-color:var(--ros)}}
+.abr.h{display:none}
+
+/* ── LIGHTNING ── */
+.lp{background:var(--sf);border:1px solid var(--b1);border-radius:var(--r2);padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+.lp::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--vio),var(--blue))}
+.lph{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.lptit{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.lpkg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.lpk{background:var(--up);border:1px solid var(--b1);border-radius:var(--r);padding:10px;text-align:center}
+.lpkl{font-size:8px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-bottom:4px}
+.lpkv{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--t1);line-height:1}
+.lpks{font-size:9px;color:var(--t3);font-family:var(--mono);margin-top:3px}
+.lprg{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.lprw{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b1)}
+.lprw:last-child{border-bottom:none}
+.lprn{font-size:11px;color:var(--t1);display:flex;align-items:center;gap:6px}
+.lpinf{margin-top:10px;padding:7px 10px;background:var(--up);border:1px solid var(--b1);border-radius:var(--r);font-size:9px;color:var(--t3);font-family:var(--mono)}
+
+/* ── METEO KPI ── */
+.mkpig{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.mcard{background:var(--sf);border:1px solid var(--b1);border-radius:var(--r2);padding:13px 12px;position:relative;overflow:hidden}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mc-s::before{background:var(--sky)}.mc-b::before{background:var(--blue)}
+.mc-t::before{background:var(--tel)}.mc-g::before{background:var(--grn)}.mc-v::before{background:var(--vio)}
+.mclbl{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;font-family:var(--mono);margin-bottom:5px}
+.mcval{font-family:var(--mono);font-size:22px;font-weight:400;color:var(--t1);letter-spacing:-1px;line-height:1}
+.mcu{font-size:10px;color:var(--t2)}
+.mcsub{font-size:9px;color:var(--t3);margin-top:4px;font-family:var(--mono)}
+
+/* ── PAGE LINK ── */
+.plnk{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--blue);text-decoration:none;padding:4px 10px;border-radius:var(--r);border:1px solid var(--blu-b);background:var(--blu-bg);font-family:var(--mono);transition:all .15s;margin-top:10px}
+.plnk:hover{background:#122040}
+
+/* ── FOOTER ── */
+.foot{border-top:1px solid var(--b1);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:9px;color:var(--t3);font-family:var(--mono);background:var(--bg);flex-shrink:0}
+.foot a{color:var(--blue);text-decoration:none}
+
+/* ── SPARKLINE ON KPI ── */
+.kpi-spark { display:block; width:100%; height:28px; margin-top:6px; }
+
+/* ── PROGRESS RING ── */
+.kpi-ring-wrap { position:absolute; top:10px; right:10px; width:36px; height:36px; }
+.kpi-ring-wrap svg { transform:rotate(-90deg); }
+.ring-bg  { fill:none; stroke:#21262d; stroke-width:3; }
+.ring-val { fill:none; stroke-width:3; stroke-linecap:round;
+            transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1); }
+
+/* ── TOAST ── */
+#toast-container {
+  position:fixed; bottom:20px; right:20px;
+  display:flex; flex-direction:column; gap:8px;
+  z-index:9999; pointer-events:none;
 }
-.topbar-left { display: flex; align-items: center; gap: 12px; }
-.topbar-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
-.topbar-sub { font-size: 11px; color: var(--text-muted); }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-.live-pill {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--green);
-  border: 1px solid var(--green-border);
-  background: var(--green-dim);
-  padding: 3px 10px; border-radius: 20px;
-  font-family: var(--font-mono);
+.toast {
+  background:#1c2333; border:1px solid #30363d;
+  border-radius:8px; padding:10px 14px;
+  font-family:'DM Mono',monospace; font-size:11px;
+  color:#e6edf3; min-width:260px; max-width:320px;
+  display:flex; align-items:flex-start; gap:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  animation:toast-in .25s ease;
+  pointer-events:all;
 }
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.4s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-.clock { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-.time-select {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  cursor: pointer;
-}
+.toast.out { animation:toast-out .25s ease forwards; }
+.toast-icon { font-size:15px; flex-shrink:0; margin-top:1px; }
+.toast-body { flex:1; }
+.toast-title { font-weight:600; margin-bottom:2px; letter-spacing:.2px; }
+.toast-msg   { font-size:10px; color:#8b949e; }
+.toast-bar   { height:2px; border-radius:1px; margin-top:8px;
+               animation:toast-bar linear forwards; }
+.toast-warn  { border-color:#3d2c00; }
+.toast-warn  .toast-bar { background:var(--amb); }
+.toast-ok    { border-color:#14532d; }
+.toast-ok    .toast-bar { background:var(--grn); }
+.toast-err   { border-color:#4a1020; }
+.toast-err   .toast-bar { background:var(--ros); }
+@keyframes toast-in  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+@keyframes toast-out { to{opacity:0;transform:translateX(20px)} }
+@keyframes toast-bar { from{width:100%} to{width:0%} }
 
-/* CONTENT */
-.content { padding: 16px 20px; flex: 1; }
-
-/* METRICS ROW */
-.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 14px; }
-.mcard {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  transition: border-color .2s;
-}
-.mcard:hover { border-color: var(--border-light); }
-.mcard .mlabel {
-  font-size: 10px; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: .8px;
-  font-family: var(--font-mono);
-  margin-bottom: 6px;
-  display: flex; align-items: center; gap: 5px;
-}
-.mcard .mval { font-size: 24px; font-weight: 500; font-family: var(--font-mono); }
-.mcard .msub { font-size: 10px; margin-top: 3px; color: var(--text-muted); }
-.mcard .mtrend { font-size: 10px; margin-top: 2px; }
-.green { color: var(--green); }
-.blue { color: var(--blue); }
-.orange { color: var(--orange); }
-.red { color: var(--red); }
-.yellow { color: var(--yellow); }
-.teal { color: var(--teal); }
-.purple { color: var(--purple); }
-
-/* PANELS */
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
-}
-.panel-title {
-  font-size: 10px; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: .8px;
-  font-family: var(--font-mono);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 6px;
-}
-.panel-title .panel-actions { margin-left: auto; display: flex; gap: 6px; }
-.panel-action {
-  font-size: 10px; padding: 2px 8px; border-radius: 4px;
-  border: 1px solid var(--border); background: var(--bg-panel);
-  color: var(--text-muted); cursor: pointer;
-}
-.panel-action:hover { color: var(--text-primary); border-color: var(--border-light); }
-.chart-wrap { position: relative; width: 100%; height: 160px; }
-
-/* STATUS ROWS */
-.status-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 0; border-bottom: 1px solid var(--border);
-}
-.status-row:last-child { border-bottom: none; }
-.status-name { font-size: 12px; color: var(--text-primary); display: flex; align-items: center; gap: 7px; }
-.status-pill {
-  font-size: 10px; padding: 2px 10px; border-radius: 10px; font-weight: 500;
-  font-family: var(--font-mono);
-}
-.pill-ok { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
-.pill-warn { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
-.pill-alarm { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
-.pill-off { background: #1a1c24; color: var(--text-muted); border: 1px solid var(--border); }
-.pill-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
-
-/* VENT BARS */
-.vent-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.vent-label { font-size: 11px; color: var(--text-secondary); width: 100px; flex-shrink: 0; font-family: var(--font-mono); }
-.vent-track { flex: 1; background: var(--bg-panel); border-radius: 3px; height: 16px; overflow: hidden; }
-.vent-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 10px; font-weight: 500; font-family: var(--font-mono); transition: width 1.2s ease; }
-.fan { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
-.spin { animation: rot .8s linear infinite; }
-.spin-slow { animation: rot 2.2s linear infinite; }
-@keyframes rot { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-
-/* LIGHTS */
-.lights-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.lzone { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 4px; border-radius: var(--radius); border: 1px solid transparent; transition: all .2s; }
-.lzone:hover { background: var(--bg-hover); border-color: var(--border); }
-.lbulb { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all .3s; border: 1px solid var(--border); }
-.lbulb.on { background: var(--orange); border-color: #cc7a25; box-shadow: 0 0 0 4px rgba(255,152,48,.12), 0 0 12px rgba(255,152,48,.2); }
-.lbulb.off { background: var(--bg-panel); }
-.lname { font-size: 10px; color: var(--text-muted); text-align: center; font-family: var(--font-mono); }
-.lpill { font-size: 9px; padding: 1px 6px; border-radius: 10px; font-family: var(--font-mono); }
-.lpill.on { background: var(--orange-dim); color: var(--orange); }
-.lpill.off { background: #1a1c24; color: var(--text-muted); }
-
-/* PUMP GRID */
-.pump-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.pump-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; text-align: center; transition: border-color .2s; }
-.pump-card:hover { border-color: var(--border-light); }
-.pump-icon { font-size: 20px; margin-bottom: 4px; display: inline-block; }
-.pump-name { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-family: var(--font-mono); }
-.pump-val { font-size: 13px; font-weight: 500; font-family: var(--font-mono); }
-
-/* SOLAR GRID */
-.solar-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-top: 10px; }
-.solar-panel { border-radius: 4px; padding: 5px; text-align: center; font-size: 10px; font-family: var(--font-mono); }
-.solar-panel.ok { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
-.solar-panel.err { background: var(--orange-dim); border: 1px solid var(--orange-border); color: var(--orange); }
-.solar-panel.off { background: #1a1c24; border: 1px solid var(--border); color: var(--text-muted); }
-
-/* ALARM BANNER */
-.alarm-banner {
-  background: var(--red-dim); border: 1px solid var(--red-border);
-  border-radius: var(--radius); padding: 10px 14px; margin-bottom: 12px;
-  display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--red);
-  animation: pulse-border 2s infinite;
-}
-@keyframes pulse-border { 0%,100%{border-color: var(--red-border)} 50%{border-color: var(--red)} }
-.alarm-banner.hidden { display: none; }
-
-/* SECTION */
-.section { display: none; }
-.section.active { display: block; }
-
-/* PAGE LINKS */
-.page-link {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--blue); text-decoration: none;
-  padding: 3px 8px; border-radius: 4px; border: 1px solid var(--blue-border);
-  background: var(--blue-dim); font-family: var(--font-mono);
-  transition: all .2s; margin-top: 8px;
-}
-.page-link:hover { background: #1a3060; }
-
-/* FOOTER */
-.footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 20px; border-top: 1px solid var(--border);
-  font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);
-  flex-shrink: 0;
-}
-.footer a { color: var(--blue); text-decoration: none; }
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
 </style>
 </head>
 <body>
-<div class="layout">
+<div class="app">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-text">OpenSmartBuilding</div>
-      <div class="logo-sub">Building Management System v1.0</div>
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-ico"><i class="ti ti-building-2"></i></div>
+    <div><div class="sb-name">OpenSmartBuilding</div><div class="sb-ver">Hyperion · v1.0</div></div>
+  </div>
+  <div class="sb-sec">Overview</div>
+  <a class="ni on" onclick="nav('overview',this)"><i class="ti ti-layout-dashboard"></i>Dashboard<div class="nd ok"></div></a>
+  <div class="sb-sec">Sisteme</div>
+  <a class="ni" onclick="nav('hvac',this)"><i class="ti ti-temperature"></i>HVAC<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('solar',this)"><i class="ti ti-sun"></i>Solar<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('chiller',this)"><i class="ti ti-snowflake"></i>Chilere<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('termica',this)"><i class="ti ti-flame"></i>Termică<div class="nd w"></div></a>
+  <a class="ni" onclick="nav('pompe',this)"><i class="ti ti-ripple"></i>Pompe<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('ventilatie',this)"><i class="ti ti-wind"></i>Ventilație<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('lumini',this)"><i class="ti ti-bulb"></i>Iluminat<div class="nd ok"></div></a>
+  <div class="sb-sec">Siguranță</div>
+  <a class="ni" onclick="nav('incendiu',this)"><i class="ti ti-fire-extinguisher"></i>Antiincendiu<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('efractie',this)"><i class="ti ti-shield"></i>Efracție<div class="nd ok"></div></a>
+  <a class="ni" onclick="nav('acces',this)"><i class="ti ti-id-badge"></i>Control Acces<div class="nd ok"></div></a>
+  <div class="sb-sec">Mediu</div>
+  <a class="ni" onclick="nav('meteo',this)"><i class="ti ti-cloud"></i>Meteo<div class="nd ok"></div></a>
+  <div class="sb-foot">
+    <a href="https://github.com/MariusMihalache/OpenSmartBuilding" target="_blank">GitHub · OpenSmartBuilding</a>
+    <a href="https://blog.hubinfratech.ro" target="_blank">HubInfraTech Blog</a>
+    <div style="margin-top:5px">MIT License · Open Source</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+<div class="top">
+  <div class="top-l">
+    <div class="ttl" id="ptitle">Dashboard — toate sistemele</div>
+    <div class="sub">Școala Generală · Modbus TCP/IP · 12 subsisteme</div>
+  </div>
+  <div class="top-r">
+    <select class="rsel" onchange="this.blur()">
+      <option>1h</option><option>6h</option><option selected>12h</option>
+      <option>24h</option><option>7 zile</option><option>30 zile</option>
+    </select>
+    <div class="clk">
+      <div class="clk-time" id="ct">--:--:--</div>
+      <div class="clk-date" id="cd">--- -- ----</div>
     </div>
+    <div class="live"><div class="ldot"></div>LIVE</div>
+  </div>
+</div>
 
-    <div class="sidebar-section">Navigare</div>
-    <a class="nav-item active" onclick="showSection('overview', this)">
-      <i class="ti ti-layout-dashboard"></i> Overview
-    </a>
+<div class="cnt">
 
-    <div class="sidebar-section">Sisteme</div>
-    <a class="nav-item" onclick="showSection('hvac', this)">
-      <i class="ti ti-temperature"></i> HVAC
-    </a>
-    <a class="nav-item" onclick="showSection('solar', this)">
-      <i class="ti ti-sun"></i> Solar
-      <span class="nav-badge">14kW</span>
-    </a>
-    <a class="nav-item" onclick="showSection('chiller', this)">
-      <i class="ti ti-snowflake"></i> Chilere
-    </a>
-    <a class="nav-item" onclick="showSection('termica', this)">
-      <i class="ti ti-flame"></i> Termică
-      <span class="nav-badge warn">68°C</span>
-    </a>
-    <a class="nav-item" onclick="showSection('pompe', this)">
-      <i class="ti ti-ripple"></i> Pompe
-    </a>
-    <a class="nav-item" onclick="showSection('ventilatie', this)">
-      <i class="ti ti-wind"></i> Ventilație
-    </a>
-    <a class="nav-item" onclick="showSection('lumini', this)">
-      <i class="ti ti-bulb"></i> Iluminat
-    </a>
-
-    <div class="sidebar-section">Siguranță</div>
-    <a class="nav-item" onclick="showSection('incendiu', this)">
-      <i class="ti ti-fire-extinguisher"></i> Antiincendiu
-    </a>
-    <a class="nav-item" onclick="showSection('efractie', this)">
-      <i class="ti ti-shield"></i> Efracție
-    </a>
-    <a class="nav-item" onclick="showSection('acces', this)">
-      <i class="ti ti-id-badge"></i> Control Acces
-      <span class="nav-badge">IP</span>
-    </a>
-
-    <div class="sidebar-section">Mediu</div>
-    <a class="nav-item" onclick="showSection('meteo', this)">
-      <i class="ti ti-cloud"></i> Meteo & Umiditate
-    </a>
-
-    <div class="sidebar-footer">
-      <a href="https://github.com/MariusMihalache/OpenSmartBuilding" target="_blank">
-        <i class="ti ti-brand-github"></i> GitHub Repository
-      </a>
-      <a href="https://blog.hubinfratech.ro" target="_blank">
-        <i class="ti ti-world"></i> HubInfraTech Blog
-      </a>
-      <div style="margin-top:6px">Open Source — MIT License</div>
+<!-- ══ OVERVIEW ══ -->
+<div id="s-overview" class="sec on">
+  <div class="kgrid">
+    <div class="kpi kg"><div class="klbl"><i class="ti ti-temperature" style="font-size:12px"></i>Temp. interior</div><div class="kval" id="ov-t">21.8<span class="ku">°C</span></div><div class="ktr cg">↑ +0.2° / 1h</div><canvas class="kpi-spark" id="sp-temp"></canvas></div>
+    <div class="kpi kb"><div class="klbl"><i class="ti ti-droplet" style="font-size:12px"></i>Umiditate</div><div class="kval" id="ov-h">58<span class="ku">%</span></div><div class="ksub">optim 40–60%</div><div class="kpi-ring-wrap"><svg viewBox="0 0 36 36" width="36" height="36"><circle class="ring-bg" cx="18" cy="18" r="15.9"/><circle class="ring-val" id="ring-hum" cx="18" cy="18" r="15.9" stroke="#38bdf8" stroke-dasharray="100" stroke-dashoffset="42"/></svg></div><canvas class="kpi-spark" id="sp-hum"></canvas></div>
+    <div class="kpi ka"><div class="klbl"><i class="ti ti-bolt" style="font-size:12px"></i>Consum total</div><div class="kval" id="ov-p">34.2<span class="ku">kW</span></div><div class="ktr ca" id="ov-ppct">68% din 50 kW</div><div class="kpi-ring-wrap"><svg viewBox="0 0 36 36" width="36" height="36"><circle class="ring-bg" cx="18" cy="18" r="15.9"/><circle class="ring-val" id="ring-pwr" cx="18" cy="18" r="15.9" stroke="#f59e0b" stroke-dasharray="100" stroke-dashoffset="32"/></svg></div><canvas class="kpi-spark" id="sp-power"></canvas></div>
+    <div class="kpi ks"><div class="klbl"><i class="ti ti-sun" style="font-size:12px"></i>Solar produs</div><div class="kval" id="ov-s">8.4<span class="ku">kW</span></div><div class="ksub">14/16 panouri</div><canvas class="kpi-spark" id="sp-sol"></canvas></div>
+    <div class="kpi kt"><div class="klbl"><i class="ti ti-wind" style="font-size:12px"></i>Vânt exterior</div><div class="kval" id="ov-w">12<span class="ku">km/h</span></div><div class="ksub">NV — Moderat</div><canvas class="kpi-spark" id="sp-wind"></canvas></div>
+    <div class="kpi kb"><div class="klbl"><i class="ti ti-snowflake" style="font-size:12px"></i>Chilere</div><div class="kval">2<span class="ku">/3</span></div><div class="ksub cg">cascadare auto</div></div>
+    <div class="kpi ka"><div class="klbl"><i class="ti ti-flame" style="font-size:12px"></i>Centrală</div><div class="kval">68<span class="ku">°C</span></div><div class="ktr ca">setpoint 70°C</div></div>
+    <div class="kpi kg"><div class="klbl"><i class="ti ti-shield-check" style="font-size:12px"></i>Alarme</div><div class="kval cg">0</div><div class="ksub cg">toate OK</div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-line" style="color:var(--grn)"></i>Temperatură interior</div><span class="pact">°C</span></div><div class="cw"><canvas id="c-temp"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-area" style="color:var(--blue)"></i>Consum energie</div></div><div class="cw"><canvas id="c-ener"></canvas></div></div>
+  </div>
+  <div class="r3">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-sun" style="color:var(--amb)"></i>Solar vs Consum</div></div><div class="cw"><canvas id="c-solv"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-droplet" style="color:var(--sky)"></i>Umiditate int/ext</div></div><div class="cw"><canvas id="c-humv"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-activity" style="color:var(--tel)"></i>Status sisteme</div></div>
+      <div class="sr"><div class="sn"><i class="ti ti-temperature" style="color:var(--grn);font-size:14px"></i>HVAC</div><span class="bdg bok">ACTIV</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-sun" style="color:var(--amb);font-size:14px"></i>Solar</div><span class="bdg bok">14/16 OK</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-snowflake" style="color:var(--sky);font-size:14px"></i>Chilere</div><span class="bdg bok">2/3 ACTIV</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--amb);font-size:14px"></i>Termică</div><span class="bdg bwn">68°C</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-ripple" style="color:var(--blue);font-size:14px"></i>Pompe</div><span class="bdg bok">5/6 ACTIV</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-fire-extinguisher" style="color:var(--ros);font-size:14px"></i>Antiincendiu</div><span class="bdg bok">OK</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-shield" style="color:var(--grn);font-size:14px"></i>Efracție</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-id-badge" style="color:var(--sky);font-size:14px"></i>Control Acces</div><span class="bdg bin">IP ONLINE</span></div>
     </div>
-  </aside>
+  </div>
+</div>
 
-  <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
-        <i class="ti ti-building-2" style="font-size:18px;color:var(--blue)"></i>
-        <div>
-          <div class="topbar-title" id="page-title">Overview — Toate Sistemele</div>
-          <div class="topbar-sub">Școala Generală — OpenSmartBuilding</div>
-        </div>
+<!-- ══ HVAC ══ -->
+<div id="s-hvac" class="sec">
+  <div class="kgrid">
+    <div class="kpi kg"><div class="klbl">Temp curentă</div><div class="kval" id="hv-t">21.8<span class="ku">°C</span></div><div class="ksub">Target 22°C · HEATING</div></div>
+    <div class="kpi kb"><div class="klbl">Setpoint</div><div class="kval">22<span class="ku">°C</span></div><div class="ksub">Mod: Auto</div></div>
+    <div class="kpi ks"><div class="klbl">Umiditate int.</div><div class="kval">58<span class="ku">%</span></div><div class="ksub cg">Normal</div></div>
+    <div class="kpi kg"><div class="klbl">CO2</div><div class="kval" id="hv-co2">620<span class="ku">ppm</span></div><div class="ksub">Limita: 1000 ppm</div></div>
+  </div>
+  <div class="grow">
+    <div class="gc"><div class="gtit">Temperatură interior</div><canvas id="g-temp" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-temp">21.8</span><span class="gunt">°C</span></div><div class="gsub">Target 22°C · HEATING</div></div>
+    <div class="gc"><div class="gtit">CO₂ interior</div><canvas id="g-co2" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-co2">620</span><span class="gunt">ppm</span></div><div class="gsub" id="gs-co2">Aer curat · sub 800 ppm</div></div>
+    <div class="gc"><div class="gtit">Umiditate relativă</div><canvas id="g-humh" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-humh">58</span><span class="gunt">%</span></div><div class="gsub cg">Zona de confort</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-wind" style="color:var(--sky)"></i>Ventilație pe zone</div></div>
+    <div class="vr"><div class="vic spin" style="color:var(--blue);border-color:var(--blu-b)"><i class="ti ti-propeller"></i></div><div class="vlb">Cls. 1–4</div><div class="vtr"><div class="vfi" style="width:85%;background:var(--blue);color:#030d1e">85%</div></div></div>
+    <div class="vr"><div class="vic spin" style="color:var(--grn);border-color:var(--grn-b)"><i class="ti ti-propeller"></i></div><div class="vlb">Cls. 5–8</div><div class="vtr"><div class="vfi" style="width:70%;background:var(--grn);color:#020e06">70%</div></div></div>
+    <div class="vr"><div class="vic spins" style="color:var(--amb);border-color:var(--amb-b)"><i class="ti ti-propeller"></i></div><div class="vlb">Sala sport</div><div class="vtr"><div class="vfi" style="width:45%;background:var(--amb);color:#0e0900">45%</div></div></div>
+    <div class="vr"><div class="vic spin" style="color:var(--grn);border-color:var(--grn-b)"><i class="ti ti-propeller"></i></div><div class="vlb">Cantină</div><div class="vtr"><div class="vfi" style="width:90%;background:var(--grn);color:#020e06">90%</div></div></div>
+    <div class="vr"><div class="vic" style="color:var(--t3);opacity:.4"><i class="ti ti-propeller"></i></div><div class="vlb">Secretariat</div><div class="vtr"><div class="vfi" style="width:0%"></div></div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-line" style="color:var(--grn)"></i>Temperatură 12h</div></div><div class="cw"><canvas id="c-hvact"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-air" style="color:var(--vio)"></i>CO2 & Umiditate 12h</div></div><div class="cw"><canvas id="c-hvach"></canvas></div></div>
+  </div>
+  <a href="pages/hvac.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată HVAC</a>
+</div>
+
+<!-- ══ SOLAR ══ -->
+<div id="s-solar" class="sec">
+  <div class="kgrid">
+    <div class="kpi ks"><div class="klbl">Putere inst.</div><div class="kval" id="sol-p">8.4<span class="ku">kW</span></div></div>
+    <div class="kpi ka"><div class="klbl">Produs azi</div><div class="kval">42.1<span class="ku">kWh</span></div></div>
+    <div class="kpi kg"><div class="klbl">Panouri active</div><div class="kval">14<span class="ku">/16</span></div></div>
+    <div class="kpi ka"><div class="klbl">Total lună</div><div class="kval">318<span class="ku">kWh</span></div></div>
+  </div>
+  <div class="grow2">
+    <div class="gc"><div class="gtit">Putere instantanee</div><canvas id="g-solp" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-solp">8.4</span><span class="gunt">kW</span></div><div class="gsub">Max instalat: 14 kW</div></div>
+    <div class="gc"><div class="gtit">Energie azi vs target 50 kWh</div><canvas id="g-solkwh" width="160" height="160"></canvas><div class="gread"><span class="gval">42.1</span><span class="gunt">kWh</span></div><div class="gsub cg">84% din target</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px"><div class="phd"><div class="ptit"><i class="ti ti-chart-bar" style="color:var(--amb)"></i>Producție orară azi</div></div><div class="cw"><canvas id="c-solar"></canvas></div></div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-layout-grid" style="color:var(--sky)"></i>Status panouri</div></div>
+    <div class="spg">
+      <div class="spp ok">P1<br>OK</div><div class="spp ok">P2<br>OK</div><div class="spp ok">P3<br>OK</div><div class="spp ok">P4<br>OK</div><div class="spp ok">P5<br>OK</div><div class="spp ok">P6<br>OK</div><div class="spp ok">P7<br>OK</div><div class="spp er">P8<br>ERR</div>
+      <div class="spp ok">P9<br>OK</div><div class="spp ok">P10<br>OK</div><div class="spp ok">P11<br>OK</div><div class="spp ok">P12<br>OK</div><div class="spp ok">P13<br>OK</div><div class="spp ok">P14<br>OK</div><div class="spp of">P15<br>OFF</div><div class="spp of">P16<br>OFF</div>
+    </div>
+  </div>
+  <a href="pages/solar.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Solar</a>
+</div>
+
+<!-- ══ CHILLER ══ -->
+<div id="s-chiller" class="sec">
+  <div class="kgrid">
+    <div class="kpi ks"><div class="klbl">Chiller 1 Tur</div><div class="kval">7.2<span class="ku">°C</span></div><div class="ksub cg">Activ</div></div>
+    <div class="kpi ks"><div class="klbl">Chiller 2 Tur</div><div class="kval">7.8<span class="ku">°C</span></div><div class="ksub cg">Activ</div></div>
+    <div class="kpi kb"><div class="klbl">Chiller 3</div><div class="kval cm">—</div><div class="ksub">Standby</div></div>
+    <div class="kpi kt"><div class="klbl">Temp retur</div><div class="kval">12.4<span class="ku">°C</span></div><div class="ksub">Delta: 5.2°C</div></div>
+  </div>
+  <div class="grow">
+    <div class="gc"><div class="gtit">Chiller 1 — Tur</div><canvas id="g-ch1" width="160" height="160"></canvas><div class="gread"><span class="gval">7.2</span><span class="gunt">°C</span></div><div class="gsub cg">Activ · OK</div></div>
+    <div class="gc"><div class="gtit">Chiller 2 — Tur</div><canvas id="g-ch2" width="160" height="160"></canvas><div class="gread"><span class="gval">7.8</span><span class="gunt">°C</span></div><div class="gsub cg">Activ · OK</div></div>
+    <div class="gc"><div class="gtit">Temperatură retur</div><canvas id="g-chret" width="160" height="160"></canvas><div class="gread"><span class="gval">12.4</span><span class="gunt">°C</span></div><div class="gsub">Delta tur/retur: 5.2°C</div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-line" style="color:var(--sky)"></i>Temp apă răcită 12h</div></div><div class="cw"><canvas id="c-chill"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-bolt" style="color:var(--vio)"></i>Consum chilere 12h</div></div><div class="cw"><canvas id="c-chillp"></canvas></div></div>
+  </div>
+  <a href="pages/chilere.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Chilere</a>
+</div>
+
+<!-- ══ TERMICA ══ -->
+<div id="s-termica" class="sec">
+  <div class="kgrid">
+    <div class="kpi ka"><div class="klbl">Temp tur</div><div class="kval">68<span class="ku">°C</span></div><div class="ktr ca">Setpoint: 70°C</div></div>
+    <div class="kpi kb"><div class="klbl">Temp retur</div><div class="kval">52<span class="ku">°C</span></div><div class="ksub">Delta: 16°C</div></div>
+    <div class="kpi kg"><div class="klbl">Presiune</div><div class="kval">1.6<span class="ku">bar</span></div><div class="ksub cg">Normal</div></div>
+    <div class="kpi ka"><div class="klbl">Consum gaz</div><div class="kval">4.2<span class="ku">m³/h</span></div><div class="ksub">Azi: 38 m³</div></div>
+  </div>
+  <div class="grow">
+    <div class="gc"><div class="gtit">Temperatură tur</div><canvas id="g-ttur" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-ttur">68</span><span class="gunt">°C</span></div><div class="gsub ca">Setpoint 70°C</div></div>
+    <div class="gc"><div class="gtit">Temperatură retur</div><canvas id="g-tret" width="160" height="160"></canvas><div class="gread"><span class="gval">52</span><span class="gunt">°C</span></div><div class="gsub">Delta: 16°C</div></div>
+    <div class="gc"><div class="gtit">Presiune circuit</div><canvas id="g-tbar" width="160" height="160"></canvas><div class="gread"><span class="gval">1.6</span><span class="gunt">bar</span></div><div class="gsub cg">Normal · 1.2–2.0 bar</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-flame" style="color:var(--amb)"></i>Zone termice</div></div>
+    <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Corpul A — Clase</div><span class="bdg bok">22°C — OK</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Corpul B — Lab</div><span class="bdg bok">21°C — OK</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Sala de sport</div><span class="bdg bwn">18°C — Scăzut</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Cantină</div><span class="bdg bok">20°C — OK</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Holuri</div><span class="bdg bwn">16°C — Scăzut</span></div>
+  </div>
+  <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-line" style="color:var(--amb)"></i>Tur / Retur 12h</div></div><div class="cw"><canvas id="c-term"></canvas></div></div>
+  <a href="pages/termica.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Termică</a>
+</div>
+
+<!-- ══ POMPE ══ -->
+<div id="s-pompe" class="sec">
+  <div class="grow">
+    <div class="gc"><div class="gtit">Pompă primară 1</div><canvas id="g-p1" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-p1">1450</span><span class="gunt">rpm</span></div><div class="gsub cg">ACTIV</div></div>
+    <div class="gc"><div class="gtit">Pompă primară 2</div><canvas id="g-p2" width="160" height="160"></canvas><div class="gread"><span class="gval">1380</span><span class="gunt">rpm</span></div><div class="gsub cg">ACTIV</div></div>
+    <div class="gc"><div class="gtit">Pompă sanitară</div><canvas id="g-ps" width="160" height="160"></canvas><div class="gread"><span class="gval">1200</span><span class="gunt">rpm</span></div><div class="gsub cg">ACTIV</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-ripple" style="color:var(--sky)"></i>Toate grupurile</div></div>
+    <div class="ppg">
+      <div class="ppc"><div class="ppi spin" style="color:var(--blue)"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă prim. 1</div><div class="ppv cb">1450 rpm</div><div class="pps cg">ACTIV</div></div>
+      <div class="ppc"><div class="ppi spin" style="color:var(--blue)"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă prim. 2</div><div class="ppv cb">1380 rpm</div><div class="pps cg">ACTIV</div></div>
+      <div class="ppc"><div class="ppi" style="color:var(--t3);opacity:.4"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă prim. 3</div><div class="ppv cm">0 rpm</div><div class="pps cm">STANDBY</div></div>
+      <div class="ppc"><div class="ppi spins" style="color:var(--grn)"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă sec. 1</div><div class="ppv cg">960 rpm</div><div class="pps cg">ACTIV</div></div>
+      <div class="ppc"><div class="ppi spins" style="color:var(--grn)"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă sec. 2</div><div class="ppv cg">880 rpm</div><div class="pps cg">ACTIV</div></div>
+      <div class="ppc"><div class="ppi spin" style="color:var(--amb)"><i class="ti ti-propeller"></i></div><div class="ppn">Pompă sanitară</div><div class="ppv ca">1200 rpm</div><div class="pps cg">ACTIV</div></div>
+    </div>
+  </div>
+  <div class="r2">
+    <div class="pnl">
+      <div class="phd"><div class="ptit"><i class="ti ti-activity" style="color:var(--tel)"></i>Presiuni circuit</div></div>
+      <div class="sr"><div class="sn">Circuit primar tur</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="cs">2.4 bar</span></div>
+      <div class="sr"><div class="sn">Circuit primar retur</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="cs">1.9 bar</span></div>
+      <div class="sr"><div class="sn">Circuit secundar tur</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="cg">1.8 bar</span></div>
+      <div class="sr"><div class="sn">Circuit secundar retur</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="cg">1.4 bar</span></div>
+      <div class="sr"><div class="sn">Apă sanitară</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="ca">3.2 bar</span></div>
+      <div class="sr"><div class="sn">Rezervor incendiu</div><span style="font-family:var(--mono);font-size:13px;font-weight:500" class="cg">98%</span></div>
+    </div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-line" style="color:var(--sky)"></i>Presiuni 12h</div></div><div class="cw"><canvas id="c-pump"></canvas></div></div>
+  </div>
+  <a href="pages/pompe.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Pompe</a>
+</div>
+
+<!-- ══ VENTILATIE ══ -->
+<div id="s-ventilatie" class="sec">
+  <div class="kgrid">
+    <div class="kpi kt"><div class="klbl">Vânt ext.</div><div class="kval" id="vn-w">12<span class="ku">km/h</span></div><div class="ksub">Direcție NV</div></div>
+    <div class="kpi ks"><div class="klbl">Umiditate int.</div><div class="kval">58<span class="ku">%</span></div><div class="ksub cg">Normal</div></div>
+    <div class="kpi kb"><div class="klbl">Umiditate ext.</div><div class="kval">72<span class="ku">%</span></div><div class="ksub ca">Ridicată</div></div>
+    <div class="kpi kg"><div class="klbl">CO2 mediu</div><div class="kval">620<span class="ku">ppm</span></div><div class="ksub cg">Sub limita</div></div>
+  </div>
+  <div class="grow2">
+    <div class="gc"><div class="gtit">Viteză vânt exterior</div><canvas id="g-vspd" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-vspd">12</span><span class="gunt">km/h</span></div><div class="gsub" id="gs-vspd">NV · Moderat</div></div>
+    <div class="gc"><div class="gtit">Direcție vânt — Rose diagram</div><canvas id="g-rose" width="160" height="160"></canvas><div class="gread" style="gap:8px"><span class="gval" style="font-size:14px">NV</span><span class="gunt">315°</span></div><div class="gsub">Direcție dominantă 12h</div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-droplet" style="color:var(--sky)"></i>Umiditate 12h</div></div><div class="cw"><canvas id="c-hum"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-wind" style="color:var(--tel)"></i>Vânt ext. 12h</div></div><div class="cw"><canvas id="c-wind"></canvas></div></div>
+  </div>
+  <a href="pages/ventilatie.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Ventilație</a>
+</div>
+
+<!-- ══ LUMINI ══ -->
+<div id="s-lumini" class="sec">
+  <div class="kgrid">
+    <div class="kpi ka"><div class="klbl">Zone active</div><div class="kval">6<span class="ku">/10</span></div><div class="ksub">controlate BMS</div></div>
+    <div class="kpi ks"><div class="klbl">Consum total</div><div class="kval">8.6<span class="ku">kW</span></div><div class="ksub">iluminat activ</div></div>
+    <div class="kpi kg"><div class="klbl">Lux mediu</div><div class="kval" id="lux-avg">480<span class="ku">lx</span></div><div class="ksub">confort: 300–750 lx</div></div>
+    <div class="kpi kv"><div class="klbl">Scenariu</div><div class="kval" style="font-size:16px">Zi</div><div class="ksub">07:00–18:00</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-bulb" style="color:var(--amb)"></i>Intensitate luminoasă pe zone (lux)</div><span class="pact">0–1000 lx</span></div>
+    <div class="lxg" id="lux-grid"></div>
+  </div>
+  <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-chart-bar" style="color:var(--amb)"></i>Consum iluminat pe zone (kW)</div></div><div class="cw"><canvas id="c-lights"></canvas></div></div>
+  <a href="pages/iluminat.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Iluminat</a>
+</div>
+
+<!-- ══ INCENDIU ══ -->
+<div id="s-incendiu" class="sec">
+  <div class="abr h" id="abr"><i class="ti ti-alert-triangle" style="font-size:15px"></i>ALARMĂ ACTIVĂ — Detector fum Cls. 7A!</div>
+  <div class="kgrid">
+    <div class="kpi kg"><div class="klbl">Detectori fum</div><div class="kval cg">32<span class="ku">/32</span></div><div class="ksub cg">Operaționali</div></div>
+    <div class="kpi kg"><div class="klbl">Detectori temp.</div><div class="kval cg">16<span class="ku">/16</span></div><div class="ksub cg">OK</div></div>
+    <div class="kpi kg"><div class="klbl">Presiune sprinklere</div><div class="kval cg">6.2<span class="ku">bar</span></div><div class="ksub cg">Normal</div></div>
+    <div class="kpi kg"><div class="klbl">Ieșiri urgență</div><div class="kval cg">6<span class="ku">/6</span></div><div class="ksub cg">Libere</div></div>
+  </div>
+  <div class="grow2">
+    <div class="gc"><div class="gtit">Presiune rețea sprinklere</div><canvas id="g-sprink" width="160" height="160"></canvas><div class="gread"><span class="gval">6.2</span><span class="gunt">bar</span></div><div class="gsub cg">Normal · prag min 5 bar</div></div>
+    <div class="gc"><div class="gtit">Nivel rezervor incendiu</div><canvas id="g-rez" width="160" height="160"></canvas><div class="gread"><span class="gval">98</span><span class="gunt">%</span></div><div class="gsub cg">Rezervor plin</div></div>
+  </div>
+  <div class="pnl" style="margin-bottom:10px">
+    <div class="phd"><div class="ptit"><i class="ti ti-flame" style="color:var(--ros)"></i>Zone monitorizate</div></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Corp A — Etaj 1</div><span class="bdg bok">OK — 4 detectori</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Corp A — Etaj 2</div><span class="bdg bok">OK — 4 detectori</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Corp B — Lab</div><span class="bdg bok">OK — 6 detectori</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Sala sport</div><span class="bdg bok">OK — 8 detectori</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Cantină &amp; Bucătărie</div><span class="bdg bok">OK — 6 detectori</span></div>
+    <div class="sr"><div class="sn"><i class="ti ti-flame" style="color:var(--ros)"></i>Centrală termică</div><span class="bdg bok">OK — 4 detectori</span></div>
+  </div>
+  <button onclick="testAlarm()" style="font-size:9px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--ros-b);background:var(--ros-bg);color:var(--ros);cursor:pointer;font-family:var(--mono);margin-bottom:10px"><i class="ti ti-bell"></i> Test alarmă</button>
+  <a href="pages/antiincendiu.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Antiincendiu</a>
+</div>
+
+<!-- ══ EFRACTIE ══ -->
+<div id="s-efractie" class="sec">
+  <div class="kgrid">
+    <div class="kpi kg"><div class="klbl">Senzori mișcare</div><div class="kval cg">8<span class="ku">/8</span></div><div class="ksub cg">Toți OK</div></div>
+    <div class="kpi kg"><div class="klbl">Senzori uși</div><div class="kval cg">12<span class="ku">/12</span></div><div class="ksub cg">OK</div></div>
+    <div class="kpi kg"><div class="klbl">Camere CCTV</div><div class="kval cg">6<span class="ku">/6</span></div><div class="ksub cg">Online</div></div>
+    <div class="kpi kg"><div class="klbl">Sistem</div><div class="kval cg" style="font-size:18px">ARMAT</div><div class="ksub cg">0 alarme</div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl">
+      <div class="phd"><div class="ptit"><i class="ti ti-shield" style="color:var(--grn)"></i>Zone efracție</div></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Intrare principală</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Intrare secundară</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Corp A — Noapte</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Corp B — Noapte</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Centrală termică</div><span class="bdg bok">ARMAT</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-eye" style="color:var(--amb)"></i>Server room</div><span class="bdg bok">ARMAT 24/7</span></div>
+    </div>
+    <div class="pnl">
+      <div class="phd"><div class="ptit"><i class="ti ti-history" style="color:var(--blue)"></i>Jurnal recent</div></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Sistem armat automat 18:00</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">18:00:02</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Ultima persoană — Intrare princ.</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">17:58:34</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-alert-triangle" style="color:var(--amb)"></i>Test senzor — Corp B etaj 2</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">14:22:11</span></div>
+    </div>
+  </div>
+  <a href="pages/efractie.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Efracție</a>
+</div>
+
+<!-- ══ ACCES ══ -->
+<div id="s-acces" class="sec">
+  <div class="kgrid">
+    <div class="kpi kb"><div class="klbl">Prezențe azi</div><div class="kval">248</div><div class="ksub">persoane</div></div>
+    <div class="kpi kg"><div class="klbl">Uși online</div><div class="kval cg">8<span class="ku">/8</span></div><div class="ksub cs">IP</div></div>
+    <div class="kpi ka"><div class="klbl">Acces refuzat</div><div class="kval ca">3</div><div class="ksub ca">Card necunoscut</div></div>
+    <div class="kpi kg"><div class="klbl">Rețea</div><div class="kval cg" style="font-size:18px">ONLINE</div><div class="ksub cs">Modbus TCP</div></div>
+  </div>
+  <div class="r2">
+    <div class="pnl">
+      <div class="phd"><div class="ptit"><i class="ti ti-door" style="color:var(--sky)"></i>Uși — stare</div></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--grn)"></i>Intrare principală</div><span class="bdg bok">Deblocată</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--t3)"></i>Intrare secundară</div><span class="bdg bof">Blocată</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Sala profesori</div><span class="bdg bin">Card activ</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--ros)"></i>Server room</div><span class="bdg bin">Card + PIN</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Arhivă</div><span class="bdg bof">Blocată</span></div>
+      <div class="sr"><div class="sn"><i class="ti ti-door" style="color:var(--amb)"></i>Centrală termică</div><span class="bdg bin">Card activ</span></div>
+    </div>
+    <div class="pnl">
+      <div class="phd"><div class="ptit"><i class="ti ti-history" style="color:var(--blue)"></i>Jurnal acces</div></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Director — Intrare principală</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">08:14:32</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Prof. Ionescu — Sala profesori</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">08:22:17</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-x" style="color:var(--ros)"></i>Card necunoscut — Server room</div><span style="font-size:9px;color:var(--ros);font-family:var(--mono)">09:05:44</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Admin IT — Server room</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">09:11:02</span></div>
+      <div class="sr"><div class="sn" style="font-size:11px"><i class="ti ti-check" style="color:var(--grn)"></i>Îngrijitor — Intrare secundară</div><span style="font-size:9px;color:var(--t3);font-family:var(--mono)">09:30:55</span></div>
+    </div>
+  </div>
+  <a href="pages/acces.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Control Acces</a>
+</div>
+
+<!-- ══ METEO ══ -->
+<div id="s-meteo" class="sec">
+  <div class="mkpig">
+    <div class="mcard mc-s"><div class="mclbl">Vânt exterior</div><div class="mcval" id="mv-w">12<span class="mcu"> km/h</span></div><div class="mcsub" id="ms-w">NV — Moderat</div></div>
+    <div class="mcard mc-b"><div class="mclbl">Temperatură ext.</div><div class="mcval" id="mv-t">14<span class="mcu">°C</span></div><div class="mcsub">Min 8° · Max 17°</div></div>
+    <div class="mcard mc-t"><div class="mclbl">Umiditate ext.</div><div class="mcval" id="mv-he">72<span class="mcu">%</span></div><div class="mcsub ca">Ridicată</div></div>
+    <div class="mcard mc-g"><div class="mclbl">Umiditate int.</div><div class="mcval" id="mv-hi">58<span class="mcu">%</span></div><div class="mcsub cg">Zona verde</div></div>
+    <div class="mcard mc-v"><div class="mclbl">Presiune atm.</div><div class="mcval" id="mv-pr">1013<span class="mcu"> hPa</span></div><div class="mcsub" id="ms-pr">↔ Stabil</div></div>
+  </div>
+  <div class="grow">
+    <div class="gc"><div class="gtit">Vânt exterior</div><canvas id="g-wind" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-wind">12</span><span class="gunt">km/h</span></div><div class="gsub" id="gs-wind">NV · Moderat</div></div>
+    <div class="gc"><div class="gtit">Presiune atmosferică</div><canvas id="g-press" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-press">1013</span><span class="gunt">hPa</span></div><div class="gsub" id="gs-press">Standard · stabil</div></div>
+    <div class="gc"><div class="gtit">Umiditate exterioară</div><canvas id="g-humext" width="160" height="160"></canvas><div class="gread"><span class="gval" id="gv-humext">72</span><span class="gunt">%</span></div><div class="gsub">Optim: 30–70%</div></div>
+  </div>
+  <div class="lp">
+    <div class="lph">
+      <div class="lptit"><i class="ti ti-bolt" style="font-size:14px;color:var(--vio)"></i>Paratrăsnet — IEC 62305 · Clasa II</div>
+      <span class="bdg bok">SISTEM ACTIV</span>
+    </div>
+    <div class="lpkg">
+      <div class="lpk"><div class="lpkl">Descărcări / 24h</div><div class="lpkv cv">0</div><div class="lpks">fulgere</div></div>
+      <div class="lpk"><div class="lpkl">Rezistență priză</div><div class="lpkv cs">2.4 <span style="font-size:12px">Ω</span></div><div class="lpks">sub 10Ω</div></div>
+      <div class="lpk"><div class="lpkl">Raza protecție</div><div class="lpkv cg">45 <span style="font-size:12px">m</span></div><div class="lpks">acoperire totală</div></div>
+      <div class="lpk"><div class="lpkl">Ultima revizie</div><div class="lpkv" style="font-size:15px">Mar 2025</div><div class="lpks">periodic</div></div>
+    </div>
+    <div class="lprg">
+      <div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>Tijă acoperiș</div><span class="bdg bvo">INTACTĂ</span></div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>Conductor coborâre</div><span class="bdg bvo">OK</span></div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>Priză pământ Corp A</div><span class="bdg bvo">2.4 Ω</span></div>
       </div>
-      <div class="topbar-right">
-        <select class="time-select" id="time-range" onchange="updateTimeRange()">
-          <option value="1h">Ultimele 1h</option>
-          <option value="6h">Ultimele 6h</option>
-          <option value="12h" selected>Ultimele 12h</option>
-          <option value="24h">Ultimele 24h</option>
-          <option value="7d">Ultimele 7 zile</option>
-          <option value="30d">Ultimele 30 zile</option>
-        </select>
-        <span class="clock" id="clock">--:--:--</span>
-        <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+      <div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>Priză pământ Corp B</div><span class="bdg bvo">3.1 Ω</span></div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>SPD tablou principal</div><span class="bdg bok">FUNCȚIONAL</span></div>
+        <div class="lprw"><div class="lprn"><i class="ti ti-bolt" style="color:var(--vio)"></i>Alertă furtună</div><span class="bdg bok">FĂRĂ RISC</span></div>
       </div>
     </div>
+    <div class="lpinf"><i class="ti ti-info-circle" style="color:var(--vio)"></i> IEC 62305 · Nivel risc: <span class="cg">SCĂZUT</span> · Modbus TCP port 502</div>
+  </div>
+  <div class="r2" style="margin-bottom:10px">
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-wind" style="color:var(--tel)"></i>Vânt 12h</div></div><div class="cw"><canvas id="c-wind2"></canvas></div></div>
+    <div class="pnl"><div class="phd"><div class="ptit"><i class="ti ti-gauge" style="color:var(--vio)"></i>Presiune 12h</div></div><div class="cw"><canvas id="c-press"></canvas></div></div>
+  </div>
+  <a href="pages/meteo.html" class="plnk"><i class="ti ti-external-link"></i>Pagina detaliată Meteo</a>
+</div>
 
-    <div class="content">
-
-      <!-- OVERVIEW -->
-      <div id="sec-overview" class="section active">
-        <div class="metrics">
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-temperature"></i>Temp. interior</div>
-            <div class="mval green" id="ov-temp">21.8°C</div>
-            <div class="msub">Target: 22°C</div>
-            <div class="mtrend green">▲ +0.2° față de acum 1h</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-droplet"></i>Umiditate</div>
-            <div class="mval blue" id="ov-hum">58%</div>
-            <div class="msub">Optim: 40–60%</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-bolt"></i>Consum total</div>
-            <div class="mval orange" id="ov-power">34.2 kW</div>
-            <div class="msub">68% din limita 50 kW</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-sun"></i>Producție solară</div>
-            <div class="mval yellow" id="ov-solar">8.4 kW</div>
-            <div class="msub">14 panouri active</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-wind"></i>Vânt exterior</div>
-            <div class="mval teal" id="ov-wind">12 km/h</div>
-            <div class="msub">NV — Moderat</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-snowflake"></i>Chilere active</div>
-            <div class="mval blue">2/3</div>
-            <div class="msub green">OK — Cascadare auto</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-flame"></i>Centrală termică</div>
-            <div class="mval orange">68°C</div>
-            <div class="msub orange">Tur — Setpoint 70°C</div>
-          </div>
-          <div class="mcard">
-            <div class="mlabel"><i class="ti ti-shield-check"></i>Alarme active</div>
-            <div class="mval green" id="ov-alarms">0</div>
-            <div class="msub green">Toate sistemele OK</div>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-title">
-              <i class="ti ti-chart-line"></i>Temperatură interior
-              <div class="panel-actions"><span class="panel-action">°C</span></div>
-            </div>
-            <div class="chart-wrap"><canvas id="chart-temp"></canvas></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-area"></i>Consum energie total</div>
-            <div class="chart-wrap"><canvas id="chart-energy"></canvas></div>
-          </div>
-        </div>
-
-        <div class="grid3">
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-sun"></i>Producție solară vs Consum</div>
-            <div class="chart-wrap"><canvas id="chart-solar-ov"></canvas></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-droplet"></i>Umiditate interior / exterior</div>
-            <div class="chart-wrap"><canvas id="chart-hum-ov"></canvas></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-activity"></i>Status sisteme</div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-temperature" style="color:var(--orange)"></i>HVAC</div><span class="status-pill pill-ok">ACTIV</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-sun" style="color:var(--yellow)"></i>Solar</div><span class="status-pill pill-ok">14/16 OK</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-snowflake" style="color:var(--teal)"></i>Chilere</div><span class="status-pill pill-ok">2/3 ACTIV</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--orange)"></i>Termică</div><span class="status-pill pill-warn">68°C</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-ripple" style="color:var(--blue)"></i>Pompe</div><span class="status-pill pill-ok">5/6 ACTIV</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-fire-extinguisher" style="color:var(--red)"></i>Antiincendiu</div><span class="status-pill pill-ok">OK</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-shield" style="color:var(--green)"></i>Efracție</div><span class="status-pill pill-ok">ARMAT</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-id-badge" style="color:var(--blue)"></i>Control Acces</div><span class="status-pill pill-blue">IP ONLINE</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HVAC -->
-      <div id="sec-hvac" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-temperature"></i>Temp. curentă</div><div class="mval green">21.8°C</div><div class="msub">Target: 22°C — HEATING</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-temperature-plus"></i>Temp. setpoint</div><div class="mval blue">22°C</div><div class="msub">Mod: Auto</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Umiditate int.</div><div class="mval blue">58%</div><div class="msub green">Normal</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-air"></i>CO2</div><div class="mval green">620 ppm</div><div class="msub">Limita: 1000 ppm</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-wind"></i>Ventilație pe zone</div>
-          <div class="vent-row"><div class="fan spin" style="color:var(--blue);border-color:var(--blue)"><i class="ti ti-propeller"></i></div><div class="vent-label">Cls. 1–4</div><div class="vent-track"><div class="vent-fill" style="width:85%;background:var(--blue);color:#0a1628">85%</div></div></div>
-          <div class="vent-row"><div class="fan spin" style="color:var(--green);border-color:var(--green)"><i class="ti ti-propeller"></i></div><div class="vent-label">Cls. 5–8</div><div class="vent-track"><div class="vent-fill" style="width:70%;background:var(--green);color:#0a1a0e">70%</div></div></div>
-          <div class="vent-row"><div class="fan spin-slow" style="color:var(--orange);border-color:var(--orange)"><i class="ti ti-propeller"></i></div><div class="vent-label">Sala sport</div><div class="vent-track"><div class="vent-fill" style="width:45%;background:var(--orange);color:#1a0e00">45%</div></div></div>
-          <div class="vent-row"><div class="fan spin" style="color:var(--green);border-color:var(--green)"><i class="ti ti-propeller"></i></div><div class="vent-label">Cantină</div><div class="vent-track"><div class="vent-fill" style="width:90%;background:var(--green);color:#0a1a0e">90%</div></div></div>
-          <div class="vent-row"><div class="fan" style="color:var(--text-muted);opacity:.4"><i class="ti ti-propeller"></i></div><div class="vent-label">Secretariat</div><div class="vent-track"><div class="vent-fill" style="width:0%;background:var(--border)">OFF</div></div></div>
-        </div>
-        <div class="grid2">
-          <div class="panel"><div class="panel-title"><i class="ti ti-chart-line"></i>Temperatură 12h</div><div class="chart-wrap"><canvas id="chart-hvac-temp"></canvas></div></div>
-          <div class="panel"><div class="panel-title"><i class="ti ti-droplet"></i>Umiditate & CO2</div><div class="chart-wrap"><canvas id="chart-hvac-hum"></canvas></div></div>
-        </div>
-        <a href="pages/hvac.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată HVAC</a>
-      </div>
-
-      <!-- SOLAR -->
-      <div id="sec-solar" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-bolt"></i>Putere instantanee</div><div class="mval yellow">8.4 kW</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-chart-bar"></i>Produs azi</div><div class="mval yellow">42.1 kWh</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-sun"></i>Panouri active</div><div class="mval green">14/16</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-calendar"></i>Total luna</div><div class="mval yellow">318 kWh</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-chart-bar"></i>Producție orară azi</div>
-          <div class="chart-wrap"><canvas id="chart-solar"></canvas></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-layout-grid"></i>Status panouri fotovoltaice</div>
-          <div class="solar-grid">
-            <div class="solar-panel ok">P1<br>OK</div><div class="solar-panel ok">P2<br>OK</div>
-            <div class="solar-panel ok">P3<br>OK</div><div class="solar-panel ok">P4<br>OK</div>
-            <div class="solar-panel ok">P5<br>OK</div><div class="solar-panel ok">P6<br>OK</div>
-            <div class="solar-panel ok">P7<br>OK</div><div class="solar-panel err">P8<br>ERR</div>
-            <div class="solar-panel ok">P9<br>OK</div><div class="solar-panel ok">P10<br>OK</div>
-            <div class="solar-panel ok">P11<br>OK</div><div class="solar-panel ok">P12<br>OK</div>
-            <div class="solar-panel ok">P13<br>OK</div><div class="solar-panel ok">P14<br>OK</div>
-            <div class="solar-panel off">P15<br>OFF</div><div class="solar-panel off">P16<br>OFF</div>
-          </div>
-        </div>
-        <a href="pages/solar.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Solar</a>
-      </div>
-
-      <!-- CHILLER -->
-      <div id="sec-chiller" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-snowflake"></i>Chiller 1 — Tur</div><div class="mval blue">7.2°C</div><div class="msub green">Activ — OK</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-snowflake"></i>Chiller 2 — Tur</div><div class="mval blue">7.8°C</div><div class="msub green">Activ — OK</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-snowflake"></i>Chiller 3</div><div class="mval" style="color:var(--text-muted)">—</div><div class="msub" style="color:var(--text-muted)">Standby</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-arrow-back-up"></i>Temp. retur</div><div class="mval teal">12.4°C</div><div class="msub">Delta: 5.2°C</div></div>
-        </div>
-        <div class="grid2">
-          <div class="panel"><div class="panel-title"><i class="ti ti-chart-line"></i>Temp. apă răcită</div><div class="chart-wrap"><canvas id="chart-chiller"></canvas></div></div>
-          <div class="panel"><div class="panel-title"><i class="ti ti-bolt"></i>Consum chilere</div><div class="chart-wrap"><canvas id="chart-chiller-power"></canvas></div></div>
-        </div>
-        <a href="pages/chilere.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Chilere</a>
-      </div>
-
-      <!-- TERMICA -->
-      <div id="sec-termica" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-flame"></i>Temp. tur</div><div class="mval orange">68°C</div><div class="msub orange">Setpoint: 70°C</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-arrow-back-up"></i>Temp. retur</div><div class="mval" style="color:var(--text-primary)">52°C</div><div class="msub">Delta: 16°C</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-gauge"></i>Presiune</div><div class="mval green">1.6 bar</div><div class="msub green">Normal</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Consum gaz</div><div class="mval orange">4.2 m³/h</div><div class="msub">Azi: 38 m³</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-flame"></i>Zone termice</div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Corpul A — Clase</div><span class="status-pill pill-ok">22°C — OK</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Corpul B — Laboratoare</div><span class="status-pill pill-ok">21°C — OK</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Sala de sport</div><span class="status-pill pill-warn">18°C — Scăzut</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Cantină</div><span class="status-pill pill-ok">20°C — OK</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Holuri</div><span class="status-pill pill-warn">16°C — Scăzut</span></div>
-        </div>
-        <div class="panel"><div class="panel-title"><i class="ti ti-chart-line"></i>Tur / Retur 12h</div><div class="chart-wrap"><canvas id="chart-termica"></canvas></div></div>
-        <a href="pages/termica.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Termică</a>
-      </div>
-
-      <!-- POMPE -->
-      <div id="sec-pompe" class="section">
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-ripple"></i>Grupuri de pompare</div>
-          <div class="pump-grid">
-            <div class="pump-card"><div class="pump-icon spin" style="color:var(--blue)"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă prim. 1</div><div class="pump-val blue">1450 rpm</div><div style="font-size:10px;color:var(--green);margin-top:3px;font-family:var(--font-mono)">ACTIV</div></div>
-            <div class="pump-card"><div class="pump-icon spin" style="color:var(--blue)"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă prim. 2</div><div class="pump-val blue">1380 rpm</div><div style="font-size:10px;color:var(--green);margin-top:3px;font-family:var(--font-mono)">ACTIV</div></div>
-            <div class="pump-card"><div class="pump-icon" style="color:var(--text-muted);opacity:.4"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă prim. 3</div><div class="pump-val" style="color:var(--text-muted)">0 rpm</div><div style="font-size:10px;color:var(--text-muted);margin-top:3px;font-family:var(--font-mono)">STANDBY</div></div>
-            <div class="pump-card"><div class="pump-icon spin-slow" style="color:var(--green)"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă sec. 1</div><div class="pump-val green">960 rpm</div><div style="font-size:10px;color:var(--green);margin-top:3px;font-family:var(--font-mono)">ACTIV</div></div>
-            <div class="pump-card"><div class="pump-icon spin-slow" style="color:var(--green)"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă sec. 2</div><div class="pump-val green">880 rpm</div><div style="font-size:10px;color:var(--green);margin-top:3px;font-family:var(--font-mono)">ACTIV</div></div>
-            <div class="pump-card"><div class="pump-icon spin" style="color:var(--orange)"><i class="ti ti-propeller"></i></div><div class="pump-name">Pompă sanitară</div><div class="pump-val orange">1200 rpm</div><div style="font-size:10px;color:var(--green);margin-top:3px;font-family:var(--font-mono)">ACTIV</div></div>
-          </div>
-        </div>
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-activity"></i>Presiuni circuit</div>
-            <div class="status-row"><div class="status-name">Circuit primar tur</div><span style="font-size:12px;color:var(--blue);font-family:var(--font-mono)">2.4 bar</span></div>
-            <div class="status-row"><div class="status-name">Circuit primar retur</div><span style="font-size:12px;color:var(--blue);font-family:var(--font-mono)">1.9 bar</span></div>
-            <div class="status-row"><div class="status-name">Circuit secundar tur</div><span style="font-size:12px;color:var(--green);font-family:var(--font-mono)">1.8 bar</span></div>
-            <div class="status-row"><div class="status-name">Circuit secundar retur</div><span style="font-size:12px;color:var(--green);font-family:var(--font-mono)">1.4 bar</span></div>
-            <div class="status-row"><div class="status-name">Apă sanitară</div><span style="font-size:12px;color:var(--orange);font-family:var(--font-mono)">3.2 bar</span></div>
-            <div class="status-row"><div class="status-name">Rezervor incendiu</div><span style="font-size:12px;color:var(--green);font-family:var(--font-mono)">98%</span></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-line"></i>Presiuni 12h</div>
-            <div class="chart-wrap"><canvas id="chart-pompe"></canvas></div>
-          </div>
-        </div>
-        <a href="pages/pompe.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Pompe</a>
-      </div>
-
-      <!-- VENTILATIE -->
-      <div id="sec-ventilatie" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-wind"></i>Vânt exterior</div><div class="mval teal">12 km/h</div><div class="msub teal">Direcție NV</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Umiditate int.</div><div class="mval blue">58%</div><div class="msub green">Normal</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-cloud"></i>Umiditate ext.</div><div class="mval blue">72%</div><div class="msub orange">Ridicată</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-air"></i>CO2 mediu</div><div class="mval green">620 ppm</div><div class="msub green">Sub limita</div></div>
-        </div>
-        <div class="grid2">
-          <div class="panel"><div class="panel-title"><i class="ti ti-droplet"></i>Umiditate 12h</div><div class="chart-wrap"><canvas id="chart-hum"></canvas></div></div>
-          <div class="panel"><div class="panel-title"><i class="ti ti-wind"></i>Vânt exterior 12h</div><div class="chart-wrap"><canvas id="chart-wind"></canvas></div></div>
-        </div>
-        <a href="pages/ventilatie.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Ventilație</a>
-      </div>
-
-      <!-- LUMINI -->
-      <div id="sec-lumini" class="section">
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-bulb"></i>Control iluminat — zone<span style="margin-left:auto;font-size:11px;color:var(--orange);font-family:var(--font-mono)" id="lights-count">6/10 active</span></div>
-          <div class="lights-grid">
-            <div class="lzone" onclick="toggleLight(0)"><div class="lbulb on" id="lb0"><i class="ti ti-bulb"></i></div><div class="lname">Cls. 1</div><div class="lpill on" id="lp0">ON</div></div>
-            <div class="lzone" onclick="toggleLight(1)"><div class="lbulb on" id="lb1"><i class="ti ti-bulb"></i></div><div class="lname">Cls. 2</div><div class="lpill on" id="lp1">ON</div></div>
-            <div class="lzone" onclick="toggleLight(2)"><div class="lbulb off" id="lb2"><i class="ti ti-bulb"></i></div><div class="lname">Cls. 3</div><div class="lpill off" id="lp2">OFF</div></div>
-            <div class="lzone" onclick="toggleLight(3)"><div class="lbulb on" id="lb3"><i class="ti ti-bulb"></i></div><div class="lname">Laborator</div><div class="lpill on" id="lp3">ON</div></div>
-            <div class="lzone" onclick="toggleLight(4)"><div class="lbulb off" id="lb4"><i class="ti ti-bulb"></i></div><div class="lname">Bibliotecă</div><div class="lpill off" id="lp4">OFF</div></div>
-            <div class="lzone" onclick="toggleLight(5)"><div class="lbulb on" id="lb5"><i class="ti ti-bulb"></i></div><div class="lname">Cantină</div><div class="lpill on" id="lp5">ON</div></div>
-            <div class="lzone" onclick="toggleLight(6)"><div class="lbulb off" id="lb6"><i class="ti ti-bulb"></i></div><div class="lname">Sala sport</div><div class="lpill off" id="lp6">OFF</div></div>
-            <div class="lzone" onclick="toggleLight(7)"><div class="lbulb on" id="lb7"><i class="ti ti-bulb"></i></div><div class="lname">Hol A</div><div class="lpill on" id="lp7">ON</div></div>
-            <div class="lzone" onclick="toggleLight(8)"><div class="lbulb off" id="lb8"><i class="ti ti-bulb"></i></div><div class="lname">Hol B</div><div class="lpill off" id="lp8">OFF</div></div>
-            <div class="lzone" onclick="toggleLight(9)"><div class="lbulb on" id="lb9"><i class="ti ti-bulb"></i></div><div class="lname">Secretariat</div><div class="lpill on" id="lp9">ON</div></div>
-          </div>
-        </div>
-        <div class="panel"><div class="panel-title"><i class="ti ti-chart-bar"></i>Consum iluminat pe zone (kW)</div><div class="chart-wrap"><canvas id="chart-lights"></canvas></div></div>
-        <a href="pages/iluminat.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Iluminat</a>
-      </div>
-
-      <!-- INCENDIU -->
-      <div id="sec-incendiu" class="section">
-        <div class="alarm-banner hidden" id="alarm-banner"><i class="ti ti-alert-triangle" style="font-size:16px"></i>&nbsp;ALARMA ACTIVĂ — Detector fum Cls. 7A declanșat!</div>
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-flame"></i>Detectori fum</div><div class="mval green">32/32</div><div class="msub green">Toți operaționali</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-temperature"></i>Detectori temp.</div><div class="mval green">16/16</div><div class="msub green">OK</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Presiune sprinklere</div><div class="mval green">OK</div><div class="msub green">6.2 bar</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-door-exit"></i>Ieșiri urgență</div><div class="mval green">6/6</div><div class="msub green">Toate libere</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-flame"></i>Zone monitorizate antiincendiu</div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Corp A — Etaj 1</div><span class="status-pill pill-ok">OK — 4 detectori</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Corp A — Etaj 2</div><span class="status-pill pill-ok">OK — 4 detectori</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Corp B — Laboratoare</div><span class="status-pill pill-ok">OK — 6 detectori</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Sala de sport</div><span class="status-pill pill-ok">OK — 8 detectori</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Cantină & Bucătărie</div><span class="status-pill pill-ok">OK — 6 detectori</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-flame" style="color:var(--red)"></i>Centrală termică</div><span class="status-pill pill-ok">OK — 4 detectori</span></div>
-        </div>
-        <div style="margin-bottom:12px"><button onclick="testAlarm()" style="font-size:11px;padding:6px 14px;border-radius:var(--radius);border:1px solid var(--red-border);background:var(--red-dim);color:var(--red);cursor:pointer;font-family:var(--font-mono)"><i class="ti ti-bell"></i> Test Alarmă</button></div>
-        <a href="pages/antiincendiu.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Antiincendiu</a>
-      </div>
-
-      <!-- EFRACTIE -->
-      <div id="sec-efractie" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-eye"></i>Senzori mișcare</div><div class="mval green">8/8</div><div class="msub green">Toți OK</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-door"></i>Senzori uși</div><div class="mval green">12/12</div><div class="msub green">OK</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-device-cctv"></i>Camere CCTV</div><div class="mval green">6/6</div><div class="msub green">Online</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-shield-check"></i>Sistem</div><div class="mval green">ARMAT</div><div class="msub green">0 alarme</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:12px">
-          <div class="panel-title"><i class="ti ti-shield"></i>Zone efracție</div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Intrare principală</div><span class="status-pill pill-ok">ARMAT</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Intrare secundară</div><span class="status-pill pill-ok">ARMAT</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Corp A — Noapte</div><span class="status-pill pill-ok">ARMAT</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Corp B — Noapte</div><span class="status-pill pill-ok">ARMAT</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Centrală termică</div><span class="status-pill pill-ok">ARMAT</span></div>
-          <div class="status-row"><div class="status-name"><i class="ti ti-eye" style="color:var(--orange)"></i>Server room</div><span class="status-pill pill-ok">ARMAT — 24/7</span></div>
-        </div>
-        <div class="panel">
-          <div class="panel-title"><i class="ti ti-history"></i>Jurnal evenimente recente</div>
-          <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Sistem armat automat la 18:00</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">18:00:02</span></div>
-          <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Ultima persoană ieșită — Intrare principală</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">17:58:34</span></div>
-          <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-alert-triangle" style="color:var(--orange)"></i>Test senzor — Corp B etaj 2</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">14:22:11</span></div>
-        </div>
-        <a href="pages/efractie.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Efracție</a>
-      </div>
-
-      <!-- ACCES -->
-      <div id="sec-acces" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-users"></i>Prezențe azi</div><div class="mval blue">248</div><div class="msub">persoane înregistrate</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-door"></i>Uși online</div><div class="mval green">8/8</div><div class="msub blue">IP — toate conectate</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-x"></i>Acces refuzat azi</div><div class="mval orange">3</div><div class="msub orange">Card necunoscut</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-wifi"></i>Status rețea</div><div class="mval green">ONLINE</div><div class="msub blue">Modbus TCP / IP</div></div>
-        </div>
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-door"></i>Uși — stare curentă</div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--green)"></i>Intrare principală</div><span class="status-pill pill-ok">Deblocată</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--text-muted)"></i>Intrare secundară</div><span class="status-pill pill-off">Blocată</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Sala profesori</div><span class="status-pill pill-blue">Card activ</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--red)"></i>Server room</div><span class="status-pill pill-blue">Card + PIN</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Arhivă</div><span class="status-pill pill-off">Blocată</span></div>
-            <div class="status-row"><div class="status-name"><i class="ti ti-door" style="color:var(--orange)"></i>Centrală termică</div><span class="status-pill pill-blue">Card activ</span></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-history"></i>Jurnal acces recent</div>
-            <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Director — Intrare principală</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">08:14:32</span></div>
-            <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Prof. Ionescu — Sala profesori</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">08:22:17</span></div>
-            <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-x" style="color:var(--red)"></i>Card necunoscut — Server room</div><span style="font-size:10px;color:var(--red);font-family:var(--font-mono)">09:05:44</span></div>
-            <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Admin IT — Server room</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">09:11:02</span></div>
-            <div class="status-row"><div class="status-name" style="font-size:11px"><i class="ti ti-check" style="color:var(--green)"></i>Îngrijitor — Intrare secundară</div><span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">09:30:55</span></div>
-          </div>
-        </div>
-        <div class="panel" style="margin-top:12px">
-          <div class="panel-title"><i class="ti ti-network"></i>Arhitectură rețea control acces</div>
-          <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;font-family:var(--font-mono)">
-            Cititoare card/biometric (OSDP / Wiegand RS-485)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-            Controlere locale (IP — port 502 Modbus TCP)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-            Switch rețea PoE — VLAN dedicat acces<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-            Server BMS — OpenSmartBuilding<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-            Dashboard web — acces remote securizat
-          </div>
-        </div>
-        <a href="pages/acces.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Control Acces</a>
-      </div>
-
-      <!-- METEO -->
-      <div id="sec-meteo" class="section">
-        <div class="metrics">
-          <div class="mcard"><div class="mlabel"><i class="ti ti-wind"></i>Vânt</div><div class="mval teal">12 km/h</div><div class="msub teal">Direcție: NV</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-temperature"></i>Temp. exterior</div><div class="mval" style="color:var(--text-primary)">14°C</div><div class="msub">Parțial noros</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Umiditate ext.</div><div class="mval blue">72%</div><div class="msub orange">Ridicată</div></div>
-          <div class="mcard"><div class="mlabel"><i class="ti ti-droplet"></i>Umiditate int.</div><div class="mval blue">58%</div><div class="msub green">Normal</div></div>
-        </div>
-        <div class="grid2">
-          <div class="panel"><div class="panel-title"><i class="ti ti-wind"></i>Vânt 12h</div><div class="chart-wrap"><canvas id="chart-wind2"></canvas></div></div>
-          <div class="panel"><div class="panel-title"><i class="ti ti-droplet"></i>Umiditate int. / ext. 12h</div><div class="chart-wrap"><canvas id="chart-hum2"></canvas></div></div>
-        </div>
-        <a href="pages/meteo.html" class="page-link"><i class="ti ti-external-link"></i> Pagina detaliată Meteo</a>
-      </div>
-
-    </div><!-- end content -->
-
-    <div class="footer">
-      <span>Ultima actualizare: <span id="clock2">--:--:--</span> &nbsp;|&nbsp; Interval: <span id="interval-label">12h</span></span>
-      <span>OpenSmartBuilding v1.0 — Open Source BMS</span>
-      <span><a href="https://github.com/MariusMihalache/OpenSmartBuilding" target="_blank"><i class="ti ti-brand-github"></i> GitHub</a> &nbsp;|&nbsp; <a href="https://blog.hubinfratech.ro" target="_blank">HubInfraTech</a> &nbsp;|&nbsp; <span style="color:var(--green)">MIT License</span></span>
-    </div>
-  </div><!-- end main -->
-</div><!-- end layout -->
+</div><!-- /cnt -->
+<div class="foot">
+  <span>Sync: <span id="ft" style="color:var(--sky);font-family:var(--mono)">--:--:--</span></span>
+  <span>OpenSmartBuilding · Hyperion Enterprise v1.0</span>
+  <span><a href="https://github.com/MariusMihalache/OpenSmartBuilding">GitHub</a> · <a href="https://blog.hubinfratech.ro">HubInfraTech</a> · MIT</span>
+</div>
+</div><!-- /main -->
+</div><!-- /app -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── CHART DEFAULTS ──
-Chart.defaults.color = '#9599a8';
-Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
-Chart.defaults.font.family = "'JetBrains Mono', monospace";
-Chart.defaults.font.size = 10;
+'use strict';
 
-const H = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+/* ═══ CLOCK ═══ */
+const WD = ['Dum','Lun','Mar','Mie','Joi','Vin','Sâm'];
+const MO = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
+function pad(n) { return String(n).padStart(2,'0'); }
+function tickClock() {
+  const n = new Date();
+  const h = pad(n.getHours()), m = pad(n.getMinutes()), s = pad(n.getSeconds());
+  document.getElementById('ct').textContent = h + ':' + m + ':' + s;
+  document.getElementById('cd').textContent = WD[n.getDay()] + ' ' + pad(n.getDate()) + ' ' + MO[n.getMonth()] + ' ' + n.getFullYear();
+  document.getElementById('ft').textContent = h + ':' + m + ':' + s;
+}
+tickClock();
+setInterval(tickClock, 1000);
 
-function mkLine(id, datasets, yUnit, min, max) {
-  const el = document.getElementById(id);
-  if (!el) return;
+/* ═══ NAVIGATION ═══ */
+const TITLES = {
+  overview: 'Dashboard — toate sistemele',
+  hvac: 'HVAC — Climatizare',
+  solar: 'Solar — Fotovoltaic',
+  chiller: 'Chilere — Răcire',
+  termica: 'Instalație Termică',
+  pompe: 'Grupuri de Pompare',
+  ventilatie: 'Ventilație & Umiditate',
+  lumini: 'Iluminat Inteligent',
+  incendiu: 'Instalații Antiincendiu',
+  efractie: 'Sistem Efracție',
+  acces: 'Control Acces IP',
+  meteo: 'Meteo & Condiții Exterior'
+};
+
+function nav(name, btn) {
+  document.querySelectorAll('.sec').forEach(function(s) { s.classList.remove('on'); });
+  document.querySelectorAll('.ni').forEach(function(b) { b.classList.remove('on'); });
+  document.getElementById('s-' + name).classList.add('on');
+  if (btn) btn.classList.add('on');
+  document.getElementById('ptitle').textContent = TITLES[name] || name;
+  if (name === 'lumini') { buildLuxGrid(); }
+  setTimeout(function() { redrawAll(name); }, 60);
+}
+
+/* ═══ GAUGE ENGINE ═══ */
+function drawGauge(id, cfg) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var cx = 80, cy = 80, R = 60;
+  var val = cfg.value, mn = cfg.min, mx = cfg.max;
+  var color = cfg.color || '#3b82f6';
+  var ticks = cfg.ticks || 10;
+  var sub = cfg.sub || 5;
+  var zones = cfg.zones || [];
+  ctx.clearRect(0, 0, 160, 160);
+
+  function d2r(deg) { return (deg - 90) * Math.PI / 180; }
+  function v2a(v) { return 225 + (Math.max(mn, Math.min(mx, v)) - mn) / (mx - mn) * 270; }
+
+  // outer ring
+  ctx.beginPath(); ctx.arc(cx, cy, R + 11, 0, Math.PI * 2);
+  ctx.strokeStyle = '#1c2333'; ctx.lineWidth = 1; ctx.stroke();
+
+  // zone bands
+  zones.forEach(function(z) {
+    ctx.beginPath(); ctx.arc(cx, cy, R, d2r(v2a(z.from)), d2r(v2a(z.to)));
+    ctx.strokeStyle = z.color + '44'; ctx.lineWidth = 9; ctx.lineCap = 'butt'; ctx.stroke();
+  });
+
+  // track
+  ctx.beginPath(); ctx.arc(cx, cy, R, d2r(225), d2r(225 + 270));
+  ctx.strokeStyle = '#1c2333'; ctx.lineWidth = 9; ctx.lineCap = 'butt'; ctx.stroke();
+
+  // value arc
+  ctx.beginPath(); ctx.arc(cx, cy, R, d2r(225), d2r(v2a(val)));
+  ctx.strokeStyle = color; ctx.lineWidth = 9; ctx.lineCap = 'butt'; ctx.stroke();
+
+  // tick marks
+  for (var i = 0; i <= ticks; i++) {
+    var pct = i / ticks;
+    var a = d2r(225 + pct * 270);
+    ctx.beginPath();
+    ctx.moveTo(cx + (R + 8) * Math.cos(a), cy + (R + 8) * Math.sin(a));
+    ctx.lineTo(cx + (R + 2) * Math.cos(a), cy + (R + 2) * Math.sin(a));
+    ctx.strokeStyle = '#30363d'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke();
+    if (i < ticks) {
+      for (var j = 1; j < sub; j++) {
+        var sp = (i + j / sub) / ticks;
+        var sa = d2r(225 + sp * 270);
+        ctx.beginPath();
+        ctx.moveTo(cx + (R + 7) * Math.cos(sa), cy + (R + 7) * Math.sin(sa));
+        ctx.lineTo(cx + (R + 4) * Math.cos(sa), cy + (R + 4) * Math.sin(sa));
+        ctx.strokeStyle = '#21262d'; ctx.lineWidth = 0.8; ctx.stroke();
+      }
+    }
+  }
+
+  // min / mid / max labels
+  ctx.font = '500 9px "DM Mono",monospace';
+  ctx.fillStyle = '#484f58'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  [[0, mn], [0.5, Math.round((mn + mx) / 2)], [1, mx]].forEach(function(pair) {
+    var a = d2r(225 + pair[0] * 270), lr = R - 16;
+    ctx.fillText(String(pair[1]), cx + lr * Math.cos(a), cy + lr * Math.sin(a));
+  });
+
+  // needle
+  var na = d2r(v2a(val));
+  var nx = cx + (R - 18) * Math.cos(na), ny = cy + (R - 18) * Math.sin(na);
+  var bl = na + Math.PI / 2, br = na - Math.PI / 2;
+  ctx.beginPath();
+  ctx.moveTo(nx, ny);
+  ctx.lineTo(cx + 5 * Math.cos(bl), cy + 5 * Math.sin(bl));
+  ctx.lineTo(cx - 10 * Math.cos(na), cy - 10 * Math.sin(na));
+  ctx.lineTo(cx + 5 * Math.cos(br), cy + 5 * Math.sin(br));
+  ctx.closePath(); ctx.fillStyle = '#e6edf3'; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(cx - 10 * Math.cos(na), cy - 10 * Math.sin(na));
+  ctx.lineTo(cx + 4 * Math.cos(bl), cy + 4 * Math.sin(bl));
+  ctx.lineTo(cx + 4 * Math.cos(br), cy + 4 * Math.sin(br));
+  ctx.closePath(); ctx.fillStyle = '#30363d'; ctx.fill();
+
+  // hub
+  ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fillStyle = '#161b22'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI * 2); ctx.fillStyle = '#0d1117'; ctx.fill();
+}
+
+/* ═══ WIND ROSE ═══ */
+function drawRose() {
+  var canvas = document.getElementById('g-rose');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var cx = 80, cy = 80, maxR = 52;
+  ctx.clearRect(0, 0, 160, 160);
+  var dirs = ['N','NE','E','SE','S','SV','V','NV'];
+  var freqs = [5, 8, 12, 6, 4, 10, 18, 37];
+  var maxF = Math.max.apply(null, freqs);
+
+  ctx.strokeStyle = '#21262d'; ctx.lineWidth = 0.5;
+  [0.33, 0.66, 1].forEach(function(r) {
+    ctx.beginPath(); ctx.arc(cx, cy, maxR * r, 0, Math.PI * 2); ctx.stroke();
+  });
+  dirs.forEach(function(d, i) {
+    var a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + maxR * Math.cos(a), cy + maxR * Math.sin(a));
+    ctx.strokeStyle = '#21262d'; ctx.lineWidth = 0.5; ctx.stroke();
+  });
+  dirs.forEach(function(d, i) {
+    var a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+    var r = (freqs[i] / maxF) * maxR;
+    var spread = Math.PI / 8;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, a - spread, a + spread);
+    ctx.closePath();
+    var dom = (i === 7);
+    ctx.fillStyle = dom ? '#38bdf899' : '#38bdf830';
+    ctx.strokeStyle = dom ? '#38bdf8' : '#38bdf850';
+    ctx.lineWidth = 1; ctx.fill(); ctx.stroke();
+  });
+  ctx.font = '600 9px "DM Mono",monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  dirs.forEach(function(d, i) {
+    var a = (i / 8) * Math.PI * 2 - Math.PI / 2, lr = maxR + 12;
+    ctx.fillStyle = (i === 7) ? '#38bdf8' : '#484f58';
+    ctx.fillText(d, cx + lr * Math.cos(a), cy + lr * Math.sin(a));
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fillStyle = '#30363d'; ctx.fill();
+}
+
+/* ═══ GAUGE CONFIGS ═══ */
+var GC = {
+  'g-temp':   { value: 21.8, min: 15, max: 30,   color: '#22c55e', ticks: 5,  sub: 4, zones: [{from:15,to:18,color:'#38bdf8'},{from:18,to:25,color:'#22c55e'},{from:25,to:30,color:'#f43f5e'}] },
+  'g-co2':    { value: 620,  min: 400,max: 1500,  color: '#a78bfa', ticks: 5,  sub: 4, zones: [{from:400,to:800,color:'#22c55e'},{from:800,to:1000,color:'#f59e0b'},{from:1000,to:1500,color:'#f43f5e'}] },
+  'g-humh':   { value: 58,   min: 0,  max: 100,   color: '#38bdf8', ticks: 5,  sub: 4, zones: [{from:0,to:30,color:'#f59e0b'},{from:30,to:65,color:'#22c55e'},{from:65,to:100,color:'#f59e0b'}] },
+  'g-solp':   { value: 8.4,  min: 0,  max: 14,    color: '#fbbf24', ticks: 7,  sub: 4, zones: [{from:0,to:3,color:'#484f58'},{from:3,to:10,color:'#22c55e'},{from:10,to:14,color:'#fbbf24'}] },
+  'g-solkwh': { value: 42.1, min: 0,  max: 50,    color: '#f59e0b', ticks: 5,  sub: 5, zones: [{from:0,to:20,color:'#484f58'},{from:20,to:40,color:'#22c55e'},{from:40,to:50,color:'#fbbf24'}] },
+  'g-ch1':    { value: 7.2,  min: 4,  max: 15,    color: '#38bdf8', ticks: 5,  sub: 4, zones: [{from:4,to:6,color:'#a78bfa'},{from:6,to:10,color:'#22c55e'},{from:10,to:15,color:'#f59e0b'}] },
+  'g-ch2':    { value: 7.8,  min: 4,  max: 15,    color: '#38bdf8', ticks: 5,  sub: 4, zones: [{from:4,to:6,color:'#a78bfa'},{from:6,to:10,color:'#22c55e'},{from:10,to:15,color:'#f59e0b'}] },
+  'g-chret':  { value: 12.4, min: 4,  max: 20,    color: '#2dd4bf', ticks: 4,  sub: 4, zones: [{from:4,to:8,color:'#38bdf8'},{from:8,to:16,color:'#22c55e'},{from:16,to:20,color:'#f59e0b'}] },
+  'g-ttur':   { value: 68,   min: 40, max: 90,    color: '#f59e0b', ticks: 5,  sub: 5, zones: [{from:40,to:55,color:'#38bdf8'},{from:55,to:75,color:'#22c55e'},{from:75,to:90,color:'#f43f5e'}] },
+  'g-tret':   { value: 52,   min: 30, max: 80,    color: '#fbbf24', ticks: 5,  sub: 5, zones: [{from:30,to:45,color:'#38bdf8'},{from:45,to:65,color:'#22c55e'},{from:65,to:80,color:'#f43f5e'}] },
+  'g-tbar':   { value: 1.6,  min: 0,  max: 3,     color: '#22c55e', ticks: 6,  sub: 5, zones: [{from:0,to:.8,color:'#f43f5e'},{from:.8,to:2.2,color:'#22c55e'},{from:2.2,to:3,color:'#f59e0b'}] },
+  'g-p1':     { value: 1450, min: 0,  max: 2000,  color: '#3b82f6', ticks: 4,  sub: 5, zones: [{from:0,to:500,color:'#484f58'},{from:500,to:1600,color:'#22c55e'},{from:1600,to:2000,color:'#f59e0b'}] },
+  'g-p2':     { value: 1380, min: 0,  max: 2000,  color: '#3b82f6', ticks: 4,  sub: 5, zones: [{from:0,to:500,color:'#484f58'},{from:500,to:1600,color:'#22c55e'},{from:1600,to:2000,color:'#f59e0b'}] },
+  'g-ps':     { value: 1200, min: 0,  max: 2000,  color: '#f59e0b', ticks: 4,  sub: 5, zones: [{from:0,to:500,color:'#484f58'},{from:500,to:1600,color:'#22c55e'},{from:1600,to:2000,color:'#f59e0b'}] },
+  'g-vspd':   { value: 12,   min: 0,  max: 80,    color: '#2dd4bf', ticks: 8,  sub: 5, zones: [{from:0,to:20,color:'#22c55e'},{from:20,to:50,color:'#f59e0b'},{from:50,to:80,color:'#f43f5e'}] },
+  'g-sprink': { value: 6.2,  min: 0,  max: 10,    color: '#22c55e', ticks: 5,  sub: 4, zones: [{from:0,to:5,color:'#f43f5e'},{from:5,to:8,color:'#22c55e'},{from:8,to:10,color:'#f59e0b'}] },
+  'g-rez':    { value: 98,   min: 0,  max: 100,   color: '#22c55e', ticks: 5,  sub: 4, zones: [{from:0,to:30,color:'#f43f5e'},{from:30,to:70,color:'#f59e0b'},{from:70,to:100,color:'#22c55e'}] },
+  'g-wind':   { value: 12,   min: 0,  max: 80,    color: '#38bdf8', ticks: 8,  sub: 5, zones: [{from:0,to:20,color:'#22c55e'},{from:20,to:50,color:'#f59e0b'},{from:50,to:80,color:'#f43f5e'}] },
+  'g-press':  { value: 1013, min: 950,max: 1050,  color: '#a78bfa', ticks: 10, sub: 5, zones: [{from:950,to:1000,color:'#f43f5e'},{from:1000,to:1020,color:'#22c55e'},{from:1020,to:1050,color:'#f59e0b'}] },
+  'g-humext': { value: 72,   min: 0,  max: 100,   color: '#38bdf8', ticks: 5,  sub: 4, zones: [{from:0,to:30,color:'#f59e0b'},{from:30,to:70,color:'#22c55e'},{from:70,to:100,color:'#f59e0b'}] }
+};
+
+function redrawAll(secName) {
+  Object.keys(GC).forEach(function(id) {
+    var canvas = document.getElementById(id);
+    if (!canvas) return;
+    var sec = canvas.closest('.sec');
+    if (sec && sec.classList.contains('on')) {
+      drawGauge(id, GC[id]);
+    }
+  });
+  if (secName === 'ventilatie') {
+    var roseCanvas = document.getElementById('g-rose');
+    if (roseCanvas) {
+      var sec = roseCanvas.closest('.sec');
+      if (sec && sec.classList.contains('on')) drawRose();
+    }
+  }
+}
+
+/* ═══ LUX BARS ═══ */
+var luxData = [
+  { name: 'Cls. 1',    lux: 520, on: true  },
+  { name: 'Cls. 2',    lux: 480, on: true  },
+  { name: 'Cls. 3',    lux: 0,   on: false },
+  { name: 'Laborator', lux: 650, on: true  },
+  { name: 'Bibliotecă',lux: 0,   on: false },
+  { name: 'Cantină',   lux: 390, on: true  },
+  { name: 'Sala sport',lux: 0,   on: false },
+  { name: 'Hol A',     lux: 210, on: true  },
+  { name: 'Hol B',     lux: 0,   on: false },
+  { name: 'Secretariat',lux:440, on: true  }
+];
+
+function luxColor(l) {
+  if (l === 0) return '#21262d';
+  if (l < 200) return '#484f58';
+  if (l < 350) return '#f59e0b';
+  if (l < 600) return '#22c55e';
+  return '#38bdf8';
+}
+function luxLabel(l) {
+  if (l === 0) return 'OFF';
+  if (l < 200) return 'Insuficient';
+  if (l < 350) return 'Redus';
+  if (l < 600) return 'Confort';
+  return 'Intens';
+}
+
+function buildLuxGrid() {
+  var grid = document.getElementById('lux-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  luxData.forEach(function(z) {
+    var pct = Math.round((z.lux / 1000) * 100);
+    var col = luxColor(z.lux);
+    var lbl = luxLabel(z.lux);
+    var div = document.createElement('div');
+    div.className = 'lxr';
+    div.innerHTML =
+      '<div class="lxh">' +
+        '<div class="lxn">' +
+          '<i class="ti ti-bulb" style="font-size:13px;color:' + (z.on ? '#f59e0b' : '#484f58') + '"></i>' +
+          z.name +
+        '</div>' +
+        '<span class="lxv" style="color:' + col + '">' + (z.lux > 0 ? z.lux + ' lx' : '—') + '</span>' +
+      '</div>' +
+      '<div class="lxt"><div class="lxf" style="width:' + pct + '%;background:' + col + '"></div></div>' +
+      '<div class="lxs"><span>0</span><span style="color:' + col + ';font-size:9px">' + lbl + '</span><span>1000 lx</span></div>';
+    grid.appendChild(div);
+  });
+  var active = luxData.filter(function(z) { return z.on && z.lux > 0; });
+  var avg = active.length ? Math.round(active.reduce(function(s, z) { return s + z.lux; }, 0) / active.length) : 0;
+  var el = document.getElementById('lux-avg');
+  if (el) el.innerHTML = avg + '<span class="ku">lx</span>';
+}
+
+/* ═══ CHARTS ═══ */
+Chart.defaults.color = '#484f58';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.04)';
+Chart.defaults.font.family = "'DM Mono',monospace";
+Chart.defaults.font.size = 9;
+var HL = ['06','07','08','09','10','11','12','13','14','15','16','17'];
+
+function mkFill(color) {
+  return function(ctx) {
+    var g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 140);
+    g.addColorStop(0, color + '28'); g.addColorStop(1, color + '00'); return g;
+  };
+}
+function mkL(id, ds, unit, mn, mx) {
+  var el = document.getElementById(id); if (!el) return;
   new Chart(el, {
     type: 'line',
-    data: { labels: H, datasets: datasets.map(d => ({ ...d, borderWidth: 2, pointRadius: 2.5, pointHoverRadius: 4, fill: !!d.fill, tension: 0.4 })) },
+    data: { labels: HL, datasets: ds.map(function(d) { return Object.assign({}, d, { borderWidth: 1.5, pointRadius: 0, tension: .4 }); }) },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: datasets.length > 1, labels: { boxWidth: 10, padding: 10 } } },
+      plugins: { legend: { display: ds.length > 1, labels: { boxWidth: 8, padding: 8, color: '#8b949e' } } },
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: '#2a2d3a' }, ticks: { maxRotation: 0 } },
-        y: { min, max, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: '#2a2d3a' }, ticks: { callback: v => v + (yUnit || '') } }
+        x: { grid: { color: 'rgba(255,255,255,0.03)' }, border: { display: false }, ticks: { color: '#484f58', maxRotation: 0, maxTicksLimit: 6 } },
+        y: { min: mn, max: mx, grid: { color: 'rgba(255,255,255,0.03)' }, border: { display: false }, ticks: { color: '#484f58', maxTicksLimit: 5, callback: function(v) { return v + (unit || ''); } } }
       }
     }
   });
 }
-
-function mkBar(id, labels, data, color, yUnit) {
-  const el = document.getElementById(id);
-  if (!el) return;
+function mkB(id, labels, data, color, unit) {
+  var el = document.getElementById(id); if (!el) return;
   new Chart(el, {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 3 }] },
+    data: { labels: labels, datasets: [{ data: data, backgroundColor: color + 'bb', borderRadius: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: '#2a2d3a' } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: '#2a2d3a' }, ticks: { callback: v => v + (yUnit || '') } }
+        x: { grid: { display: false }, border: { display: false }, ticks: { color: '#484f58' } },
+        y: { grid: { color: 'rgba(255,255,255,0.03)' }, border: { display: false }, ticks: { color: '#484f58', callback: function(v) { return v + (unit || ''); } } }
       }
     }
   });
 }
 
-// ── CHARTS ──
-mkLine('chart-temp', [{ label: '°C', data: [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8], borderColor: '#73bf69', backgroundColor: 'rgba(115,191,105,0.06)', fill: true }], '°C', 17, 25);
-mkLine('chart-energy', [{ label: 'kW', data: [18,22,28,32,35,36,34,33,34,34,33,34], borderColor: '#5794f2', backgroundColor: 'rgba(87,148,242,0.06)', fill: true }], ' kW', 0, 50);
-mkLine('chart-solar-ov', [{ label: 'Solar kW', data: [0,0,2,5,7,8.4,8.2,7.5,6,4,2,0.8], borderColor: '#fade2a' }, { label: 'Consum kW', data: [18,22,28,32,35,36,34,33,34,34,33,34], borderColor: '#ff9830', borderDash: [4,3] }], ' kW');
-mkLine('chart-hum-ov', [{ label: 'Int %', data: [55,56,57,58,59,58,57,58,58,57,58,58], borderColor: '#5794f2' }, { label: 'Ext %', data: [70,72,74,73,71,70,69,70,71,72,72,72], borderColor: '#64b5f6', borderDash: [4,3] }], '%', 40, 90);
-mkLine('chart-hvac-temp', [{ label: '°C', data: [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8], borderColor: '#73bf69', backgroundColor: 'rgba(115,191,105,0.06)', fill: true }], '°C', 17, 25);
-mkLine('chart-hvac-hum', [{ label: 'Umid %', data: [55,56,57,58,59,58,57,58,58,57,58,58], borderColor: '#5794f2' }, { label: 'CO2 /10', data: [40,45,55,62,64,62,60,61,62,62,61,62], borderColor: '#b877d9', borderDash: [3,3] }], '', 30, 80);
-mkBar('chart-solar', ['07','08','09','10','11','12','13','14','15','16','17','18'], [0.5,2,4.5,6.8,8,8.4,8.2,7.5,6,4,2,0.8], '#fade2a', ' kW');
-mkLine('chart-chiller', [{ label: 'Tur °C', data: [8,7.8,7.5,7.2,7.0,7.2,7.3,7.2,7.4,7.6,7.5,7.2], borderColor: '#5794f2' }, { label: 'Retur °C', data: [13,12.8,12.5,12.2,12,12.3,12.5,12.4,12.6,12.8,12.6,12.4], borderColor: '#64b5f6', borderDash: [4,3] }], '°C', 5, 16);
-mkLine('chart-chiller-power', [{ label: 'kW', data: [8,10,12,14,14,13,13,12,13,13,12,12], borderColor: '#b877d9', backgroundColor: 'rgba(184,119,217,0.06)', fill: true }], ' kW', 0, 20);
-mkLine('chart-termica', [{ label: 'Tur °C', data: [65,66,67,68,68,69,68,68,67,68,68,68], borderColor: '#ff9830' }, { label: 'Retur °C', data: [50,51,52,52,53,53,52,52,51,52,52,52], borderColor: '#fade2a', borderDash: [4,3] }], '°C', 40, 80);
-mkLine('chart-pompe', [{ label: 'Prim bar', data: [2.4,2.4,2.3,2.4,2.5,2.4,2.4,2.3,2.4,2.4,2.4,2.4], borderColor: '#5794f2' }, { label: 'Sec bar', data: [1.8,1.8,1.7,1.8,1.9,1.8,1.8,1.7,1.8,1.8,1.8,1.8], borderColor: '#73bf69', borderDash: [4,3] }], ' bar', 0, 4);
-mkLine('chart-hum', [{ label: 'Int %', data: [55,56,57,58,59,58,57,58,58,57,58,58], borderColor: '#5794f2' }, { label: 'Ext %', data: [70,72,74,73,71,70,69,70,71,72,72,72], borderColor: '#64b5f6', borderDash: [4,3] }], '%', 40, 90);
-mkLine('chart-wind', [{ label: 'km/h', data: [5,8,10,14,12,16,18,15,13,12,11,12], borderColor: '#64b5f6', backgroundColor: 'rgba(100,181,246,0.06)', fill: true }], ' km/h', 0, 30);
-mkLine('chart-wind2', [{ label: 'km/h', data: [5,8,10,14,12,16,18,15,13,12,11,12], borderColor: '#64b5f6', backgroundColor: 'rgba(100,181,246,0.06)', fill: true }], ' km/h', 0, 30);
-mkLine('chart-hum2', [{ label: 'Int %', data: [55,56,57,58,59,58,57,58,58,57,58,58], borderColor: '#5794f2' }, { label: 'Ext %', data: [70,72,74,73,71,70,69,70,71,72,72,72], borderColor: '#64b5f6', borderDash: [4,3] }], '%', 40, 90);
-mkBar('chart-lights', ['Cls.1','Cls.2','Lab','Cantină','Hol A','Secretariat'], [1.2,1.2,1.8,2.4,0.6,0.4], '#ff9830', ' kW');
+var DT = {
+  temp: [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8],
+  ener: [18,22,28,32,35,36,34,33,34,34,33,34],
+  hi:   [55,56,57,58,59,58,57,58,58,57,58,58],
+  he:   [70,72,74,73,71,70,69,70,71,72,72,72],
+  sol:  [0,.5,2,5,7,8.4,8.2,7.5,6,4,2,.8],
+  wind: [5,8,10,14,12,16,18,15,13,12,11,12],
+  pr:   [1015,1014,1013,1013,1012,1013,1014,1013,1013,1012,1013,1013]
+};
 
-// ── NAVIGATION ──
-const titles = { overview:'Overview — Toate Sistemele', hvac:'HVAC — Climatizare', solar:'Solar — Fotovoltaic', chiller:'Chilere — Răcire', termica:'Instalație Termică', pompe:'Grupuri de Pompare', ventilatie:'Ventilație & Umiditate', lumini:'Iluminat Inteligent', incendiu:'Instalații Antiincendiu', efractie:'Sistem Efracție', acces:'Control Acces — IP', meteo:'Meteo & Condiții Exterior' };
+mkL('c-temp',  [{ label:'°C', data:DT.temp, borderColor:'#22c55e', backgroundColor:mkFill('#22c55e'), fill:true }], '°C', 17, 25);
+mkL('c-ener',  [{ label:'kW', data:DT.ener, borderColor:'#3b82f6', backgroundColor:mkFill('#3b82f6'), fill:true }], ' kW', 0, 50);
+mkL('c-solv',  [{ label:'Solar', data:DT.sol, borderColor:'#f59e0b' }, { label:'Consum', data:DT.ener, borderColor:'#f43f5e', borderDash:[4,3] }], ' kW');
+mkL('c-humv',  [{ label:'Int%', data:DT.hi, borderColor:'#38bdf8' }, { label:'Ext%', data:DT.he, borderColor:'#2dd4bf', borderDash:[4,3] }], '%', 40, 90);
+mkL('c-hvact', [{ label:'°C', data:DT.temp, borderColor:'#22c55e', backgroundColor:mkFill('#22c55e'), fill:true }], '°C', 17, 25);
+mkL('c-hvach', [{ label:'Umid%', data:DT.hi, borderColor:'#38bdf8' }, { label:'CO2/10', data:[40,45,55,62,64,62,60,61,62,62,61,62], borderColor:'#a78bfa', borderDash:[3,3] }], '', 30, 80);
+mkB('c-solar',  ['07','08','09','10','11','12','13','14','15','16','17','18'], DT.sol, '#f59e0b', ' kW');
+mkL('c-chill',  [{ label:'Tur', data:[8,7.8,7.5,7.2,7,7.2,7.3,7.2,7.4,7.6,7.5,7.2], borderColor:'#38bdf8' }, { label:'Retur', data:[13,12.8,12.5,12.2,12,12.3,12.5,12.4,12.6,12.8,12.6,12.4], borderColor:'#2dd4bf', borderDash:[4,3] }], '°C', 5, 16);
+mkL('c-chillp', [{ label:'kW', data:[8,10,12,14,14,13,13,12,13,13,12,12], borderColor:'#a78bfa', backgroundColor:mkFill('#a78bfa'), fill:true }], ' kW', 0, 20);
+mkL('c-term',   [{ label:'Tur', data:[65,66,67,68,68,69,68,68,67,68,68,68], borderColor:'#f59e0b' }, { label:'Retur', data:[50,51,52,52,53,53,52,52,51,52,52,52], borderColor:'#fbbf24', borderDash:[4,3] }], '°C', 40, 80);
+mkL('c-pump',   [{ label:'Prim', data:[2.4,2.4,2.3,2.4,2.5,2.4,2.4,2.3,2.4,2.4,2.4,2.4], borderColor:'#38bdf8' }, { label:'Sec', data:[1.8,1.8,1.7,1.8,1.9,1.8,1.8,1.7,1.8,1.8,1.8,1.8], borderColor:'#22c55e', borderDash:[4,3] }], ' bar', 0, 4);
+mkL('c-hum',    [{ label:'Int%', data:DT.hi, borderColor:'#38bdf8' }, { label:'Ext%', data:DT.he, borderColor:'#2dd4bf', borderDash:[4,3] }], '%', 40, 90);
+mkL('c-wind',   [{ label:'km/h', data:DT.wind, borderColor:'#2dd4bf', backgroundColor:mkFill('#2dd4bf'), fill:true }], ' km/h', 0, 30);
+mkL('c-wind2',  [{ label:'km/h', data:DT.wind, borderColor:'#2dd4bf', backgroundColor:mkFill('#2dd4bf'), fill:true }], ' km/h', 0, 30);
+mkL('c-press',  [{ label:'hPa', data:DT.pr, borderColor:'#a78bfa', backgroundColor:mkFill('#a78bfa'), fill:true }], ' hPa', 1005, 1025);
+mkB('c-lights', ['Cls.1','Cls.2','Lab','Cantină','Hol A','Secr.'], [1.2,1.2,1.8,2.4,.6,.4], '#f59e0b', ' kW');
 
-function showSection(name, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + name).classList.add('active');
-  if (btn) btn.classList.add('active');
-  document.getElementById('page-title').textContent = titles[name] || name;
-}
-
-// ── LIGHTS ──
-const lightStates = [true,true,false,true,false,true,false,true,false,true];
-function toggleLight(i) {
-  lightStates[i] = !lightStates[i];
-  document.getElementById('lb'+i).className = 'lbulb ' + (lightStates[i]?'on':'off');
-  document.getElementById('lp'+i).className = 'lpill ' + (lightStates[i]?'on':'off');
-  document.getElementById('lp'+i).textContent = lightStates[i]?'ON':'OFF';
-  document.getElementById('lights-count').textContent = lightStates.filter(Boolean).length + '/10 active';
-}
-
-// ── ALARM TEST ──
-let alarmOn = false;
+/* ═══ ALARM ═══ */
+var alarmOn = false;
 function testAlarm() {
   alarmOn = !alarmOn;
-  document.getElementById('alarm-banner').classList.toggle('hidden', !alarmOn);
+  document.getElementById('abr').classList.toggle('h', !alarmOn);
 }
 
-// ── CLOCK ──
-function updateClock() {
-  const t = new Date().toLocaleTimeString('ro-RO');
-  document.getElementById('clock').textContent = t;
-  document.getElementById('clock2').textContent = t;
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-// ── TIME RANGE ──
-function updateTimeRange() {
-  const val = document.getElementById('time-range').value;
-  const labels = { '1h':'1h', '6h':'6h', '12h':'12h', '24h':'24h', '7d':'7 zile', '30d':'30 zile' };
-  document.getElementById('interval-label').textContent = labels[val];
-}
-
-// ── LIVE DATA ──
-let tick = 0;
-setInterval(() => {
+/* ═══ LIVE DATA ═══ */
+var tick = 0;
+setInterval(function() {
   tick++;
-  document.getElementById('ov-temp').textContent = (21.8 + Math.sin(tick*.3)*.4).toFixed(1) + '°C';
-  document.getElementById('ov-hum').textContent = Math.round(58 + Math.sin(tick*.2)*2) + '%';
-  document.getElementById('ov-power').textContent = (34 + Math.sin(tick*.5)*1.5).toFixed(1) + ' kW';
-  document.getElementById('ov-solar').textContent = (8.4 + Math.sin(tick*.4)*.3).toFixed(1) + ' kW';
-  document.getElementById('ov-wind').textContent = Math.round(12 + Math.sin(tick*.6)*3) + ' km/h';
+  var t = (21.8 + Math.sin(tick * .3) * .4).toFixed(1);
+  var p = (34   + Math.sin(tick * .5) * 1.5).toFixed(1);
+  var s = (8.4  + Math.sin(tick * .4) * .3).toFixed(1);
+  var h = Math.round(58 + Math.sin(tick * .2) * 2);
+  var w = Math.round(12 + Math.sin(tick * .6) * 4);
+  var pr = Math.round(1013 + Math.sin(tick * .05) * 2);
+  var he = Math.round(72  + Math.sin(tick * .15) * 3);
+  var co2 = Math.round(620 + Math.sin(tick * .1) * 40);
+
+  function g(id) { return document.getElementById(id); }
+  function setH(id, html) { var el = g(id); if (el) el.innerHTML = html; }
+  function setT(id, txt)  { var el = g(id); if (el) el.textContent = txt; }
+
+  // Overview
+  setH('ov-t', t  + '<span class="ku">°C</span>');
+  setH('ov-h', h  + '<span class="ku">%</span>');
+  setH('ov-p', p  + '<span class="ku">kW</span>');
+  setH('ov-s', s  + '<span class="ku">kW</span>');
+  setH('ov-w', w  + '<span class="ku">km/h</span>');
+
+  // HVAC
+  setH('hv-t',   t   + '<span class="ku">°C</span>');
+  setH('hv-co2', co2 + '<span class="ku">ppm</span>');
+  setT('gv-temp', t);
+  setT('gv-co2',  co2);
+  setT('gv-humh', h);
+  setT('gs-co2', co2 < 800 ? 'Aer curat · sub 800 ppm' : co2 < 1000 ? 'Atenție · 800–1000 ppm' : 'Alertă · peste 1000 ppm');
+
+  // Solar
+  setH('sol-p', s + '<span class="ku">kW</span>');
+  setT('gv-solp', s);
+
+  // Termica
+  var ttur = Math.round(68 + Math.sin(tick * .08) * .8);
+  setT('gv-ttur', ttur);
+
+  // Pompe
+  setT('gv-p1', Math.round(1450 + Math.sin(tick * .2) * 30));
+
+  // Ventilatie
+  setH('vn-w', w + '<span class="ku">km/h</span>');
+  setT('gv-vspd', w);
+  setT('gs-vspd', w < 15 ? 'Calm · Ușor' : w < 30 ? 'NV · Moderat' : 'NV · Puternic');
+
+  // Meteo
+  setH('mv-w',  w  + '<span class="mcu"> km/h</span>');
+  setH('mv-t',  (14 + Math.sin(tick * .1) * .5).toFixed(1) + '<span class="mcu">°C</span>');
+  setH('mv-he', he + '<span class="mcu">%</span>');
+  setH('mv-hi', h  + '<span class="mcu">%</span>');
+  setH('mv-pr', pr + '<span class="mcu"> hPa</span>');
+  setT('ms-w',  w < 15 ? 'Calm — Ușor' : w < 30 ? 'NV — Moderat' : 'NV — Puternic');
+  setT('ms-pr', pr > 1014 ? '↑ În creștere' : pr < 1012 ? '↓ În scădere' : '↔ Stabil');
+  setT('gv-wind',   w);
+  setT('gv-press',  pr);
+  setT('gv-humext', he);
+  setT('gs-wind',   w < 15 ? 'Calm · Ușor' : w < 30 ? 'NV · Moderat' : 'NV · Puternic');
+  setT('gs-press',  pr > 1014 ? 'Creștere · timp frumos' : pr < 1012 ? 'Scădere · posibil ploaie' : 'Standard · stabil');
+
+  // Update gauge configs
+  GC['g-temp'].value  = parseFloat(t);
+  GC['g-co2'].value   = co2;
+  GC['g-humh'].value  = h;
+  GC['g-solp'].value  = parseFloat(s);
+  GC['g-ttur'].value  = ttur;
+  GC['g-p1'].value    = Math.round(1450 + Math.sin(tick * .2) * 30);
+  GC['g-vspd'].value  = w;
+  GC['g-wind'].value  = w;
+  GC['g-press'].value = pr;
+  GC['g-humext'].value = he;
+
+  // Lux fluctuation
+  var luxSec = document.getElementById('s-lumini');
+  if (luxSec && luxSec.classList.contains('on')) {
+    luxData.forEach(function(z) {
+      if (z.on && z.lux > 0) z.lux = Math.max(100, Math.min(900, Math.round(z.lux + (Math.random() - .5) * 15)));
+    });
+    buildLuxGrid();
+  }
+
+  // Sparkline history
+  pushSpark('temp',  parseFloat(t));
+  pushSpark('hum',   h);
+  pushSpark('power', parseFloat(p));
+  pushSpark('sol',   parseFloat(s));
+  pushSpark('wind',  w);
+  redrawSparks();
+
+  // Progress rings
+  var pwrPct = Math.round((parseFloat(p) / 50) * 100);
+  updateRing('ring-pwr', pwrPct);
+  updateRing('ring-hum', h);
+
+  // Toast threshold checks
+  checkThresholds({ co2: co2, pwr: parseFloat(p), wind: w, pr: pr, sol: parseFloat(s) });
+
+  // Redraw visible gauges
+  var active = document.querySelector('.sec.on');
+  if (active) redrawAll(active.id.replace('s-', ''));
 }, 2500);
+
+/* ═══ SPARKLINES ═══ */
+function drawSpark(id, data, color) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth || canvas.parentElement.offsetWidth || 140;
+  var H = 28;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+  if (!data || data.length < 2) return;
+  var mn = Math.min.apply(null, data);
+  var mx = Math.max.apply(null, data);
+  var range = mx - mn || 1;
+  var step = W / (data.length - 1);
+
+  // fill
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color + '40');
+  grad.addColorStop(1, color + '00');
+  ctx.beginPath();
+  data.forEach(function(v, i) {
+    var x = i * step;
+    var y = H - ((v - mn) / range) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // line
+  ctx.beginPath();
+  data.forEach(function(v, i) {
+    var x = i * step;
+    var y = H - ((v - mn) / range) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+
+  // last point dot
+  var lx = (data.length - 1) * step;
+  var ly = H - ((data[data.length - 1] - mn) / range) * (H - 4) - 2;
+  ctx.beginPath(); ctx.arc(lx, ly, 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = color; ctx.fill();
+}
+
+// rolling spark history
+var sparkHist = {
+  temp:  [19,20,21,21.5,22,22.4,22.6,22.5,22.3,22.1,21.9,21.8],
+  hum:   [55,56,57,58,59,58,57,58,58,57,58,58],
+  power: [18,22,28,32,35,36,34,33,34,34,33,34],
+  sol:   [0,.5,2,5,7,8.4,8.2,7.5,6,4,2,.8],
+  wind:  [5,8,10,14,12,16,18,15,13,12,11,12]
+};
+function pushSpark(key, val) {
+  sparkHist[key].push(val);
+  if (sparkHist[key].length > 20) sparkHist[key].shift();
+}
+function redrawSparks() {
+  drawSpark('sp-temp',  sparkHist.temp,  '#22c55e');
+  drawSpark('sp-hum',   sparkHist.hum,   '#38bdf8');
+  drawSpark('sp-power', sparkHist.power, '#f59e0b');
+  drawSpark('sp-sol',   sparkHist.sol,   '#fbbf24');
+  drawSpark('sp-wind',  sparkHist.wind,  '#2dd4bf');
+}
+setTimeout(redrawSparks, 200);
+window.addEventListener('resize', redrawSparks);
+
+/* ═══ PROGRESS RING UPDATE ═══ */
+function updateRing(id, pct) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var offset = 100 - pct;
+  el.style.strokeDashoffset = offset;
+}
+
+/* ═══ COUNTER ANIMATION ═══ */
+function animCount(el, from, to, decimals, suffix) {
+  if (!el) return;
+  var start = null;
+  var dur = 600;
+  function step(ts) {
+    if (!start) start = ts;
+    var prog = Math.min((ts - start) / dur, 1);
+    var ease = 1 - Math.pow(1 - prog, 3);
+    var cur = from + (to - from) * ease;
+    el.textContent = cur.toFixed(decimals) + suffix;
+    if (prog < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══ TOAST ═══ */
+var toastQueue = [];
+function showToast(type, title, msg, duration) {
+  duration = duration || 4000;
+  var container = document.getElementById('toast-container');
+  if (!container) return;
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  var icons = { warn: 'ti-alert-triangle', ok: 'ti-circle-check', err: 'ti-circle-x', info: 'ti-info-circle' };
+  var colors = { warn: '#f59e0b', ok: '#22c55e', err: '#f43f5e', info: '#38bdf8' };
+  t.innerHTML =
+    '<i class="ti ' + (icons[type]||'ti-info-circle') + ' toast-icon" style="color:' + (colors[type]||'#38bdf8') + '"></i>' +
+    '<div class="toast-body">' +
+      '<div class="toast-title">' + title + '</div>' +
+      '<div class="toast-msg">' + msg + '</div>' +
+      '<div class="toast-bar" style="animation-duration:' + duration + 'ms"></div>' +
+    '</div>';
+  container.appendChild(t);
+  setTimeout(function() {
+    t.classList.add('out');
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 260);
+  }, duration);
+}
+
+// Toast thresholds — track last state to avoid spam
+var toastState = {};
+function checkThresholds(vals) {
+  function check(key, condition, type, title, msg) {
+    var now = condition ? 1 : 0;
+    if (now && toastState[key] !== 1) { showToast(type, title, msg); }
+    toastState[key] = now;
+  }
+  check('co2high',   vals.co2  > 900,   'warn', 'CO₂ Ridicat',      'Nivelul CO₂ depășește 900 ppm — verificați ventilația');
+  check('powerhi',   vals.pwr  > 42,    'warn', 'Consum Ridicat',    'Consumul total depășește 42 kW — 84% din limita maximă');
+  check('windhi',    vals.wind > 45,    'warn', 'Vânt Puternic',     'Viteză vânt > 45 km/h — verificați sistemul solar');
+  check('presslow',  vals.pr   < 1008,  'err',  'Presiune Scăzută',  'Presiunea atmosferică sub 1008 hPa — posibil furtună');
+  check('solargood', vals.sol  > 10,    'ok',   'Solar la Maxim',    'Producție fotovoltaică excelentă: ' + vals.sol.toFixed(1) + ' kW');
+}
+
 </script>
+<div id="toast-container"></div>
 </body>
 </html>
