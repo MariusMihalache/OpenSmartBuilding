@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AHU-01 — Schema P&ID</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#07090d;overflow:hidden;font-family:"JetBrains Mono",monospace}
+.hdr{height:42px;background:#0a0f18;border-bottom:1.5px solid #2a4a62;display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-title{font-size:11px;font-weight:700;color:#7ab8d4;text-transform:uppercase;letter-spacing:1.5px}
+.hdr-right{display:flex;align-items:center;gap:14px}
+.badge{font-size:9px;font-weight:700;padding:3px 10px;border-radius:4px}
+.b-ok{background:#001a0a;color:#00c853;border:1px solid #00401a}
+.b-sim{background:#1a0e00;color:#ff8f00;border:1px solid #3d2400}
+.clk{font-size:13px;color:#7ab8d4;letter-spacing:2px}
+.main{display:flex;height:calc(100vh - 42px)}
+.svg-wrap{flex:1;overflow:auto;background:#07090d}
+.svg-wrap::-webkit-scrollbar{width:5px;height:5px}
+.svg-wrap::-webkit-scrollbar-thumb{background:#2a4a62;border-radius:3px}
+.ctrl{width:265px;background:#0a0f18;border-left:1.5px solid #2a4a62;overflow-y:auto;flex-shrink:0}
+.ctrl::-webkit-scrollbar{width:3px}
+.ctrl::-webkit-scrollbar-thumb{background:#2a4a62}
+.ctrl-hdr{padding:10px 14px 8px;border-bottom:1px solid #2a4a62;font-size:9px;font-weight:700;color:#90c4e0;text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:6px}
+.ctrl-body{padding:8px 10px}
+.grp{margin-bottom:5px;border:1px solid #2a4a62;border-radius:5px;overflow:hidden}
+.grp-hdr{display:flex;align-items:center;gap:7px;padding:8px 10px;background:#0d1219;cursor:pointer;user-select:none;font-size:9px;font-weight:700;color:#90c4e0;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid transparent;transition:background .12s}
+.grp-hdr:hover{background:#111820}
+.grp-hdr.open{border-bottom-color:#2a4a62}
+.grp-arrow{font-size:10px;color:#6a9ab8;transition:transform .2s;margin-left:auto}
+.grp-hdr.open .grp-arrow{transform:rotate(90deg)}
+.grp-body{padding:8px 10px;background:#07090d;display:none}
+.grp-hdr.open + .grp-body{display:block}
+.row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(42,74,98,.35)}
+.row:last-child{border-bottom:none}
+.rl{font-size:9px;color:#8ab8d4}
+.rv{font-size:11px;font-weight:700}
+.tw{display:flex;align-items:center;gap:5px}
+.tog{width:36px;height:18px;border-radius:9px;border:1px solid #2a4a62;background:#0a0f18;position:relative;cursor:pointer;transition:all .2s}
+.tog.on{background:#001a0a;border-color:#00401a}
+.tog-k{position:absolute;width:12px;height:12px;border-radius:50%;background:#6a9ab8;top:2px;left:2px;transition:all .2s}
+.tog.on .tog-k{left:20px;background:#00c853}
+.tl{font-size:9px;font-weight:700;min-width:24px;text-align:right}
+.sp-row{display:flex;align-items:center;gap:5px;padding:4px 0}
+.spl{font-size:9px;color:#8ab8d4;flex:1}
+.spc{display:flex;align-items:center;gap:3px}
+.sb{width:20px;height:20px;border-radius:3px;border:1px solid #2a4a62;background:#0d1219;color:#8ab8d4;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.sb:hover{border-color:#42a5f5;color:#42a5f5}
+.sv{font-size:11px;font-weight:700;min-width:52px;text-align:center;background:#07090d;border:1px solid #2a4a62;border-radius:3px;padding:2px 4px}
+.su{font-size:8px;color:#8ab8d4}
+.bw{margin:4px 0 2px}
+.bl{display:flex;justify-content:space-between;font-size:8px;color:#8ab8d4;margin-bottom:3px}
+.bt{width:100%;height:6px;background:#0a0f18;border-radius:3px;border:1px solid #2a4a62;overflow:hidden}
+.bf{height:100%;border-radius:3px;transition:width .8s,background .4s}
+.bbs{display:flex;gap:4px;margin-top:5px}
+.bb{flex:1;padding:5px 4px;border-radius:3px;border:1px solid;font-size:9px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.bo{background:#071428;color:#42a5f5;border-color:#1e88e5}.bo:hover{background:#0d1f3c}
+.bh{background:#071428;color:#38bdf8;border-color:#0e3050}
+.bc{background:#1a0505;color:#ef5350;border-color:#7a1a1a}.bc:hover{background:#2a0808}
+.vl{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.vo{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:4px;border:1px solid #2a4a62;background:#0d1219;cursor:pointer;font-size:9px;color:#8ab8d4;transition:all .15s}
+.vo:hover{border-color:#3d6a8a;color:#b0d8f0;background:#111820}
+.vo.sel{background:#001a0a;border-color:#00401a;color:#00c853}
+.vo.sel-e{background:#1a0505;border-color:#7a1a1a;color:#ef5350}
+.vd{width:9px;height:9px;border-radius:50%;border:1.5px solid #2a4a62;flex-shrink:0;transition:all .15s}
+.vo.sel .vd{background:#00c853;border-color:#00c853}
+.vo.sel-e .vd{background:#ef5350;border-color:#ef5350}
+.eb{background:#07090d;border:1px solid #2a4a62;border-radius:4px;padding:8px;margin:5px 0}
+.er{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(42,74,98,.3);font-size:10px}
+.er:last-child{border-bottom:none;border-top:1px solid #2a4a62;margin-top:3px;padding-top:5px}
+.el{color:#8ab8d4}
+.lb2{background:#07090d;border:1px solid #2a4a62;border-radius:4px;padding:5px;height:80px;overflow-y:auto;margin-top:5px}
+.lb2::-webkit-scrollbar{width:2px}
+.lb2::-webkit-scrollbar-thumb{background:#2a4a62}
+.ll{padding:1px 0;border-bottom:1px solid rgba(42,74,98,.2);display:flex;gap:5px;font-size:9px}
+.ll:last-child{border-bottom:none}
+.lt2{color:#5a8ab0;flex-shrink:0}
+.ok{color:#00c853}.wn{color:#ff8f00}.er2{color:#ef5350}.inf{color:#42a5f5}.t2{color:#90c4e0}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left">
+    <i class="ti ti-wind" style="font-size:18px;color:#42a5f5"></i>
+    <span class="hdr-title">AHU-01 — Stânga · Schema P&ID</span>
+  </div>
+  <div class="hdr-right">
+    <span class="badge b-ok" id="hdr-st">● ACTIV</span>
+    <span class="badge b-sim">Simulare activă</span>
+    <span class="clk" id="clk">--:--:--</span>
+  </div>
+</div>
+
+<div class="main">
+<div class="svg-wrap">
+<svg viewBox="0 0 1560 820" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:1400px">
+<defs>
+  <pattern id="dp-fresh" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="18" x2="18" y2="0" stroke="#1e88e5" stroke-width="0.7" opacity="0.25"/>
+  </pattern>
+  <pattern id="dp-viciat" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="18" y2="18" stroke="#ff8f00" stroke-width="0.7" opacity="0.22"/>
+  </pattern>
+  <pattern id="dp-exh" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="18" y2="18" stroke="#607d8b" stroke-width="0.6" opacity="0.2"/>
+  </pattern>
+  <pattern id="dp-sup" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="18" x2="18" y2="0" stroke="#00c853" stroke-width="0.7" opacity="0.25"/>
+  </pattern>
+  <pattern id="fp-g4" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+    <line x1="4" y1="0" x2="4" y2="8" stroke="#2a4a62" stroke-width="2"/>
+    <line x1="0" y1="4" x2="8" y2="4" stroke="#1e2d3d" stroke-width="0.5" opacity="0.4"/>
+  </pattern>
+  <pattern id="fp-f7" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+    <line x1="2.5" y1="0" x2="2.5" y2="5" stroke="#3a6a8a" stroke-width="1.4"/>
+    <line x1="0" y1="2.5" x2="5" y2="2.5" stroke="#2a4a62" stroke-width="0.6" opacity="0.5"/>
+  </pattern>
+  <pattern id="hx-hot" x="0" y="0" width="12" height="10" patternUnits="userSpaceOnUse">
+    <path d="M0,5 C3,0 6,0 6,5 C6,10 9,10 12,5" fill="none" stroke="#7a1a1a" stroke-width="1.5"/>
+  </pattern>
+  <pattern id="hx-cold" x="0" y="0" width="12" height="10" patternUnits="userSpaceOnUse">
+    <path d="M0,5 C3,0 6,0 6,5 C6,10 9,10 12,5" fill="none" stroke="#1a3a6b" stroke-width="1.5"/>
+  </pattern>
+  <marker id="a-fr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0,1 8,4 0,7" fill="#1e88e5"/></marker>
+  <marker id="a-vi" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0,1 8,4 0,7" fill="#ff8f00"/></marker>
+  <marker id="a-ex" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0,1 8,4 0,7" fill="#607d8b"/></marker>
+  <marker id="a-su" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><polygon points="0,1 8,4 0,7" fill="#00c853"/></marker>
+  <linearGradient id="g-unit" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" style="stop-color:#0d1a2e"/><stop offset="100%" style="stop-color:#060c18"/>
+  </linearGradient>
+  <style>
+    .ff{stroke:#1e88e5;stroke-width:3;fill:none;stroke-dasharray:13,9;animation:aFr 1s linear infinite}
+    .fv{stroke:#ff8f00;stroke-width:3;fill:none;stroke-dasharray:13,9;animation:aVi 1.4s linear infinite}
+    .fe{stroke:#607d8b;stroke-width:2.5;fill:none;stroke-dasharray:10,9;animation:aEx 2s linear infinite}
+    .fs{stroke:#00c853;stroke-width:3;fill:none;stroke-dasharray:13,9;animation:aFr 1s linear infinite}
+    .fh{stroke:#ef5350;stroke-width:3;fill:none;stroke-dasharray:13,9;animation:aHW .9s linear infinite}
+    .fc{stroke:#42a5f5;stroke-width:3;fill:none;stroke-dasharray:13,9;animation:aCW 1.2s linear infinite}
+    @keyframes aFr{to{stroke-dashoffset:-44}}
+    @keyframes aVi{to{stroke-dashoffset:44}}
+    @keyframes aEx{to{stroke-dashoffset:-38}}
+    @keyframes aHW{to{stroke-dashoffset:-44}}
+    @keyframes aCW{to{stroke-dashoffset:44}}
+    .fan-sp{animation:fanR .55s linear infinite;transform-origin:1100px 420px}
+    @keyframes fanR{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  </style>
+</defs>
+
+<!-- BG + grid -->
+<rect width="1560" height="820" fill="#07090d"/>
+<g stroke="#0c1018" stroke-width="0.4" opacity="0.6">
+  <line x1="0" y1="80" x2="1560" y2="80"/><line x1="0" y1="160" x2="1560" y2="160"/>
+  <line x1="0" y1="240" x2="1560" y2="240"/><line x1="0" y1="320" x2="1560" y2="320"/>
+  <line x1="0" y1="400" x2="1560" y2="400"/><line x1="0" y1="480" x2="1560" y2="480"/>
+  <line x1="0" y1="560" x2="1560" y2="560"/><line x1="0" y1="640" x2="1560" y2="640"/>
+  <line x1="0" y1="720" x2="1560" y2="720"/><line x1="0" y1="780" x2="1560" y2="780"/>
+  <line x1="80" y1="0" x2="80" y2="820"/><line x1="160" y1="0" x2="160" y2="820"/>
+  <line x1="240" y1="0" x2="240" y2="820"/><line x1="320" y1="0" x2="320" y2="820"/>
+  <line x1="400" y1="0" x2="400" y2="820"/><line x1="480" y1="0" x2="480" y2="820"/>
+  <line x1="560" y1="0" x2="560" y2="820"/><line x1="640" y1="0" x2="640" y2="820"/>
+  <line x1="720" y1="0" x2="720" y2="820"/><line x1="800" y1="0" x2="800" y2="820"/>
+  <line x1="880" y1="0" x2="880" y2="820"/><line x1="960" y1="0" x2="960" y2="820"/>
+  <line x1="1040" y1="0" x2="1040" y2="820"/><line x1="1120" y1="0" x2="1120" y2="820"/>
+  <line x1="1200" y1="0" x2="1200" y2="820"/><line x1="1280" y1="0" x2="1280" y2="820"/>
+  <line x1="1360" y1="0" x2="1360" y2="820"/><line x1="1440" y1="0" x2="1440" y2="820"/>
+</g>
+
+<!-- HW PIPE sus -->
+<line x1="20" y1="100" x2="1280" y2="100" stroke="#7a1a1a" stroke-width="7" stroke-linecap="round"/>
+<path d="M 30,100 H 1270" class="fh"/>
+<rect x="22" y="72" width="148" height="20" rx="2" fill="#1a0800" stroke="#7a1a1a" stroke-width="1"/>
+<text x="96" y="85" text-anchor="middle" style="font-family:monospace;fill:#ef5350;font-size:9px;font-weight:700">APĂ CALDĂ TUR 68°C →</text>
+<line x1="20" y1="124" x2="1280" y2="124" stroke="#5a1020" stroke-width="4" stroke-linecap="round" stroke-dasharray="12,6"/>
+<rect x="22" y="126" width="140" height="16" rx="2" fill="#120508" stroke="#5a1020" stroke-width="0.5"/>
+<text x="92" y="137" text-anchor="middle" style="font-family:monospace;fill:#e57373;font-size:8px">← APĂ CALDĂ RETUR 52°C</text>
+<!-- HW T° sensor -->
+<circle cx="360" cy="100" r="11" fill="#07090d" stroke="#ff8f00" stroke-width="1.8"/>
+<text x="360" y="96" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">T°</text>
+<text x="360" y="107" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:7px">HW</text>
+<text x="360" y="82" text-anchor="middle" style="font-family:monospace;fill:#ef5350;font-size:11px;font-weight:700" id="pid-hw-t">68°C</text>
+<!-- HW drop to battery — x=440 -->
+<line x1="440" y1="100" x2="440" y2="248" stroke="#7a1a1a" stroke-width="5" stroke-linecap="round"/>
+<line x1="462" y1="124" x2="462" y2="248" stroke="#5a1020" stroke-width="3" stroke-linecap="round"/>
+<rect x="428" y="96"  width="24" height="10" rx="2" fill="#1e2d3d" stroke="#7a1a1a" stroke-width="1"/>
+<rect x="428" y="122" width="24" height="8"  rx="2" fill="#1e2d3d" stroke="#5a1020" stroke-width="1"/>
+<rect x="428" y="246" width="24" height="8"  rx="2" fill="#1e2d3d" stroke="#7a1a1a" stroke-width="1"/>
+<!-- EV-HW pe teava externa -->
+<g style="cursor:pointer" onclick="clickEV('hw')">
+  <polygon points="408,68 428,82 408,96"  fill="#071428" stroke="#42a5f5" stroke-width="2"/>
+  <polygon points="428,68 408,82 428,96"  fill="#071428" stroke="#42a5f5" stroke-width="2"/>
+  <line x1="418" y1="50" x2="418" y2="68" stroke="#42a5f5" stroke-width="1.5"/>
+  <rect x="400" y="22" width="36" height="28" rx="3" fill="#071428" stroke="#42a5f5" stroke-width="1.5"/>
+  <rect x="404" y="26" width="28" height="14" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+  <!-- valori EV-HW scoase afara -->
+  <circle cx="452" cy="38" r="15" fill="#07090d" stroke="#42a5f5" stroke-width="1"/>
+  <text x="452" y="35" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">EV</text>
+  <text x="452" y="47" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">HW</text>
+  <text x="452" y="62" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700" id="pid-ev-hw-pct">100%</text>
+  <text x="452" y="73" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:8px">AUTO</text>
+  <rect x="400" y="96" width="36" height="5" rx="2" fill="#0a0f18" stroke="#2a4a62" stroke-width="0.5"/>
+  <rect id="ev-hw-svgb" x="400" y="96" width="36" height="5" rx="2" fill="#1e88e5"/>
+</g>
+
+<!-- T° HW return -->
+<circle cx="462" cy="155" r="9" fill="#07090d" stroke="#e57373" stroke-width="1.5"/>
+<text x="462" y="152" text-anchor="middle" style="font-family:monospace;fill:#e57373;font-size:7px;font-weight:700">T°</text>
+<text x="462" y="161" text-anchor="middle" style="font-family:monospace;fill:#e57373;font-size:6px">ret</text>
+<text x="484" y="145" text-anchor="middle" style="font-family:monospace;fill:#e57373;font-size:9px" id="pid-hw-ret">52°C</text>
+
+<!-- CW PIPE jos -->
+<line x1="20" y1="720" x2="1280" y2="720" stroke="#1a3a6b" stroke-width="7" stroke-linecap="round"/>
+<path d="M 1270,720 H 30" class="fc"/>
+<rect x="22" y="698" width="170" height="20" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1"/>
+<text x="107" y="711" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">← APĂ RĂCITĂ SUPPLY 7°C</text>
+<line x1="20" y1="742" x2="1280" y2="742" stroke="#1a3a6b" stroke-width="4" stroke-dasharray="12,6"/>
+<rect x="22" y="744" width="160" height="16" rx="2" fill="#040a14" stroke="#1e2d3d" stroke-width="0.5"/>
+<text x="102" y="755" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:8px">APĂ RĂCITĂ RETUR 12°C →</text>
+<!-- CW T° sensor -->
+<circle cx="680" cy="720" r="11" fill="#07090d" stroke="#1a3a6b" stroke-width="1.8"/>
+<text x="680" y="716" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:8px;font-weight:700">T°</text>
+<text x="680" y="727" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:7px">CW</text>
+<text x="680" y="703" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:11px;font-weight:700" id="pid-cw-t">7.2°C</text>
+<!-- CW rise to battery — x=700 -->
+<line x1="700" y1="548" x2="700" y2="720" stroke="#1a3a6b" stroke-width="5" stroke-linecap="round"/>
+<line x1="720" y1="548" x2="720" y2="742" stroke="#1a3a6b" stroke-width="3" stroke-linecap="round"/>
+<rect x="688" y="716" width="24" height="8" rx="2" fill="#1e2d3d" stroke="#1a3a6b" stroke-width="1"/>
+<rect x="688" y="546" width="24" height="8" rx="2" fill="#1e2d3d" stroke="#1a3a6b" stroke-width="1"/>
+<!-- CW T° ret -->
+<circle cx="720" cy="658" r="9" fill="#07090d" stroke="#5a8ab8" stroke-width="1.5"/>
+<text x="720" y="655" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:7px;font-weight:700">T°</text>
+<text x="720" y="664" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:6px">ret</text>
+<text x="742" y="650" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:9px" id="pid-cw-ret">12.4°C</text>
+<!-- EV-CW pe teava externa -->
+<g style="cursor:pointer" onclick="clickEV('cw')">
+  <polygon points="660,730 680,744 660,758" fill="#071428" stroke="#42a5f5" stroke-width="2"/>
+  <polygon points="680,730 660,744 680,758" fill="#071428" stroke="#42a5f5" stroke-width="2"/>
+  <line x1="670" y1="758" x2="670" y2="778" stroke="#42a5f5" stroke-width="1.5"/>
+  <rect x="652" y="778" width="36" height="28" rx="3" fill="#071428" stroke="#42a5f5" stroke-width="1.5"/>
+  <rect x="656" y="782" width="28" height="14" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+  <!-- valori EV-CW scoase afara -->
+  <circle cx="704" cy="790" r="15" fill="#07090d" stroke="#42a5f5" stroke-width="1"/>
+  <text x="704" y="787" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">EV</text>
+  <text x="704" y="799" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">CW</text>
+  <text x="704" y="814" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700" id="pid-ev-cw-pct">85%</text>
+  <text x="704" y="825" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:8px">AUTO</text>
+  <rect x="652" y="722" width="36" height="5" rx="2" fill="#0a0f18" stroke="#2a4a62" stroke-width="0.5"/>
+  <rect id="ev-cw-svgb" x="652" y="722" width="31" height="5" rx="2" fill="#1e88e5"/>
+</g>
+
+
+<!-- EXTERIOR CONDITIONS -->
+<rect x="14" y="168" width="110" height="96" rx="4" fill="#07090d" stroke="#2a4a62" stroke-width="1.2"/>
+<rect x="14" y="168" width="110" height="20" rx="4" fill="#0d1a2e"/>
+<text x="69" y="181" text-anchor="middle" style="font-family:monospace;fill:#7ab8d4;font-size:8px;font-weight:700;letter-spacing:1.5px">EXTERIOR</text>
+<text x="20" y="200" style="font-family:monospace;fill:#8ab8d4;font-size:8px">T° ext</text>
+<text x="120" y="200" text-anchor="end" style="font-family:monospace;fill:#42a5f5;font-size:12px;font-weight:700" id="pid-t-ext">14°C</text>
+<text x="20" y="218" style="font-family:monospace;fill:#8ab8d4;font-size:8px">RH ext</text>
+<text x="120" y="218" text-anchor="end" style="font-family:monospace;fill:#38bdf8;font-size:12px;font-weight:700" id="pid-rh-ext">72%</text>
+<text x="20" y="236" style="font-family:monospace;fill:#8ab8d4;font-size:8px">Vânt</text>
+<text x="120" y="236" text-anchor="end" style="font-family:monospace;fill:#ff8f00;font-size:12px;font-weight:700" id="pid-wind">12</text>
+<text x="120" y="246" text-anchor="end" style="font-family:monospace;fill:#ff8f00;font-size:8px">km/h</text>
+<text x="20" y="257" style="font-family:monospace;fill:#8ab8d4;font-size:8px">CO₂</text>
+<text x="120" y="257" text-anchor="end" style="font-family:monospace;fill:#b39ddb;font-size:12px;font-weight:700">415</text>
+
+<!-- AER PROASPAT duct -->
+<rect x="14" y="278" width="120" height="90" rx="3" fill="url(#dp-fresh)" stroke="#1e88e5" stroke-width="2"/>
+<rect x="14" y="278" width="120" height="90" fill="#1e88e508"/>
+<text x="74" y="314" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">AER PROASPĂT</text>
+<text x="74" y="329" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:7px">exterior →</text>
+<path d="M 16,323 H 132" class="ff"/>
+
+<!-- AER VICIAT — stanga, vine din zone, intra in unitate -->
+<rect x="14" y="388" width="120" height="80" rx="3" fill="url(#dp-viciat)" stroke="#ff8f00" stroke-width="2"/>
+<rect x="14" y="388" width="120" height="80" fill="#ff8f0006"/>
+<text x="74" y="420" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:9px;font-weight:700">AER VICIAT</text>
+<text x="74" y="434" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px">← retur zone</text>
+<text x="74" y="448" text-anchor="middle" style="font-family:monospace;fill:#cc7000;font-size:7px">recirculat</text>
+<path d="M 134,428 H 20" class="fv"/>
+<text x="14" y="480" style="font-family:monospace;fill:#ff8f00;font-size:8px">↑ din duct retur</text>
+
+<!-- EVACUARE -->
+<rect x="14" y="500" width="120" height="55" rx="3" fill="url(#dp-exh)" stroke="#607d8b" stroke-width="1.5" stroke-dasharray="7,3"/>
+<text x="74" y="522" text-anchor="middle" style="font-family:monospace;fill:#607d8b;font-size:9px;font-weight:700">EVACUARE</text>
+<text x="74" y="536" text-anchor="middle" style="font-family:monospace;fill:#607d8b;font-size:8px">↑ afară</text>
+<path d="M 74,502 V 22" stroke="#607d8b" stroke-width="2.5" stroke-dasharray="8,5" marker-end="url(#a-ex)" fill="none"/>
+
+<!-- UNITATE AHU -->
+<rect x="155" y="198" width="1130" height="462" rx="6" fill="url(#g-unit)" stroke="#42a5f5" stroke-width="3"/>
+<rect x="159" y="202" width="1122" height="454" rx="4" fill="#060c16" stroke="#0d1a2e" stroke-width="0.5"/>
+<rect x="159" y="202" width="1122" height="30" rx="4" fill="#0d1a2e"/>
+<text x="720" y="222" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:13px;font-weight:700;letter-spacing:1px">AHU-01 — CENTRALĂ TRATARE AER STÂNGA</text>
+<circle cx="182" cy="217" r="14" fill="#07090d" stroke="#42a5f5" stroke-width="1"/>
+<text x="182" y="221" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">A-01</text>
+<rect x="1222" y="206" width="44" height="18" rx="3" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+<text x="1244" y="218" text-anchor="middle" style="font-family:monospace;fill:#00c853;font-size:8px;font-weight:700" id="pid-ust">● ACTIV</text>
+
+<!-- Section dividers — adjusted for narrower batteries/filters -->
+<!-- G4: x=320, w=66 → end=386 -->
+<!-- F7: x=398, w=55 → end=453 -->
+<!-- BAT INC: x=465, w=72 → end=537 -->
+<!-- BAT RAC: x=549, w=72 → end=621 -->
+<!-- VEN: x=633 → 1155 -->
+<line x1="318" y1="232" x2="318" y2="655" stroke="#0d1a2e" stroke-width="1.5"/>
+<line x1="388" y1="232" x2="388" y2="655" stroke="#0d1a2e" stroke-width="1.5"/>
+<line x1="455" y1="232" x2="455" y2="655" stroke="#0d1a2e" stroke-width="1.5"/>
+<line x1="539" y1="232" x2="539" y2="655" stroke="#0d1a2e" stroke-width="1.5"/>
+<line x1="623" y1="232" x2="623" y2="655" stroke="#0d1a2e" stroke-width="1.5"/>
+
+<!-- Section labels -->
+<text x="238" y="246" text-anchor="middle" style="font-family:monospace;fill:#5a7a8a;font-size:9px;font-weight:700;letter-spacing:1px">FILTRU G4</text>
+<text x="421" y="246" text-anchor="middle" style="font-family:monospace;fill:#4a7a8a;font-size:9px;font-weight:700;letter-spacing:1px">FILTRU F7</text>
+<text x="497" y="246" text-anchor="middle" style="font-family:monospace;fill:#c06060;font-size:9px;font-weight:700;letter-spacing:1px">BAT. ÎNCĂLZIRE</text>
+<text x="581" y="246" text-anchor="middle" style="font-family:monospace;fill:#4a8ab8;font-size:9px;font-weight:700;letter-spacing:1px">BAT. RĂCIRE</text>
+<text x="890" y="246" text-anchor="middle" style="font-family:monospace;fill:#2a9a5a;font-size:9px;font-weight:700;letter-spacing:1px">VENTILATOR</text>
+<text x="1100" y="246" text-anchor="middle" style="font-family:monospace;fill:#4a8ab8;font-size:9px;font-weight:700;letter-spacing:1px">SUPPLY</text>
+
+<!-- Air axis -->
+<line x1="155" y1="420" x2="1285" y2="420" stroke="#1e2d3d" stroke-width="0.8" stroke-dasharray="6,5" opacity="0.4"/>
+
+<!-- DMP-01 INTRARE -->
+<rect x="155" y="368" width="50" height="120" rx="0" fill="url(#dp-fresh)" stroke="#1e88e5" stroke-width="1.5"/>
+<rect x="155" y="368" width="50" height="120" fill="#1e88e508"/>
+<path d="M 157,420 H 203" class="ff"/>
+<rect x="205" y="358" width="60" height="144" rx="3" fill="#071428" stroke="#42a5f5" stroke-width="2.5"/>
+<line x1="210" y1="376" x2="260" y2="376" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="210" y1="396" x2="260" y2="396" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="210" y1="416" x2="260" y2="416" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="210" y1="436" x2="260" y2="436" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="210" y1="456" x2="260" y2="456" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="210" y1="476" x2="260" y2="476" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>
+<circle cx="235" cy="376" r="3"/><circle cx="235" cy="396" r="3"/><circle cx="235" cy="416" r="3"/>
+<circle cx="235" cy="436" r="3"/><circle cx="235" cy="456" r="3"/><circle cx="235" cy="476" r="3"/>
+<rect x="213" y="308" width="44" height="50" rx="3" fill="#071428" stroke="#42a5f5" stroke-width="1.5"/>
+<rect x="217" y="312" width="36" height="18" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+<!-- valori DMP-01 scoase afara -->
+<line x1="235" y1="358" x2="235" y2="308" stroke="#42a5f5" stroke-width="1.5"/>
+<circle cx="280" cy="328" r="16" fill="#07090d" stroke="#42a5f5" stroke-width="1"/>
+<text x="280" y="325" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">DMP</text>
+<text x="280" y="338" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700">01</text>
+<text x="280" y="354" text-anchor="middle" style="font-family:monospace;fill:#42a5f5;font-size:9px;font-weight:700" id="pid-dmp1-pct">100%</text>
+<text x="280" y="365" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:8px">AUTO</text>
+
+<!-- ═══════════════════════════════
+     CLAPETĂ AMESTEC DMP-03
+     Amestecă aer proaspăt + viciat
+═══════════════════════════════ -->
+
+<!-- Canal aer viciat jos — vine din stânga -->
+<rect x="155" y="490" width="165" height="80" rx="0" fill="url(#dp-viciat)" stroke="#ff8f00" stroke-width="1.5"/>
+<rect x="155" y="490" width="165" height="80" fill="#ff8f0006"/>
+<path d="M 160,530 H 316" class="fv"/>
+<text x="196" y="518" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">AER VICIAT</text>
+<text x="196" y="530" text-anchor="middle" style="font-family:monospace;fill:#cc7000;font-size:7px">← recirculat din zone</text>
+
+<!-- DAMPER DMP-03 pe canal viciat — corp -->
+<rect x="210" y="488" width="62" height="84" rx="3" fill="#1a0800" stroke="#ff8f00" stroke-width="2.5"/>
+<!-- Blades DMP-03 -->
+<line x1="215" y1="503" x2="268" y2="503" stroke="#ff8f00" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="215" y1="521" x2="268" y2="521" stroke="#ff8f00" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="215" y1="539" x2="268" y2="539" stroke="#ff8f00" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="215" y1="557" x2="268" y2="557" stroke="#ff8f00" stroke-width="3.5" stroke-linecap="round"/>
+<!-- Pivot dots -->
+<circle cx="241" cy="503" r="3" fill="#ff8f00"/>
+<circle cx="241" cy="521" r="3" fill="#ff8f00"/>
+<circle cx="241" cy="539" r="3" fill="#ff8f00"/>
+<circle cx="241" cy="557" r="3" fill="#ff8f00"/>
+<!-- Actuator DMP-03 — sus cu indicator -->
+<rect x="220" y="434" width="42" height="54" rx="3" fill="#1a0800" stroke="#ff8f00" stroke-width="1.8"/>
+<rect x="224" y="438" width="34" height="18" rx="2" fill="#2a1200" stroke="#cc7000" stroke-width="0.5"/>
+<!-- valori DMP-03 scoase afara -->
+<!-- Stem -->
+<line x1="241" y1="488" x2="241" y2="434" stroke="#ff8f00" stroke-width="1.8"/>
+<!-- ISA Tag circle DMP-03 -->
+<circle cx="288" cy="456" r="18" fill="#07090d" stroke="#ff8f00" stroke-width="1.5"/>
+<text x="288" y="452" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:9px;font-weight:700">DMP</text>
+<text x="288" y="465" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:9px;font-weight:700">03</text>
+<text x="288" y="482" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:9px;font-weight:700" id="pid-dmp3-pct">65%</text>
+<text x="288" y="493" text-anchor="middle" style="font-family:monospace;fill:#cc7000;font-size:8px">AUTO</text>
+
+<!-- Eticheta sub damper -->
+<text x="241" y="590" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">Clapetă amestec</text>
+<text x="241" y="602" text-anchor="middle" style="font-family:monospace;fill:#cc7000;font-size:7px">aer proaspăt + viciat</text>
+
+<!-- Punct de amestec vizibil -->
+<!-- Săgeată aer proaspăt spre amestec -->
+<path d="M 265,420 H 310" stroke="#1e88e5" stroke-width="2.5" marker-end="url(#a-fr)" fill="none"/>
+<!-- Săgeată aer viciat spre amestec (de jos) -->
+<path d="M 272,488 V 445 H 308" stroke="#ff8f00" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#a-vi)" fill="none"/>
+<!-- Cerc amestec cu X -->
+<circle cx="318" cy="432" r="16" fill="#071428" stroke="#7ab8d4" stroke-width="2"/>
+<line x1="308" y1="422" x2="328" y2="442" stroke="#7ab8d4" stroke-width="1.5"/>
+<line x1="328" y1="422" x2="308" y2="442" stroke="#7ab8d4" stroke-width="1.5"/>
+<text x="318" y="462" text-anchor="middle" style="font-family:monospace;fill:#7ab8d4;font-size:7px">AMESTEC</text>
+
+<!-- FILTRU G4 — 50% mai ingust: w=66 (era 132) -->
+<rect x="320" y="248" width="66" height="340" rx="3" fill="#0a0f18" stroke="#3a6a8a" stroke-width="2"/>
+<rect x="324" y="252" width="58" height="332" fill="url(#fp-g4)"/>
+<rect id="f1-ov" x="324" y="252" width="58" height="332" fill="#2a4a62" opacity="0.05" rx="1"/>
+<rect x="320" y="248" width="66" height="14" rx="2" fill="#1e2d3d" stroke="#3a6a8a"/>
+<rect x="320" y="574" width="66" height="14" rx="2" fill="#1e2d3d" stroke="#3a6a8a"/>
+<path d="M 322,420 H 356" class="ff" style="stroke-dasharray:8,6"/>
+<!-- G4 DP sensor box -->
+<rect x="296" y="158" width="132" height="62" rx="4" fill="#0d0c00" stroke="#ffd600" stroke-width="1.5"/>
+<rect x="296" y="158" width="132" height="18" rx="4" fill="#1a1800"/>
+<text x="362" y="170" text-anchor="middle" style="font-family:monospace;fill:#ffd600;font-size:8px;font-weight:700;letter-spacing:1px">ΔP FILTRU G4</text>
+<text x="346" y="202" text-anchor="middle" style="font-family:monospace;fill:#ffe033;font-size:26px;font-weight:700" id="pid-dp1">8</text>
+<text x="386" y="202" text-anchor="middle" style="font-family:monospace;fill:#ffd600;font-size:14px;font-weight:700">Pa</text>
+<text x="362" y="216" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:8px" id="pid-dp1-st">CURAT · lim: 80 Pa</text>
+<line x1="353" y1="220" x2="353" y2="248" stroke="#ffd600" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="353" cy="248" r="5" fill="#0d0c00" stroke="#ffd600" stroke-width="1.5"/>
+<text x="353" y="602" text-anchor="middle" style="font-family:monospace;fill:#5a7a8a;font-size:8px">EU4/G4</text>
+
+<!-- FILTRU F7 — 50% mai ingust: w=55 (era 110) -->
+<rect x="398" y="248" width="55" height="340" rx="3" fill="#0a1218" stroke="#3a6a8a" stroke-width="2"/>
+<rect x="402" y="252" width="47" height="332" fill="url(#fp-f7)"/>
+<rect x="398" y="248" width="55" height="14" rx="2" fill="#0d1a2e" stroke="#3a6a8a"/>
+<rect x="398" y="574" width="55" height="14" rx="2" fill="#0d1a2e" stroke="#3a6a8a"/>
+<path d="M 388,420 H 400" class="ff" style="stroke-dasharray:8,6"/>
+<!-- F7 DP sensor box -->
+<rect x="428" y="158" width="124" height="62" rx="4" fill="#0a0e18" stroke="#4a8ab8" stroke-width="1.5"/>
+<rect x="428" y="158" width="124" height="18" rx="4" fill="#080d18"/>
+<text x="490" y="170" text-anchor="middle" style="font-family:monospace;fill:#4a8ab8;font-size:8px;font-weight:700;letter-spacing:1px">ΔP FILTRU F7</text>
+<text x="476" y="202" text-anchor="middle" style="font-family:monospace;fill:#64b5f6;font-size:26px;font-weight:700" id="pid-dp2">22</text>
+<text x="510" y="202" text-anchor="middle" style="font-family:monospace;fill:#4a8ab8;font-size:14px;font-weight:700">Pa</text>
+<text x="490" y="216" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:8px" id="pid-dp2-st">OK · lim: 150 Pa</text>
+<line x1="425" y1="220" x2="425" y2="248" stroke="#4a8ab8" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="425" cy="248" r="5" fill="#0a0e18" stroke="#4a8ab8" stroke-width="1.5"/>
+<text x="425" y="602" text-anchor="middle" style="font-family:monospace;fill:#4a7a8a;font-size:8px">EU7/F7</text>
+
+<!-- BATERIE INCALZIRE — 50% mai ingusta: w=72 (era 144) -->
+<rect x="465" y="248" width="72" height="340" rx="3" fill="#0a1218" stroke="#7a1a1a" stroke-width="2.5"/>
+<rect x="469" y="252" width="64" height="332" fill="url(#hx-hot)"/>
+<rect x="465" y="248" width="72" height="14" rx="2" fill="#1a0800" stroke="#7a1a1a"/>
+<rect x="465" y="574" width="72" height="14" rx="2" fill="#1a0800" stroke="#7a1a1a"/>
+<line x1="481" y1="262" x2="481" y2="574" stroke="#7a1a1a" stroke-width="0.7" opacity="0.35"/>
+<line x1="497" y1="262" x2="497" y2="574" stroke="#7a1a1a" stroke-width="0.7" opacity="0.35"/>
+<line x1="513" y1="262" x2="513" y2="574" stroke="#7a1a1a" stroke-width="0.7" opacity="0.35"/>
+<line x1="527" y1="262" x2="527" y2="574" stroke="#7a1a1a" stroke-width="0.7" opacity="0.35"/>
+<rect x="451" y="280" width="14" height="12" rx="2" fill="#1a0500" stroke="#8b1a1a" stroke-width="1.5"/>
+<rect x="451" y="544" width="14" height="12" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+<path d="M 453,420 H 467" class="ff" style="stroke:#ffa726;stroke-dasharray:8,6"/>
+<!-- T° aer dupa bat.inc — jos -->
+<rect x="465" y="598" width="72" height="60" rx="4" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+<rect x="465" y="598" width="72" height="18" rx="4" fill="#1a1200"/>
+<text x="501" y="610" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">T° DUP. BAT. ÎNC.</text>
+<text x="501" y="640" text-anchor="middle" style="font-family:monospace;fill:#ffa726;font-size:24px;font-weight:700" id="pid-t-hw">16°C</text>
+<text x="501" y="652" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">aer după baterie</text>
+<line x1="501" y1="598" x2="501" y2="574" stroke="#ff8f00" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="501" cy="575" r="5" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+<text x="501" y="728" text-anchor="middle" style="font-family:monospace;fill:#6a9ab8;font-size:8px">HW: <tspan id="pid-hw-in">68°C</tspan> / ret <tspan id="pid-hw-out">52°C</tspan></text>
+
+<!-- BATERIE RACIRE — 50% mai ingusta: w=72 (era 144) -->
+<rect x="549" y="248" width="72" height="340" rx="3" fill="#070e1a" stroke="#1a3a6b" stroke-width="2.5"/>
+<rect x="553" y="252" width="64" height="332" fill="url(#hx-cold)"/>
+<rect x="549" y="248" width="72" height="14" rx="2" fill="#071428" stroke="#1a3a6b"/>
+<rect x="549" y="574" width="72" height="14" rx="2" fill="#071428" stroke="#1a3a6b"/>
+<line x1="565" y1="262" x2="565" y2="574" stroke="#1a3a6b" stroke-width="0.7" opacity="0.35"/>
+<line x1="581" y1="262" x2="581" y2="574" stroke="#1a3a6b" stroke-width="0.7" opacity="0.35"/>
+<line x1="597" y1="262" x2="597" y2="574" stroke="#1a3a6b" stroke-width="0.7" opacity="0.35"/>
+<line x1="611" y1="262" x2="611" y2="574" stroke="#1a3a6b" stroke-width="0.7" opacity="0.35"/>
+<rect x="621" y="280" width="14" height="12" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+<rect x="621" y="544" width="14" height="12" rx="2" fill="#071428" stroke="#1a3a6b" stroke-width="1.5"/>
+<!-- Condensate -->
+<rect x="549" y="588" width="72" height="12" rx="1" fill="#071428" stroke="#1a3a6b" stroke-width="1" stroke-dasharray="5,3"/>
+<line x1="585" y1="600" x2="585" y2="620" stroke="#42a5f5" stroke-width="2.5"/>
+<polygon points="577,620 593,620 585,630" fill="#1a3a6b"/>
+<text x="585" y="646" text-anchor="middle" style="font-family:monospace;fill:#1a3a6b;font-size:8px">CONDENS</text>
+<path d="M 537,420 H 551" class="ff" style="stroke:#38bdf8;stroke-dasharray:8,6"/>
+<!-- T° aer dupa bat.rac — jos -->
+<rect x="549" y="654" width="72" height="60" rx="4" fill="#00060d" stroke="#38bdf8" stroke-width="1.5"/>
+<rect x="549" y="654" width="72" height="18" rx="4" fill="#000d1a"/>
+<text x="585" y="666" text-anchor="middle" style="font-family:monospace;fill:#38bdf8;font-size:8px;font-weight:700">T° DUP. BAT. RĂC.</text>
+<text x="585" y="695" text-anchor="middle" style="font-family:monospace;fill:#4dd0e1;font-size:24px;font-weight:700" id="pid-t-cw">10°C</text>
+<text x="585" y="707" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">aer răcit</text>
+<line x1="585" y1="654" x2="585" y2="600" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="585" cy="601" r="5" fill="#00060d" stroke="#38bdf8" stroke-width="1.5"/>
+<text x="585" y="728" text-anchor="middle" style="font-family:monospace;fill:#5a8ab8;font-size:8px">CW: <tspan id="pid-cw-in">7.2°C</tspan> / ret <tspan id="pid-cw-out">12.4°C</tspan></text>
+
+<!-- CO2 + RH sensors -->
+<rect x="636" y="158" width="120" height="62" rx="4" fill="#0a0014" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="636" y="158" width="120" height="18" rx="4" fill="#12001e"/>
+<text x="696" y="170" text-anchor="middle" style="font-family:monospace;fill:#a78bfa;font-size:8px;font-weight:700;letter-spacing:1px">CO₂ INTERIOR</text>
+<text x="678" y="200" text-anchor="middle" style="font-family:monospace;fill:#b39ddb;font-size:26px;font-weight:700" id="pid-co2">620</text>
+<text x="716" y="200" text-anchor="middle" style="font-family:monospace;fill:#a78bfa;font-size:11px">ppm</text>
+<text x="696" y="216" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">lim: 800 ppm</text>
+<line x1="696" y1="220" x2="696" y2="248" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="696" cy="249" r="5" fill="#0a0014" stroke="#a78bfa" stroke-width="1.5"/>
+
+<rect x="636" y="600" width="120" height="62" rx="4" fill="#00060d" stroke="#38bdf8" stroke-width="1.5"/>
+<rect x="636" y="600" width="120" height="18" rx="4" fill="#000d1a"/>
+<text x="696" y="612" text-anchor="middle" style="font-family:monospace;fill:#38bdf8;font-size:8px;font-weight:700;letter-spacing:1px">UMIDITATE REL.</text>
+<text x="678" y="644" text-anchor="middle" style="font-family:monospace;fill:#4dd0e1;font-size:26px;font-weight:700" id="pid-rh">55%</text>
+<text x="696" y="658" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">optim: 40–60%</text>
+<line x1="696" y1="600" x2="696" y2="574" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="696" cy="575" r="5" fill="#00060d" stroke="#38bdf8" stroke-width="1.5"/>
+
+<!-- VENTILATOR — cx=1100 -->
+<circle cx="1100" cy="420" r="112" fill="#001a0a" stroke="#00c853" stroke-width="3"/>
+<circle cx="1100" cy="420" r="86"  fill="#001008" stroke="#00c853" stroke-width="2"/>
+<path d="M1100,308 A112,112 0 0,1 1212,420 L1100,420 Z" fill="#002a10" stroke="#00c853" stroke-width="1.5" opacity="0.2"/>
+<g class="fan-sp" style="transform-origin:1100px 420px">
+  <path d="M1100,344 C1122,344 1144,366 1144,388 C1144,366 1122,344 1100,344Z" fill="#00c853" opacity="0.9"/>
+  <path d="M1180,420 C1180,442 1158,464 1136,464 C1158,464 1180,442 1180,420Z" fill="#00c853" opacity="0.9"/>
+  <path d="M1100,496 C1078,496 1056,474 1056,452 C1056,474 1078,496 1100,496Z" fill="#00c853" opacity="0.9"/>
+  <path d="M1020,420 C1020,398 1042,376 1064,376 C1042,376 1020,398 1020,420Z" fill="#00c853" opacity="0.9"/>
+  <path d="M1158,354 C1172,374 1165,396 1148,400 C1165,396 1172,374 1158,354Z" fill="#00c853" opacity="0.7"/>
+  <path d="M1170,490 C1150,504 1128,497 1124,480 C1128,497 1150,504 1170,490Z" fill="#00c853" opacity="0.7"/>
+  <path d="M1042,490 C1028,470 1035,448 1052,444 C1035,448 1028,470 1042,490Z" fill="#00c853" opacity="0.7"/>
+  <path d="M1030,350 C1050,336 1072,343 1076,360 C1072,343 1050,336 1030,350Z" fill="#00c853" opacity="0.7"/>
+</g>
+<circle cx="1100" cy="420" r="22" fill="#001408" stroke="#00c853" stroke-width="2.5"/>
+<circle cx="1100" cy="420" r="9"  fill="#00c853"/>
+<!-- VFD only — NO motor box -->
+<rect x="1048" y="540" width="104" height="40" rx="4" fill="#001a0a" stroke="#00401a" stroke-width="1.5"/>
+<text x="1100" y="553" text-anchor="middle" style="font-family:monospace;fill:#00c853;font-size:8px;font-weight:700">VFD</text>
+<text x="1100" y="569" text-anchor="middle" style="font-family:monospace;fill:#00c853;font-size:14px;font-weight:700" id="pid-rpm">1450 rpm</text>
+<text x="1100" y="580" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:7px" id="pid-vfd-m">AUTO → CO₂</text>
+<!-- RPM + Debit -->
+<rect x="756" y="330" width="80" height="64" rx="4" fill="#07090d" stroke="#2a4a62" stroke-width="1.5"/>
+<text x="796" y="344" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:8px">RPM cur.</text>
+<text x="796" y="368" text-anchor="middle" style="font-family:monospace;fill:#00c853;font-size:22px;font-weight:700" id="pid-rpm-d">1450</text>
+<text x="796" y="388" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px" id="pid-debit">8500 m³/h</text>
+<!-- Power -->
+<rect x="1214" y="330" width="80" height="64" rx="4" fill="#07090d" stroke="#2a4a62" stroke-width="1.5"/>
+<text x="1254" y="344" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:8px">Putere</text>
+<text x="1254" y="368" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:22px;font-weight:700" id="pid-pw-fan">7.5</text>
+<text x="1254" y="388" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px">kW</text>
+
+<!-- SAT + DMP-02 -->
+<rect x="1214" y="158" width="120" height="62" rx="4" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+<rect x="1214" y="158" width="120" height="18" rx="4" fill="#1a1200"/>
+<text x="1274" y="170" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">SAT REFULARE</text>
+<text x="1254" y="200" text-anchor="middle" style="font-family:monospace;fill:#ffa726;font-size:26px;font-weight:700" id="pid-sat">18°C</text>
+<text x="1274" y="216" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">setpoint: 18°C</text>
+<line x1="1274" y1="220" x2="1274" y2="248" stroke="#ff8f00" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="1274" cy="249" r="5" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+
+<!-- Duct outlet → DMP-02 -->
+<rect x="1212" y="360" width="55" height="120" rx="0" fill="url(#dp-sup)" stroke="#00c853" stroke-width="1.5"/>
+<rect x="1212" y="360" width="55" height="120" fill="#00c85308"/>
+<path d="M 1213,420 H 1265" class="fs"/>
+<!-- DMP-02 body -->
+<rect x="1267" y="348" width="60" height="144" rx="3" fill="#001408" stroke="#4deb8a" stroke-width="2.5"/>
+<line x1="1272" y1="366" x2="1322" y2="366" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1272" y1="386" x2="1322" y2="386" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1272" y1="406" x2="1322" y2="406" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1272" y1="426" x2="1322" y2="426" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1272" y1="446" x2="1322" y2="446" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="1272" y1="466" x2="1322" y2="466" stroke="#4deb8a" stroke-width="3.5" stroke-linecap="round"/>
+<circle cx="1297" cy="366" r="3" fill="#4deb8a"/><circle cx="1297" cy="386" r="3" fill="#4deb8a"/>
+<circle cx="1297" cy="406" r="3" fill="#4deb8a"/><circle cx="1297" cy="426" r="3" fill="#4deb8a"/>
+<circle cx="1297" cy="446" r="3" fill="#4deb8a"/><circle cx="1297" cy="466" r="3" fill="#4deb8a"/>
+<rect x="1276" y="298" width="44" height="50" rx="3" fill="#001408" stroke="#4deb8a" stroke-width="1.5"/>
+<rect x="1280" y="302" width="36" height="18" rx="2" fill="#001a0a" stroke="#00401a" stroke-width="0.5"/>
+<!-- valori DMP-02 scoase afara -->
+<line x1="1297" y1="348" x2="1297" y2="298" stroke="#4deb8a" stroke-width="1.5"/>
+<circle cx="1340" cy="318" r="16" fill="#07090d" stroke="#4deb8a" stroke-width="1"/>
+<text x="1340" y="315" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:9px;font-weight:700">DMP</text>
+<text x="1340" y="328" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:9px;font-weight:700">02</text>
+<text x="1340" y="344" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:9px;font-weight:700" id="pid-dmp2-pct">100%</text>
+<text x="1340" y="355" text-anchor="middle" style="font-family:monospace;fill:#2a9a5a;font-size:8px">AUTO</text>
+
+<!-- SUPPLY DUCT — fara duct return portocaliu! -->
+<rect x="1327" y="360" width="200" height="120" rx="3" fill="url(#dp-sup)" stroke="#00c853" stroke-width="2.5"/>
+<rect x="1327" y="360" width="200" height="120" fill="#00c85308"/>
+<text x="1427" y="408" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:10px;font-weight:700">DUCT SUPPLY</text>
+<text x="1427" y="426" text-anchor="middle" style="font-family:monospace;fill:#2a9a5a;font-size:9px">AER TRATAT → ZONE</text>
+<path d="M 1330,420 H 1520" class="fs"/>
+<path d="M 1524,420 H 1548" stroke="#00c853" stroke-width="4" marker-end="url(#a-su)" fill="none"/>
+<!-- CO2 in supply -->
+<rect x="1336" y="598" width="130" height="60" rx="4" fill="#0a0014" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="1336" y="598" width="130" height="18" rx="4" fill="#12001e"/>
+<text x="1401" y="610" text-anchor="middle" style="font-family:monospace;fill:#a78bfa;font-size:8px;font-weight:700">CO₂ DUCT SUPPLY</text>
+<text x="1386" y="642" text-anchor="middle" style="font-family:monospace;fill:#b39ddb;font-size:22px;font-weight:700" id="pid-co2-duct">620</text>
+<text x="1421" y="642" text-anchor="middle" style="font-family:monospace;fill:#a78bfa;font-size:11px">ppm</text>
+<line x1="1401" y1="598" x2="1401" y2="480" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="1401" cy="481" r="5" fill="#0a0014" stroke="#a78bfa" stroke-width="1.5"/>
+<!-- VAV branches -->
+<rect x="1356" y="480" width="36" height="60" rx="2" fill="#001408" stroke="#00c853" stroke-width="1.5"/>
+<polygon points="1364,490 1374,504 1364,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<polygon points="1374,490 1364,504 1374,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<text x="1374" y="551" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:8px;font-weight:700">VAV-A</text>
+<text x="1374" y="563" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:7px">Corp A</text>
+<rect x="1426" y="480" width="36" height="60" rx="2" fill="#001408" stroke="#00c853" stroke-width="1.5"/>
+<polygon points="1434,490 1444,504 1434,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<polygon points="1444,490 1434,504 1444,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<text x="1444" y="551" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:8px;font-weight:700">VAV-B</text>
+<text x="1444" y="563" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:7px">Corp B</text>
+<rect x="1496" y="480" width="36" height="60" rx="2" fill="#001408" stroke="#00c853" stroke-width="1.5"/>
+<polygon points="1504,490 1514,504 1504,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<polygon points="1514,490 1504,504 1514,518" fill="#071428" stroke="#1e88e5" stroke-width="1.2"/>
+<text x="1514" y="551" text-anchor="middle" style="font-family:monospace;fill:#4deb8a;font-size:8px;font-weight:700">VAV-C</text>
+<text x="1514" y="563" text-anchor="middle" style="font-family:monospace;fill:#5a8ab0;font-size:7px">Sport</text>
+
+<!-- ═══ PARAMETRI DAMPERE — text mic sub tag ISA ═══ -->
+<!-- T° aer intrare — jos filtru G4 -->
+<rect x="296" y="650" width="132" height="60" rx="4" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+<rect x="296" y="650" width="132" height="18" rx="4" fill="#1a1200"/>
+<text x="362" y="662" text-anchor="middle" style="font-family:monospace;fill:#ff8f00;font-size:8px;font-weight:700">T° AER INTRARE</text>
+<text x="348" y="692" text-anchor="middle" style="font-family:monospace;fill:#ffa726;font-size:24px;font-weight:700" id="pid-t-in">14°C</text>
+<text x="362" y="704" text-anchor="middle" style="font-family:monospace;fill:#8ab8d4;font-size:7px">netratat</text>
+<line x1="353" y1="650" x2="353" y2="588" stroke="#ff8f00" stroke-width="1.5" stroke-dasharray="4,3"/>
+<circle cx="353" cy="589" r="5" fill="#0d0a00" stroke="#ff8f00" stroke-width="1.5"/>
+
+<!-- LEGENDA — colt dreapta SUS -->
+<rect x="1356" y="22" width="186" height="208" rx="4" fill="#07090d" stroke="#2a4a62" stroke-width="1.2"/>
+<rect x="1356" y="22" width="186" height="20" rx="4" fill="#0d1a2e"/>
+<text x="1449" y="35" text-anchor="middle" style="font-family:monospace;fill:#7ab8d4;font-size:9px;font-weight:700;letter-spacing:2px">LEGENDĂ</text>
+<rect x="1364" y="48" width="26" height="11" fill="url(#dp-fresh)" stroke="#1e88e5" stroke-width="1"/><text x="1396" y="57" style="font-family:monospace;fill:#42a5f5;font-size:8px">Aer proaspăt</text>
+<rect x="1364" y="64" width="26" height="11" fill="url(#dp-viciat)" stroke="#ff8f00" stroke-width="1"/><text x="1396" y="73" style="font-family:monospace;fill:#ff8f00;font-size:8px">Aer viciat / recirculat</text>
+<rect x="1364" y="80" width="26" height="11" fill="url(#dp-sup)"   stroke="#00c853" stroke-width="1"/><text x="1396" y="89" style="font-family:monospace;fill:#00c853;font-size:8px">Aer tratat supply</text>
+<rect x="1364" y="96" width="26" height="11" fill="url(#dp-exh)"  stroke="#607d8b" stroke-width="1"/><text x="1396" y="105" style="font-family:monospace;fill:#607d8b;font-size:8px">Evacuare exterior</text>
+<rect x="1364" y="112" width="26" height="11" fill="url(#fp-g4)"   stroke="#3a6a8a" stroke-width="1"/><text x="1396" y="121" style="font-family:monospace;fill:#8ab8d4;font-size:8px">Filtru G4 / F7</text>
+<rect x="1364" y="128" width="26" height="11" fill="url(#hx-hot)"  stroke="#7a1a1a" stroke-width="1"/><text x="1396" y="137" style="font-family:monospace;fill:#ef5350;font-size:8px">Baterie încălzire</text>
+<rect x="1364" y="144" width="26" height="11" fill="url(#hx-cold)" stroke="#1a3a6b" stroke-width="1"/><text x="1396" y="153" style="font-family:monospace;fill:#42a5f5;font-size:8px">Baterie răcire</text>
+<line x1="1364" y1="170" x2="1390" y2="170" stroke="#7a1a1a" stroke-width="5"/><text x="1396" y="174" style="font-family:monospace;fill:#ef5350;font-size:8px">HW — apă caldă</text>
+<line x1="1364" y1="186" x2="1390" y2="186" stroke="#1a3a6b" stroke-width="5"/><text x="1396" y="190" style="font-family:monospace;fill:#42a5f5;font-size:8px">CW — apă răcită</text>
+<rect x="1364" y="196" width="26" height="14" rx="1" fill="#071428" stroke="#ff8f00" stroke-width="1"/>
+<line x1="1367" y1="200" x2="1387" y2="200" stroke="#ff8f00" stroke-width="2" stroke-linecap="round"/>
+<line x1="1367" y1="206" x2="1387" y2="206" stroke="#ff8f00" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1377" cy="200" r="1.5" fill="#ff8f00"/><circle cx="1377" cy="206" r="1.5" fill="#ff8f00"/>
+<text x="1396" y="207" style="font-family:monospace;fill:#ff8f00;font-size:8px">Clapetă amestec</text>
+<text x="1364" y="225" style="font-family:monospace;fill:#4a7a9b;font-size:7px">P&ID AHU-01 · REV.06 · HubInfraTech</text>
+<text x="1364" y="235" style="font-family:monospace;fill:#4a7a9b;font-size:7px" id="pid-date">2026</text>
+
+</svg>
+</div>
+
+<!-- CONTROL PANEL -->
+<div class="ctrl">
+  <div class="ctrl-hdr"><i class="ti ti-adjustments-horizontal" style="color:#42a5f5;font-size:13px"></i>Control AHU-01</div>
+  <div class="ctrl-body">
+    <div class="row" style="padding:8px 0">
+      <span class="rl" style="font-size:10px">Unitate ON / OFF</span>
+      <div class="tw"><div class="tog on" id="tog" onclick="togU()"><div class="tog-k"></div></div><span class="tl ok" id="tl">ON</span></div>
+    </div>
+    <div class="grp"><div class="grp-hdr open" onclick="this.classList.toggle('open')"><i class="ti ti-wind" style="color:#42a5f5"></i><span>Aer proaspăt</span><i class="ti ti-chevron-right grp-arrow"></i></div>
+    <div class="grp-body">
+      <div class="row"><span class="rl">DMP-01 intrare</span><span class="rv inf" id="d1v">100%</span></div>
+      <div class="bw"><div class="bl"><span>Poziție</span><span id="d1p">100%</span></div><div class="bt"><div class="bf" id="d1b" style="width:100%;background:#1e88e5"></div></div></div>
+      <div class="bbs"><div class="bb bo" onclick="sd('d1',100)">100%</div><div class="bb bh" onclick="sd('d1',50)">50%</div><div class="bb bc" onclick="sd('d1',0)">ÎNCHIS</div></div>
+      <div style="height:6px"></div>
+      <!-- DMP-03 AMESTEC — separator vizibil -->
+      <div style="background:#1a0800;border:1px solid #ff8f00;border-radius:4px;padding:4px 6px;margin:2px 0 4px;display:flex;align-items:center;gap:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:#ff8f00;flex-shrink:0"></div>
+        <span style="font-size:9px;font-weight:700;color:#ff8f00;text-transform:uppercase;letter-spacing:1px">DMP-03 — Clapetă amestec</span>
+      </div>
+      <div class="row"><span class="rl" style="color:#ff8f00">Aer viciat recirculat</span><span class="rv" style="color:#ff8f00" id="d3v">65%</span></div>
+      <div class="bw"><div class="bl"><span style="color:#ff8f00">Deschidere recirculare</span><span id="d3p" style="color:#ff8f00">65%</span></div><div class="bt"><div class="bf" id="d3b" style="width:65%;background:#ff8f00"></div></div></div>
+      <div style="font-size:8px;color:#cc7000;margin:3px 0 2px;font-style:italic">0% = tot aer proaspăt · 100% = tot recirculat</div>
+      <div class="bbs"><div class="bb bo" onclick="sd('d3',100)" style="border-color:#ff8f00;color:#ff8f00">100%</div><div class="bb bh" onclick="sd('d3',50)" style="border-color:#ff6600;color:#ff8f00">50%</div><div class="bb bc" onclick="sd('d3',0)">ÎNCHIS</div></div>
+      <div style="height:5px"></div>
+      <div class="row"><span class="rl">DMP-02 refulare</span><span class="rv" style="color:#4deb8a" id="d2v">100%</span></div>
+      <div class="bw"><div class="bl"><span>Poziție</span><span id="d2p">100%</span></div><div class="bt"><div class="bf" id="d2b" style="width:100%;background:#00c853"></div></div></div>
+      <div class="bbs"><div class="bb bo" onclick="sd('d2',100)">100%</div><div class="bb bh" onclick="sd('d2',50)">50%</div><div class="bb bc" onclick="sd('d2',0)">ÎNCHIS</div></div>
+    </div></div>
+    <div class="grp"><div class="grp-hdr open" onclick="this.classList.toggle('open')"><i class="ti ti-flame" style="color:#ef5350"></i><span>Baterie încălzire</span><i class="ti ti-chevron-right grp-arrow"></i></div>
+    <div class="grp-body">
+      <div class="row"><span class="rl">T° apă intrare</span><span class="rv" style="color:#ef5350" id="hwi">68°C</span></div>
+      <div class="row"><span class="rl">T° apă ieșire</span><span class="rv" style="color:#e57373" id="hwo">52°C</span></div>
+      <div class="row"><span class="rl">T° aer după bat.</span><span class="rv wn" id="taw">16°C</span></div>
+      <div class="row"><span class="rl">EV-HW deschidere</span><span class="rv inf" id="ev-hw-v">100%</span></div>
+      <div class="bw"><div class="bl"><span>Poziție electrovană</span><span id="ev-hw-p">100%</span></div><div class="bt"><div class="bf" id="ev-hw-b" style="width:100%;background:#1e88e5"></div></div></div>
+      <div class="bbs"><div class="bb bo" onclick="sev('hw',100)">100%</div><div class="bb bh" onclick="sev('hw',50)">50%</div><div class="bb bc" onclick="sev('hw',0)">ÎNCHIS</div></div>
+      <div class="sp-row" style="margin-top:5px"><span class="spl">Setpoint T° refulare</span><div class="spc"><div class="sb" onclick="asp('thw',-0.5)">−</div><div class="sv" id="sp-thw">18.0°C</div><div class="sb" onclick="asp('thw',+0.5)">+</div></div></div>
+    </div></div>
+    <div class="grp"><div class="grp-hdr open" onclick="this.classList.toggle('open')"><i class="ti ti-snowflake" style="color:#42a5f5"></i><span>Baterie răcire</span><i class="ti ti-chevron-right grp-arrow"></i></div>
+    <div class="grp-body">
+      <div class="row"><span class="rl">T° apă intrare</span><span class="rv" style="color:#42a5f5" id="cwi">7.2°C</span></div>
+      <div class="row"><span class="rl">T° apă ieșire</span><span class="rv" style="color:#38bdf8" id="cwo">12.4°C</span></div>
+      <div class="row"><span class="rl">T° aer după bat.</span><span class="rv" style="color:#4dd0e1" id="tac">10°C</span></div>
+      <div class="row"><span class="rl">EV-CW deschidere</span><span class="rv inf" id="ev-cw-v">85%</span></div>
+      <div class="bw"><div class="bl"><span>Poziție electrovană</span><span id="ev-cw-p">85%</span></div><div class="bt"><div class="bf" id="ev-cw-b" style="width:85%;background:#1e88e5"></div></div></div>
+      <div class="bbs"><div class="bb bo" onclick="sev('cw',100)">100%</div><div class="bb bh" onclick="sev('cw',50)">50%</div><div class="bb bc" onclick="sev('cw',0)">ÎNCHIS</div></div>
+    </div></div>
+    <div class="grp"><div class="grp-hdr open" onclick="this.classList.toggle('open')"><i class="ti ti-propeller" style="color:#00c853"></i><span>Ventilator — VFD</span><i class="ti ti-chevron-right grp-arrow"></i></div>
+    <div class="grp-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px">
+        <div style="background:#07090d;border:1px solid #2a4a62;border-radius:3px;padding:6px;text-align:center"><div style="font-size:8px;color:#8ab8d4;margin-bottom:3px">RPM</div><div style="font-size:20px;font-weight:700;color:#00c853" id="rpm-d">1450</div></div>
+        <div style="background:#07090d;border:1px solid #2a4a62;border-radius:3px;padding:6px;text-align:center"><div style="font-size:8px;color:#8ab8d4;margin-bottom:3px">m³/h</div><div style="font-size:20px;font-weight:700;color:#00c853" id="dbt-d">8500</div></div>
+      </div>
+      <div class="sp-row" style="margin-bottom:8px"><span class="spl">Setpoint RPM</span><div class="spc"><div class="sb" onclick="asp('rpm',-50)">−</div><div class="sv" id="sp-rpm">1450</div><div class="sb" onclick="asp('rpm',+50)">+</div><span class="su">rpm</span></div></div>
+      <div style="font-size:8px;color:#8ab8d4;margin-bottom:5px;font-weight:700">Strategie VFD</div>
+      <div class="vl">
+        <div class="vo" onclick="svfd(0,this)"><div class="vd"></div>OPRIT</div>
+        <div class="vo" onclick="svfd(1,this)"><div class="vd"></div>MANUAL — RPM fix</div>
+        <div class="vo sel" onclick="svfd(2,this)"><div class="vd" style="background:#00c853;border-color:#00c853"></div>VFD AUTO → CO₂</div>
+        <div class="vo" onclick="svfd(3,this)"><div class="vd"></div>VFD AUTO → T° refulare</div>
+        <div class="vo" onclick="svfd(4,this)"><div class="vd"></div>NOAPTE — RPM minim</div>
+        <div class="vo sel-e" onclick="svfd(5,this)"><div class="vd" style="background:#ef5350;border-color:#ef5350"></div>URGENȚĂ — 100%</div>
+      </div>
+    </div></div>
+    <div class="grp"><div class="grp-hdr open" onclick="this.classList.toggle('open')"><i class="ti ti-bolt" style="color:#ff8f00"></i><span>Consum energetic</span><i class="ti ti-chevron-right grp-arrow"></i></div>
+    <div class="grp-body">
+      <div class="eb">
+        <div class="er"><span class="el">Ventilator</span><span style="font-weight:700;color:#ff8f00" id="pw-f">7.5 kW</span></div>
+        <div class="er"><span class="el">Bat. încălzire</span><span style="font-weight:700;color:#ef5350" id="pw-h">12.0 kW</span></div>
+        <div class="er"><span class="el">Bat. răcire</span><span style="font-weight:700;color:#42a5f5" id="pw-c">8.5 kW</span></div>
+        <div class="er"><span class="el" style="font-weight:700;color:#e8f0f8">TOTAL AHU-01</span><span style="font-weight:700;color:#ff8f00;font-size:15px" id="pw-t">28.0 kW</span></div>
+      </div>
+      <div class="row"><span class="rl">SAT curent</span><span class="rv" style="color:#ffa726" id="sat-c">18°C</span></div>
+      <div class="row"><span class="rl">CO₂ interior</span><span class="rv" style="color:#b39ddb" id="co2-c">620 ppm</span></div>
+      <div class="row"><span class="rl">RH interior</span><span class="rv" style="color:#4dd0e1" id="rh-c">55%</span></div>
+      <div class="row"><span class="rl">Energie azi</span><span class="rv wn" id="kwh">224 kWh</span></div>
+    </div></div>
+    <div style="font-size:8px;color:#5a8ab0;text-transform:uppercase;letter-spacing:1px;margin:5px 0 3px">Log comenzi</div>
+    <div class="lb2" id="log"><div class="ll"><span class="lt2">--:--:--</span><span class="inf">AHU-01 pornit · simulare activă</span></div></div>
+  </div>
+</div>
+</div>
+
+<script>
+'use strict';
+function tick(){var n=new Date();document.getElementById('clk').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
+tick();setInterval(tick,1000);
+var ST={on:true,d1:100,d2:100,d3:65,evHW:100,evCW:85,rpmSP:1450,vfd:2};
+var SP={thw:18.0,rpm:1450};
+var frame=0;
+function addLog(msg,cls){var l=document.getElementById('log');var n=new Date();var ts=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');var d=document.createElement('div');d.className='ll';d.innerHTML='<span class="lt2">'+ts+'</span><span class="'+(cls||'ok')+'">'+msg+'</span>';l.insertBefore(d,l.firstChild);while(l.children.length>25)l.removeChild(l.lastChild);}
+function togU(){ST.on=!ST.on;var t=document.getElementById('tog'),l=document.getElementById('tl');t.className='tog'+(ST.on?' on':'');l.textContent=ST.on?'ON':'OFF';l.className='tl '+(ST.on?'ok':'t2');document.getElementById('hdr-st').textContent=ST.on?'● ACTIV':'● OPRIT';document.getElementById('pid-ust').textContent=ST.on?'● ACTIV':'● OPRIT';addLog('AHU-01 → '+(ST.on?'PORNIT':'OPRIT'),ST.on?'ok':'wn');}
+function sd(id,pct){ST[id]=pct;var col=id==='d2'?(pct>70?'#00c853':pct>20?'#ff8f00':'#ef5350'):(id==='d3'?(pct>50?'#ff8f00':'#ef5350'):(pct>70?'#1e88e5':pct>20?'#ff8f00':'#ef5350'));var b=document.getElementById(id+'b');if(b){b.style.width=pct+'%';b.style.background=col;}['v','p'].forEach(function(s){var e=document.getElementById(id+s);if(e)e.textContent=pct+'%';});var pid=document.getElementById('pid-dmp'+id.slice(1)+'-pct');if(pid)pid.textContent=pct+'%';addLog('[SIM] DMP-0'+id.slice(1)+' → '+pct+'%',pct>50?'ok':'wn');}
+function sev(type,pct){ST['ev'+type.toUpperCase()]=pct;var col=pct>=80?'#1e88e5':pct>=30?'#ff8f00':'#ef5350';['v','p'].forEach(function(s){var e=document.getElementById('ev-'+type+'-'+s);if(e){e.textContent=pct+'%';if(s==='v')e.style.color=col;}});var b=document.getElementById('ev-'+type+'-b');if(b){b.style.width=pct+'%';b.style.background=col;}var sb=document.getElementById('ev-'+type+'-svgb');if(sb){sb.setAttribute('width',Math.round(pct*0.36));sb.setAttribute('fill',col);}var pp=document.getElementById('pid-ev-'+type+'-pct');if(pp)pp.textContent=pct+'%';addLog('[SIM] EV-'+type.toUpperCase()+' → '+pct+'%',pct>70?'ok':pct>30?'wn':'er2');}
+function clickEV(t){sev(t,ST['ev'+t.toUpperCase()]>0?0:100);}
+function asp(k,d){SP[k]=parseFloat((SP[k]+d).toFixed(1));var e=document.getElementById('sp-'+k);if(e)e.textContent=k==='rpm'?SP[k]:SP[k].toFixed(1)+'°C';if(k==='rpm')ST.rpmSP=SP[k];addLog('[SIM] SP '+k+' → '+SP[k]+(k==='rpm'?' rpm':'°C'),'inf');}
+var VN=['OPRIT','MANUAL','AUTO CO2','AUTO T tur','NOAPTE','URGENTA'];
+function svfd(idx,btn){ST.vfd=idx;document.querySelectorAll('.vo').forEach(function(o){o.className='vo';var d=o.querySelector('.vd');if(d){d.style.background='';d.style.borderColor='';}});btn.className='vo '+(idx===5?'sel-e':'sel');var d=btn.querySelector('.vd');var c=idx===5?'#ef5350':'#00c853';if(d){d.style.background=c;d.style.borderColor=c;}var pm=document.getElementById('pid-vfd-m');if(pm)pm.textContent='AUTO '+(idx===2?'CO2':idx===3?'T tur':idx===4?'NOAPTE':idx===5?'URGENTA':idx===1?'MANUAL':'OPRIT');addLog('[SIM] VFD '+VN[idx],'inf');}
+function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function live(){
+  frame++;var t=frame;
+  var hwi=(68+Math.sin(t*.08)*.8).toFixed(1),hwo=(52+Math.sin(t*.06)*.5).toFixed(1);
+  var cwi=(7.2+Math.sin(t*.07)*.2).toFixed(1),cwo=(12.4+Math.sin(t*.06)*.2).toFixed(1);
+  var tin=(14+Math.sin(t*.05)*.3).toFixed(1),thw=(16+Math.sin(t*.08)*.4).toFixed(1),tcw=(10+Math.sin(t*.07)*.3).toFixed(1);
+  var sat=(18+Math.sin(t*.08)*.3).toFixed(1),rh=Math.round(55+Math.sin(t*.07)*3),co2=Math.round(620+Math.sin(t*.1)*30);
+  var rpm=Math.round(ST.rpmSP+(ST.vfd===2?co2-620:0)*.3+Math.sin(t*.2)*20),dbt=Math.round(rpm/1450*8500);
+  var fan=(7.5*(rpm/1450)+Math.sin(t*.08)*.2).toFixed(1),hw=(12+Math.sin(t*.06)*.5).toFixed(1),cw=(8.5*(ST.evCW/100)+Math.sin(t*.07)*.3).toFixed(1);
+  var tot=(parseFloat(fan)+parseFloat(hw)+parseFloat(cw)).toFixed(1);
+  var dp=Math.min(78,Math.round(8+t*.012+Math.sin(t*.05)*.5));
+  s('pid-hw-t',hwi+'°C');s('pid-hw-ret',hwo+'°C');s('pid-cw-t',cwi+'°C');s('pid-cw-ret',cwo+'°C');
+  s('pid-t-ext',tin+'°C');s('pid-rh-ext',rh+'%');s('pid-wind',Math.round(12+Math.sin(t*.6)*4));
+  s('pid-t-in',tin+'°C');s('pid-t-hw',thw+'°C');s('pid-t-cw',tcw+'°C');
+  s('pid-co2',co2);s('pid-co2-duct',co2);s('pid-rh',rh+'%');
+  s('pid-sat',sat+'°C');s('pid-rpm',rpm+' rpm');s('pid-rpm-d',rpm);s('pid-debit',dbt+' m³/h');s('pid-pw-fan',fan);
+  s('pid-hw-in',hwi+'°C');s('pid-hw-out',hwo+'°C');s('pid-cw-in',cwi+'°C');s('pid-cw-out',cwo+'°C');
+  s('pid-dp1',dp);s('pid-dp1-st',dp<40?'CURAT · lim: 80 Pa':dp<65?'MODERAT':'INFUNDAT!');
+  var dpEl=document.getElementById('pid-dp1');if(dpEl)dpEl.style.fill=dp<40?'#ffe033':dp<65?'#ff8f00':'#ef5350';
+  var ov=document.getElementById('f1-ov');if(ov){ov.setAttribute('fill',dp<40?'#2a4a62':dp<65?'#ff8f00':'#ef5350');ov.setAttribute('opacity',dp<40?'0.04':dp<65?'0.10':'0.18');}
+  s('hwi',hwi+'°C');s('hwo',hwo+'°C');s('cwi',cwi+'°C');s('cwo',cwo+'°C');
+  s('taw',thw+'°C');s('tac',tcw+'°C');s('sat-c',sat+'°C');s('co2-c',co2+' ppm');s('rh-c',rh+'%');
+  s('rpm-d',rpm);s('dbt-d',dbt);s('pw-f',fan+' kW');s('pw-h',hw+' kW');s('pw-c',cw+' kW');s('pw-t',tot+' kW');
+  if(ST.vfd===2&&frame%12===0){var nc=Math.round(85+Math.sin(frame*.1)*8);if(Math.abs(nc-ST.evCW)>2)sev('cw',nc);}
+  s('pid-date',new Date().getFullYear());
+}
+setInterval(live,2500);live();
+</script>
+</body>
+</html>
