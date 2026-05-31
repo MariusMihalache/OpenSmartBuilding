@@ -1,8 +1,21 @@
-# OpenSmartBuilding — BMS Open Source v2
+# 🏢 OpenSmartBuilding
 
-**OpenSmartBuilding** este un sistem de management al clădirilor (BMS) open-source dezvoltat de [HubInfraTech](https://blog.hubinfratech.ro), conceput pentru monitorizarea și controlul instalațiilor tehnice din clădiri educaționale, industriale și comerciale.
+**Open-source Building Management System** — monitorizare și control în timp real pentru clădiri inteligente.
 
-> Proiect activ · MIT License · Modbus TCP/IP · **Proiect Școală**
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.0-blue)]()
+[![Status](https://img.shields.io/badge/status-activ-brightgreen)]()
+[![Blog](https://img.shields.io/badge/blog-HubInfraTech-orange)](https://blog.hubinfratech.ro)
+
+> Proiect realizat de **[Mihalache Ionut Marius](https://blog.hubinfratech.ro)** — HubInfraTech
+
+---
+
+## 🎯 Ce este OpenSmartBuilding?
+
+OpenSmartBuilding este un BMS (Building Management System) open-source care centralizează monitorizarea și controlul tuturor instalațiilor tehnice ale unei clădiri — de la HVAC și solar până la antiincendiu, efracție și control acces IP.
+
+Dashboard-ul este inspirat din **Grafana** — dark theme, grafice live, date în timp real și navigare rapidă între toate subsistemele.
 
 ---
 
@@ -12,51 +25,80 @@
 
 ---
 
-## 📋 Ce conține versiunea 2
+## ⚡ Instalare rapidă
 
-### Un singur fișier — `osb_enterprise.html`
+```bash
+git clone https://github.com/MariusMihalache/OpenSmartBuilding.git
+cd OpenSmartBuilding
+# Deschide osb_enterprise.html in browser
+```
 
-Tot dashboardul este **un singur fișier HTML** care include:
+**Nu necesită instalare, server sau dependențe.** Funcționează direct din browser.
 
-#### Tab-uri principale
-| Tab | Conținut |
-|-----|----------|
-| **Overview** | Sisteme critice și secundare cu valori live |
-| **Systems** | Gauge-uri, grafice 12h, ventilație, iluminat |
-| **Analytics** | Tendințe temperatură, energie, presiune |
-| **Alarms** | Jurnal alarme CRIT / WARN / INFO |
-| **Sală Tehnică** | Schema P&ID instalație termică interactivă |
-| **AHU-1** | Schema P&ID centrală de tratare aer |
+---
 
-#### Sală Tehnică — Schema P&ID termică
-- Cazane de condensare **CAZ-01** (activ) și **CAZ-02** (standby/cascadă)
-- Pompe **P-01** primară și **P-02** secundară cu animație impeller
-- **Butelie egalizare presiuni BUT-01** cu degazor, termometru, manometru
+## 📁 Fișiere
+
+| Fișier | Descriere |
+|--------|-----------|
+| `index.html` | Hyperion v1 — dashboard clasic |
+| `osb_enterprise.html` | **Enterprise v2** — dashboard complet cu toate sistemele |
+| `README.md` | Documentație |
+
+---
+
+## 🖥️ Enterprise v2 — ce conține
+
+Un singur fișier HTML cu 6 tab-uri:
+
+### Overview
+- Sisteme critice: HVAC climatizare + Energie consum
+- KPI strip: temperatură exterior, vânt, presiune, chilere, pompe
+- Sisteme secundare: Solar, Termică, Chilere, Pompe, Antiincendiu, Efracție, Control Acces
+
+### Systems
+- Gauge-uri: temperatură interior, CO₂, umiditate, consum, solar
+- Grafice 12h temperatură + CO₂ și consum vs solar
+- Debite ventilație pe zone
+- Intensitate luminoasă pe zone (lux)
+
+### Analytics
+- Tendințe temperatură cu threshold-uri
+- Tendințe consum energie cu alerte
+- Presiune atmosferică 12h
+
+### Alarms
+- Jurnal alarme active CRIT / WARN / INFO
+- Istoric 24h
+- Drawer detalii cu istoricul evenimentului
+
+### Sală Tehnică — Schema P&ID termică interactivă
+- **CAZ-01** cazan condensare activ + **CAZ-02** standby/cascadă
+- **P-01** pompă primară + **P-02** pompă secundară cu animație
+- **BUT-01** butelie egalizare presiuni 60L cu degazor
 - Distribuitor tur / colector retur cu 4 zone
-- Electrovane zone **EV-1..4** (Cls. 1-4, Sala Sport, Cantină, Corp B)
-- Vas de expansiune **VE-01** 60L
-- Senzori temperatură și presiune cu valori live
-- Alimentare gaze naturale
+- **EV-1..4** electrovane zone (Cls. 1-4, Sala Sport, Cantină, Corp B)
+- **VE-01** vas expansiune 60L
+- Senzori temperatură și presiune live
+- Click pe orice echipament → detalii Modbus
 
-#### AHU-1 — Schema P&ID centrală tratare aer
-- **Filtru G4** și **Filtru F7** cu indicatori ΔP live
-- **Baterie încălzire HW** și **Baterie răcire CW** cu temperaturi live
-- **Ventilator VFD** — 6 strategii (AUTO CO₂, AUTO T°, NOAPTE, URGENȚĂ, MANUAL, OPRIT)
-- **DMP-01** clapetă intrare aer proaspăt
-- **DMP-03** clapetă amestec aer proaspăt + viciat
-- **DMP-02** clapetă refulare
-- **EV-HW** și **EV-CW** electrovane cu poziție live sub tag ISA
+### AHU-1 — Schema P&ID centrală tratare aer
+- **Filtru G4** + **Filtru F7** cu ΔP live
+- **Baterie încălzire HW** + **Baterie răcire CW** cu temperaturi live
+- **Ventilator VFD** — 6 strategii control (AUTO CO₂, AUTO T°, NOAPTE, URGENȚĂ, MANUAL, OPRIT)
+- **DMP-01** clapetă intrare · **DMP-03** clapetă amestec · **DMP-02** clapetă refulare
+- **EV-HW** și **EV-CW** electrovane cu poziție live
 - **VAV-A / VAV-B / VAV-C** pe ductul de supply
-- Panou de control lateral cu log comenzi live
+- Panou control lateral cu log comenzi
 
 ---
 
 ## 🔔 Sistem alarme
 
-- Bară alarme active în timp real (CRIT / WARN / INFO)
-- Panel lateral cu toate alarmele active
+- Bară alarme active permanent vizibilă
+- Panel stânga cu toate alarmele active filtrate CRIT / WARN / INFO
+- Toast-uri automate la depășire praguri (CO₂ > 900ppm, consum > 42kW, vânt puternic)
 - Drawer detalii cu istoric eveniment și acțiuni recomandate
-- Toast-uri automate la depășire praguri (CO₂, consum, vânt, presiune)
 
 ---
 
@@ -69,28 +111,7 @@ Port:  502
 
 Când backend-ul Python este **offline** → interfața rulează în **mod simulare** cu date generate automat la 2.5 secunde.
 
----
-
-## 📁 Structura proiectului
-
-```
-OpenSmartBuilding/
-├── index.html              # Hyperion v1 — pagina principală
-├── osb_enterprise.html     # Enterprise BMS v2 — tot într-un fișier
-└── README.md
-```
-
----
-
-## 🚀 Utilizare
-
-```bash
-git clone https://github.com/MariusMihalache/OpenSmartBuilding.git
-cd OpenSmartBuilding
-# Deschide osb_enterprise.html in browser
-```
-
-Nu necesită server, build tools sau dependențe externe. Funcționează direct din browser.
+Backend Python + pymodbus pe mini PC — în dezvoltare.
 
 ---
 
@@ -101,35 +122,4 @@ Nu necesită server, build tools sau dependențe externe. Funcționează direct 
 | HTML / CSS / SVG | Interfață și scheme P&ID |
 | JavaScript vanilla | Logică, animații, simulare date |
 | Chart.js | Grafice tendințe |
-| JetBrains Mono + Inter | Tipografie |
-| Tabler Icons | Iconografie |
-| Modbus TCP/IP | Comunicare echipamente reale |
-| Python + pymodbus | Backend (în dezvoltare) |
-
----
-
-## 📡 Roadmap
-
-- [x] Dashboard Enterprise v2 cu alarme
-- [x] Schema P&ID instalație termică interactivă
-- [x] Schema P&ID AHU-01 integrată
-- [x] Sistem alarme cu drawer detalii
-- [x] Simulare date live
-- [ ] Backend Python + pymodbus pe mini PC
-- [ ] Date reale Modbus de la echipamente
-- [ ] Schema P&ID AHU-02
-- [ ] Schema detaliată chilere CH-01..04
-- [ ] Istoric date time-series
-- [ ] Notificări email / SMS la alarme
-
----
-
-## 👤 Autor
-
-**Mihalache Ionut Marius** — [HubInfraTech](https://blog.hubinfratech.ro)
-
----
-
-## 📄 Licență
-
-MIT License — liber de utilizat, modificat și distribuit.
+|
