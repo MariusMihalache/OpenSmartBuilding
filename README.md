@@ -12,11 +12,11 @@ Proiectul are două versiuni de interfață, ambele funcționale direct din brow
 ---
 🖥️ Versiuni disponibile
 v1 — Hyperion Enterprise
-▶ Demo live
+▶ Demo live: https://mariusmihalache.github.io/OpenSmartBuilding/
 Interfață dark în stilul Grafana cu gauge-uri analogice cu ace și zone de alertă, sparklines pe carduri KPI, rose diagram pentru direcția vântului, bare de intensitate luminoasă în lux pe zone și notificări automate la depășirea pragurilor.
 ---
 v2 — Enterprise Control System ⭐ NOU
-▶ Demo live
+▶ Demo live: https://mariusmihalache.github.io/OpenSmartBuilding/osb_enterprise.html
 Reproiectare completă pentru utilizare operațională reală — concept control room industrial.
 Ce aduce nou față de v1:
 Global Status Bar — bară persistentă sus cu status clădire live, consum, temperatură, CO₂, umiditate și uptime sistem
