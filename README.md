@@ -7,8 +7,8 @@ Open-source Building Management System — monitorizare și control în timp rea
 > Realizat de **[Mihalache Ionut Marius](https://blog.hubinfratech.ro)** — HubInfraTech
 ---
 🔴 Live Demo
-Hyperion v1
-Enterprise v2
+👉 Hyperion v1 — `index.html`
+👉 Enterprise v2 — `osb_enterprise.html`
 ---
 📋 Descriere
 OpenSmartBuilding este un BMS (Building Management System) open-source care centralizează monitorizarea și controlul tuturor instalațiilor tehnice ale unei clădiri.
