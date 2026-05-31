@@ -1,72 +1,95 @@
 🏢 OpenSmartBuilding
 Open-source Building Management System — monitorizare și control în timp real pentru clădiri inteligente.
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
-[![Status](https://img.shields.io/badge/status-activ-brightgreen)]()
-[![HTML](https://img.shields.io/badge/HTML-100%25-orange)]()
-![Blog](https://img.shields.io/badge/blog-HubInfraTech-blue)
-> Realizat de **[Mihalache Ionut Marius](https://blog.hubinfratech.ro)** — HubInfraTech
+![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Blog](https://img.shields.io/badge/blog-HubInfraTech-orange)
+> Proiect realizat de **[Mihalache Ionut Marius](https://blog.hubinfratech.ro)** — HubInfraTech
 ---
-🔴 Live Demo
-Hyperion v1
-Enterprise v2
+🎯 Ce este OpenSmartBuilding?
+OpenSmartBuilding este un BMS (Building Management System) open-source care centralizează monitorizarea și controlul tuturor instalațiilor tehnice ale unei clădiri — de la HVAC și solar până la antiincendiu, efracție și control acces IP.
+Proiectul are două versiuni de interfață, ambele funcționale direct din browser, fără instalare sau server.
 ---
-📋 Descriere
-OpenSmartBuilding este un BMS (Building Management System) open-source care centralizează monitorizarea și controlul tuturor instalațiilor tehnice ale unei clădiri.
-Interfața este inspirată din Grafana — dark theme, grafice live, scheme P&ID interactive și navigare rapidă între subsisteme. Funcționează direct din browser, fără server, fără dependențe.
+🖥️ Versiuni disponibile
+v1 — Hyperion Enterprise
+▶ Demo live
+Interfață dark în stilul Grafana cu gauge-uri analogice cu ace și zone de alertă, sparklines pe carduri KPI, rose diagram pentru direcția vântului, bare de intensitate luminoasă în lux pe zone și notificări automate la depășirea pragurilor.
 ---
-📁 Fișiere
-Fișier	Descriere
-`index.html`	Hyperion v1 — dashboard clasic
-`osb_enterprise.html`	Enterprise v2 — dashboard complet
+v2 — Enterprise Control System ⭐ NOU
+▶ Demo live
+Reproiectare completă pentru utilizare operațională reală — concept control room industrial.
+Ce aduce nou față de v1:
+Global Status Bar — bară persistentă sus cu status clădire live, consum, temperatură, CO₂, umiditate și uptime sistem
+Panou alarme permanent — ierarhie strictă CRITICAL / WARNING / INFO, vizibil tot timpul, cu indicator NEW pe alarme noi
+Alarm Bar activă — alarmele critice apar imediat sub status bar cu buton Acknowledge
+Side Drawer — click pe orice sistem deschide un panel lateral cu detalii tehnice, istoric eveniment și acțiuni recomandate. Dashboard-ul rămâne mereu vizibil
+4 view-uri operaționale: Overview · Systems · Analytics · Alarms
+Selector niveluri clădire: Subsol · Parter · Etaj 1 · Etaj 2 · Curte ext.
+Grafice cu threshold lines — zone normale marcate, detectare vizuală anomalii
+Notificări automate la depășirea pragurilor: CO₂, consum electric, vânt, presiune atmosferică
 ---
-🖥️ Enterprise v2 — tab-uri
-Tab	Conținut
-Overview	Sisteme critice și secundare cu valori live
-Systems	Gauge-uri, grafice 12h, ventilație, iluminat lux
-Analytics	Tendințe temperatură, energie, presiune atmosferică
-Alarms	Jurnal alarme CRIT / WARN / INFO cu drawer detalii
-Sală Tehnică	Schema P&ID instalație termică interactivă
-AHU-1	Schema P&ID centrală de tratare aer
----
-🔧 Sisteme monitorizate
-Sistem	Parametri
-🌡️ HVAC	Temperatură, CO₂, umiditate, ventilație pe zone
-☀️ Solar	Producție kW, status panouri individuale
-❄️ Chilere	Temperatură agent, cascadare automată
-🔥 Termică	Cazane, tur/retur, pompe, distribuitor, zone
-💨 AHU-1	Filtre, baterii, ventilator VFD, clapete, VAV-uri
-💧 Pompe	RPM, presiuni, debite
-🚨 Antiincendiu	Detectori fum/temp, sprinklere
-🔓 Efracție	Senzori mișcare, CCTV, alarme
-🪪 Control Acces	Uși IP, jurnal acces, prezențe
----
-🔌 Integrare Modbus TCP/IP
-```
-Host : 192.168.1.100
-Port : 502
-```
-Când backend-ul este offline → mod simulare cu date generate la 2.5s.  
-Backend Python + pymodbus pe mini PC — în dezvoltare.
----
-🚀 Utilizare
+⚡ Instalare rapidă
 ```bash
+# 1. Clonează repo-ul
 git clone https://github.com/MariusMihalache/OpenSmartBuilding.git
+
+# 2. Intră în folder
 cd OpenSmartBuilding
-# Deschide osb_enterprise.html in browser
+
+# 3. Deschide în browser
+open index.html
+# sau pe Windows:
+start index.html
+```
+Nu necesită instalare, server sau dependențe. Funcționează direct din browser.
+---
+🖥️ Sisteme monitorizate
+Sistem	Descriere
+🌡️ HVAC	Temperatură, ventilație pe zone, CO₂, umiditate
+☀️ Solar	Producție fotovoltaică, status panouri individuale
+❄️ Chilere	Temperatura agent frigorific, cascadare automată
+🔥 Termică	Centrală termică, zone, tur/retur, gaz
+💧 Pompe	Grupuri pompare, RPM, presiuni, debite
+💨 Ventilație	Vânt exterior, umiditate, CO₂
+💡 Iluminat	Intensitate în lux pe zone, consum energie
+🚨 Antiincendiu	Detectori fum/temp, sprinklere, ieșiri urgență
+🔓 Efracție	Senzori mișcare/uși, CCTV, alarme
+🪪 Control Acces	Rețea IP, jurnal acces, uși online
+🌤️ Meteo	Vânt, presiune atmosferică, temperatură, umiditate, paratrăsnet
+---
+📡 Protocoale suportate
+Modbus TCP — echipamente IP (port 502)
+Modbus RTU — RS-485 (max 32 noduri, 1200m)
+M-Bus — contoare, termostate, senzori (via gateway → Modbus)
+BACnet/IP — sisteme HVAC premium
+MQTT — integrare IoT și cloud
+REST API — integrare aplicații externe
+---
+📁 Structura proiectului
+```
+OpenSmartBuilding/
+├── index.html              ← v1 Hyperion Enterprise
+├── osb_enterprise.html     ← v2 Enterprise Control System
+├── README.md               ← Documentație
+├── js/
+│   ├── modbus.js           ← Conector Modbus TCP
+│   ├── mbus.js             ← Conector M-Bus gateway
+│   └── live-data.js        ← Manager date live
+└── docs/
+    └── architecture.md     ← Arhitectura sistemului
 ```
 ---
-📡 Roadmap
-[x] Hyperion v1
-[x] Enterprise v2 cu alarme și P&ID
-[x] Schema P&ID instalație termică interactivă
-[x] Schema P&ID AHU-01
-[ ] Backend Python + pymodbus
-[ ] Date reale Modbus
-[ ] Schema AHU-02
-[ ] Chilere CH-01..04
-[ ] Notificări email / SMS
+🔌 Integrare cu echipamente reale
+```javascript
+// Exemplu conectare Modbus TCP
+const modbus = new ModbusClient('192.168.1.100', 502);
+modbus.readHoldingRegisters(0, 10); // citire 10 regiștri
+```
+---
+📚 Articol tehnic complet
+👉 Building Management System: Creierul Clădirii Inteligente
 ---
 📄 Licență
 MIT License — liber de folosit, modificat și distribuit.
 ---
-HubInfraTech · blog.hubinfratech.ro
+OpenSmartBuilding — HubInfraTech
