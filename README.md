@@ -1,122 +1,90 @@
 # 🏢 OpenSmartBuilding
 
-**Open-source Building Management System** — monitorizare și control în timp real pentru clădiri inteligente.
+**Open-Source Building Management System (BMS)** pentru monitorizarea și controlul sistemelor unei clădiri inteligente.
 
-[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/MariusMihalache/OpenSmartBuilding)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/MariusMihalache/OpenSmartBuilding)
-[![Status](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/MariusMihalache/OpenSmartBuilding)
-[![Blog](https://img.shields.io/badge/blog-HubInfraTech-orange)](https://blog.hubinfratech.ro)
-
-> Proiect realizat de **[Mihalache Ionut Marius](https://blog.hubinfratech.ro)** — HubInfraTech
-
-## 🚀 Demo Live
-
-👉 **[Deschide Dashboard BMS](https://mariusmihalache.github.io/OpenSmartBuilding/osb_enterprise_fixed.html)**
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 
 ---
 
-## 🎯 Ce este OpenSmartBuilding?
+## 🚀 Live Demo
 
-OpenSmartBuilding este un BMS (Building Management System) open-source care centralizează monitorizarea și controlul tuturor instalațiilor tehnice ale unei clădiri — de la HVAC și solar până la antiincendiu, efracție și control acces IP.
+### 🌐 Dashboard Online
 
-Dashboard-ul este inspirat din **Grafana** — dark theme, grafice live, date în timp real și navigare rapidă între toate subsistemele.
+👉 https://mariusmihalache.github.io/OpenSmartBuilding/osb_enterprise_fixed.html
+
+### 📦 GitHub Repository
+
+👉 https://github.com/MariusMihalache/OpenSmartBuilding
+
+### 📝 Blog HubInfraTech
+
+👉 https://blog.hubinfratech.ro
 
 ---
 
-## ⚡ Instalare rapidă
+## ✨ Funcționalități
 
-Orice PC devine BMS în 3 pași:
+* 🌡️ HVAC & AHU Monitoring
+* ☀️ Solar Energy Dashboard
+* ❄️ Chillers & Cooling Systems
+* 🔥 Heating Plant Monitoring
+* 💧 Pumps & Hydraulics
+* 💡 Smart Lighting Control
+* 🚨 Fire Detection Systems
+* 🔓 Intrusion Detection
+* 🪪 IP Access Control
+* 🌤️ Weather Monitoring
+
+---
+
+## ⚡ Quick Start
 
 ```bash
-# 1. Clonează repo-ul
 git clone https://github.com/MariusMihalache/OpenSmartBuilding.git
 
-# 2. Intră în folder
 cd OpenSmartBuilding
-
-# 3. Deschide în browser
-open osb_enterprise_fixed.html
-# sau pe Windows:
-start osb_enterprise_fixed.html
 ```
 
-**Nu necesită instalare, server sau dependențe.** Funcționează direct din browser.
+Deschide:
 
----
-
-## 🖥️ Fișier principal
-
-| Fișier | Descriere |
-|--------|-----------|
-| `osb_enterprise_fixed.html` | **Dashboard principal** — toate sistemele, schema P&ID AHU, control live |
-
----
-
-## 🔧 Changelog
-
-### v1.1.0
-- ✅ Fix scroll orizontal pe schema P&ID AHU-1 (era blocat de `overflow-x: hidden`)
-- ✅ Scrollbar dark theme — bara de jos nu mai apare albă
-- ✅ Container SVG P&ID cu `overflow-x: auto` pentru navigare stânga/dreapta
-- ✅ Stilizare globală scrollbar (`scrollbar-color`, `scrollbar-width`) compatibil Chrome + Firefox
-
-### v1.0.0
-- 🚀 Lansare inițială dashboard BMS enterprise
-- Schema P&ID completă AHU-1 cu animații flux aer
-- Control HVAC, Solar, Chilere, Termică, Pompe, Iluminat
-- Antiincendiu, Efracție, Control Acces IP
-- Date live simulate cu animații
-
----
-
-## 🖥️ Sisteme monitorizate
-
-| Sistem | Descriere |
-|--------|-----------|
-| 🌡️ **HVAC / AHU** | Schema P&ID detaliată, aspirație/refulare, baterii, filtre, VFD |
-| ☀️ **Solar** | Producție fotovoltaică, status panouri individuale |
-| ❄️ **Chilere** | Temperatura agent frigorific, cascadare automată |
-| 🔥 **Termică** | Centrală termică, zone, tur/retur, gaz |
-| 💧 **Pompe** | Grupuri pompare, RPM, presiuni, debite |
-| 💡 **Iluminat** | Control ON/OFF pe zone, consum energie |
-| 🚨 **Antiincendiu** | Detectori fum/temp, sprinklere, ieșiri urgență |
-| 🔓 **Efracție** | Senzori mișcare/uși, CCTV, alarme |
-| 🪪 **Control Acces** | Rețea IP, jurnal acces, uși online |
-| 🌤️ **Meteo** | Vânt, temperatură și umiditate exterior |
-
----
-
-## 📡 Protocoale suportate
-
-- **Modbus TCP** — echipamente IP (port 502)
-- **Modbus RTU** — RS-485 (max 32 noduri, 1200m)
-- **M-Bus** — contoare, termostate, senzori (via gateway → Modbus)
-- **BACnet/IP** — sisteme HVAC premium
-- **MQTT** — integrare IoT și cloud
-- **REST API** — integrare aplicații externe
-
----
-
-## 🔌 Integrare cu echipamente reale
-
-```javascript
-// Exemplu conectare Modbus TCP
-const modbus = new ModbusClient('192.168.1.100', 502);
-modbus.readHoldingRegisters(0, 10); // citire 10 regiștri
+```bash
+osb_enterprise_fixed.html
 ```
 
----
-
-## 📚 Articol tehnic complet
-
-👉 **[Building Management System: Creierul Clădirii Inteligente](https://blog.hubinfratech.ro)**
+Nu necesită instalare, server sau dependențe.
 
 ---
 
-## 📄 Licență
+## 🖥️ Screenshot
 
-MIT License — liber de folosit, modificat și distribuit.
+![OpenSmartBuilding Dashboard](screenshot.png)
 
 ---
 
-*OpenSmartBuilding — [HubInfraTech](https://blog.hubinfratech.ro)*
+## 📡 Technologies
+
+* HTML5
+* CSS3
+* JavaScript
+* Modbus TCP
+* Modbus RTU
+* BACnet/IP
+* MQTT
+* REST API
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+### Author
+
+**Mihalache Ionut Marius**
+HubInfraTech
+
+🌐 https://blog.hubinfratech.ro
