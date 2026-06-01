@@ -63,16 +63,27 @@ Nu necesită instalare, server sau dependențe.
 
 ---
 
-## 📡 Technologies
+## 🛠️ Technologies
 
 * HTML5
 * CSS3
-* JavaScript
+* JavaScript (Vanilla)
+* SVG Graphics
+* Responsive Dashboard UI
+* Dark Theme Interface
+
+## 📋 Conceptual Support
+
+Dashboard-ul este proiectat pentru integrarea cu:
+
 * Modbus TCP
 * Modbus RTU
 * BACnet/IP
 * MQTT
 * REST API
+
+*Versiunea actuală este un demo frontend și nu conține implementări backend sau conexiuni reale către echipamente BMS.*
+
 
 ---
 
