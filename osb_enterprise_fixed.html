@@ -1074,7 +1074,6 @@ html,body{width:100%;height:100%;background:#07090d;overflow:hidden;font-family:
     <i class="ti ti-building-2" style="color:var(--acc);font-size:14px"></i>
     <div>
       <div class="ctx-building-name">Proiect Școală</div>
-      <div class="ctx-building-sub">Subsol · Parter · Etaj 1 · Etaj 2 · Curte ext. · Modbus TCP/IP</div>
     </div>
   </div>
   <div class="ctx-tabs">
@@ -2254,7 +2253,8 @@ html,body{width:100%;height:100%;background:#07090d;overflow:hidden;font-family:
         <div class="sec-header">
           <div class="sec-title">AHU-1 — Centrală Tratare Aer · Schema P&ID</div>
         </div>
-        <div style="width:100%;background:#07090d;border:1px solid #1e2d3d;border-radius:6px;overflow-x:auto;overflow-y:hidden;scrollbar-color:#1e3a5a #07090d;scrollbar-width:thin">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="flex:1;min-width:0;background:#07090d;border:1px solid #1e2d3d;border-radius:6px;overflow-x:auto;overflow-y:hidden;scrollbar-color:#1e3a5a #07090d;scrollbar-width:thin">
           <svg viewBox="0 0 1560 820" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:1400px;display:block">
 <defs>
   <pattern id="dp-fresh" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
@@ -2786,7 +2786,266 @@ html,body{width:100%;height:100%;background:#07090d;overflow:hidden;font-family:
 
 </svg>
         </div>
+
+        <!-- ══ AHU-1 PANOU CONTROL ACȚIONĂRI ══ -->
+        <div class="pid-ctrl-panel" style="width:260px;flex-shrink:0">
+          <div class="pid-ctrl-header">
+            <span class="pid-ctrl-header-title">Panou control acționări</span>
+            <span class="api-pill" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b);margin-bottom:0;padding:2px 7px">
+              <span class="api-dot" style="background:var(--warn)"></span>Simulare
+            </span>
+          </div>
+          <div class="pid-ctrl-body">
+
+            <!-- ── CLAPETE AER ── -->
+            <div style="font-size:8px;font-weight:700;color:#1e2d3d;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;margin:4px 0 4px;padding-top:4px;border-top:1px solid #1e2d3d">
+              Clapete aer
+            </div>
+
+            <!-- DMP-01 -->
+            <div class="eq-card expanded" id="card-ahu-dmp1">
+              <div class="eq-card-header" onclick="toggleCard('ahu-dmp1')">
+                <div class="eq-card-left">
+                  <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                  <div>
+                    <div class="eq-card-name">DMP-01 · Aer proaspăt</div>
+                    <div class="eq-card-sub">Clapetă intrare · AUTO</div>
+                  </div>
+                </div>
+                <span class="eq-card-badge" id="badge-ahu-dmp1" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+              </div>
+              <div class="eq-card-body" id="body-ahu-dmp1">
+                <div class="ev-bar-wrap">
+                  <div class="ev-bar-label"><span>Poziție</span><span id="ahu-dmp1-pct">100%</span></div>
+                  <div class="ev-bar-track"><div class="ev-bar-fill" id="ahu-dmp1-bar" style="width:100%;background:var(--ok)"></div></div>
+                </div>
+                <div class="action-row">
+                  <div class="act-btn act-open" onclick="ctrlAHU('dmp1',100)">Deschide</div>
+                  <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlAHU('dmp1',50)">50%</div>
+                  <div class="act-btn act-close" onclick="ctrlAHU('dmp1',0)">Închide</div>
+                </div>
+                <div class="mode-row">
+                  <div class="mode-btn selected" onclick="setModeAHU('dmp1','AUTO',this)">AUTO</div>
+                  <div class="mode-btn" onclick="setModeAHU('dmp1','MAN',this)">MANUAL</div>
+                  <div class="mode-btn" onclick="setModeAHU('dmp1','PROG',this)">PROGRAM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DMP-02 -->
+            <div class="eq-card expanded" id="card-ahu-dmp2">
+              <div class="eq-card-header" onclick="toggleCard('ahu-dmp2')">
+                <div class="eq-card-left">
+                  <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                  <div>
+                    <div class="eq-card-name">DMP-02 · Duct supply</div>
+                    <div class="eq-card-sub">Clapetă ieșire · AUTO</div>
+                  </div>
+                </div>
+                <span class="eq-card-badge" id="badge-ahu-dmp2" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+              </div>
+              <div class="eq-card-body" id="body-ahu-dmp2">
+                <div class="ev-bar-wrap">
+                  <div class="ev-bar-label"><span>Poziție</span><span id="ahu-dmp2-pct">100%</span></div>
+                  <div class="ev-bar-track"><div class="ev-bar-fill" id="ahu-dmp2-bar" style="width:100%;background:var(--ok)"></div></div>
+                </div>
+                <div class="action-row">
+                  <div class="act-btn act-open" onclick="ctrlAHU('dmp2',100)">Deschide</div>
+                  <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlAHU('dmp2',50)">50%</div>
+                  <div class="act-btn act-close" onclick="ctrlAHU('dmp2',0)">Închide</div>
+                </div>
+                <div class="mode-row">
+                  <div class="mode-btn selected" onclick="setModeAHU('dmp2','AUTO',this)">AUTO</div>
+                  <div class="mode-btn" onclick="setModeAHU('dmp2','MAN',this)">MANUAL</div>
+                  <div class="mode-btn" onclick="setModeAHU('dmp2','PROG',this)">PROGRAM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DMP-03 -->
+            <div class="eq-card expanded" id="card-ahu-dmp3">
+              <div class="eq-card-header" onclick="toggleCard('ahu-dmp3')">
+                <div class="eq-card-left">
+                  <i class="ti ti-adjustments eq-card-icon" style="color:var(--warn);font-size:14px"></i>
+                  <div>
+                    <div class="eq-card-name">DMP-03 · Recirculare</div>
+                    <div class="eq-card-sub">Clapetă amestec · MANUAL</div>
+                  </div>
+                </div>
+                <span class="eq-card-badge" id="badge-ahu-dmp3" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)">65%</span>
+              </div>
+              <div class="eq-card-body" id="body-ahu-dmp3">
+                <div class="ev-bar-wrap">
+                  <div class="ev-bar-label"><span>Poziție</span><span id="ahu-dmp3-pct">65%</span></div>
+                  <div class="ev-bar-track"><div class="ev-bar-fill" id="ahu-dmp3-bar" style="width:65%;background:var(--warn)"></div></div>
+                </div>
+                <div class="action-row">
+                  <div class="act-btn act-open" onclick="ctrlAHU('dmp3',100)">Deschide</div>
+                  <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlAHU('dmp3',50)">50%</div>
+                  <div class="act-btn act-close" onclick="ctrlAHU('dmp3',0)">Închide</div>
+                </div>
+                <div class="mode-row">
+                  <div class="mode-btn" onclick="setModeAHU('dmp3','AUTO',this)">AUTO</div>
+                  <div class="mode-btn selected" onclick="setModeAHU('dmp3','MAN',this)">MANUAL</div>
+                  <div class="mode-btn" onclick="setModeAHU('dmp3','PROG',this)">PROGRAM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── ELECTROVANE AGENT TERMIC ── -->
+            <div style="font-size:8px;font-weight:700;color:#1e2d3d;font-family:var(--mono);text-transform:uppercase;letter-spacing:1.2px;margin:8px 0 4px;padding-top:4px;border-top:1px solid #1e2d3d">
+              Electrovane agent termic
+            </div>
+
+            <!-- EVHW -->
+            <div class="eq-card expanded" id="card-ahu-evhw">
+              <div class="eq-card-header" onclick="toggleCard('ahu-evhw')">
+                <div class="eq-card-left">
+                  <i class="ti ti-adjustments eq-card-icon" style="color:var(--acc);font-size:14px"></i>
+                  <div>
+                    <div class="eq-card-name">EVHW · Bat. Încălzire</div>
+                    <div class="eq-card-sub">Siemens SSB · AUTO</div>
+                  </div>
+                </div>
+                <span class="eq-card-badge" id="badge-ahu-evhw" style="background:var(--ok-bg);color:var(--ok);border-color:var(--ok-b)">DESCHIS</span>
+              </div>
+              <div class="eq-card-body" id="body-ahu-evhw">
+                <div class="ev-bar-wrap">
+                  <div class="ev-bar-label"><span>Poziție</span><span id="ahu-evhw-pct">100%</span></div>
+                  <div class="ev-bar-track"><div class="ev-bar-fill" id="ahu-evhw-bar" style="width:100%;background:var(--ok)"></div></div>
+                </div>
+                <div class="action-row">
+                  <div class="act-btn act-open" onclick="ctrlAHU('evhw',100)">Deschide</div>
+                  <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlAHU('evhw',50)">50%</div>
+                  <div class="act-btn act-close" onclick="ctrlAHU('evhw',0)">Închide</div>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Setpoint zonă</span>
+                  <div class="sp-controls">
+                    <div class="sp-btn" onclick="adjSPahu('evhw',-0.5)">−</div>
+                    <div class="sp-val" id="sp-ahu-evhw">18.0°C</div>
+                    <div class="sp-btn" onclick="adjSPahu('evhw',+0.5)">+</div>
+                  </div>
+                </div>
+                <div class="mode-row">
+                  <div class="mode-btn selected" onclick="setModeAHU('evhw','AUTO',this)">AUTO</div>
+                  <div class="mode-btn" onclick="setModeAHU('evhw','MAN',this)">MANUAL</div>
+                  <div class="mode-btn" onclick="setModeAHU('evhw','PROG',this)">PROGRAM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVCW -->
+            <div class="eq-card expanded" id="card-ahu-evcw">
+              <div class="eq-card-header" onclick="toggleCard('ahu-evcw')">
+                <div class="eq-card-left">
+                  <i class="ti ti-adjustments eq-card-icon" style="color:var(--sky);font-size:14px"></i>
+                  <div>
+                    <div class="eq-card-name">EVCW · Bat. Răcire</div>
+                    <div class="eq-card-sub">Siemens SSB · AUTO</div>
+                  </div>
+                </div>
+                <span class="eq-card-badge" id="badge-ahu-evcw" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)">85%</span>
+              </div>
+              <div class="eq-card-body" id="body-ahu-evcw">
+                <div class="ev-bar-wrap">
+                  <div class="ev-bar-label"><span>Poziție</span><span id="ahu-evcw-pct">85%</span></div>
+                  <div class="ev-bar-track"><div class="ev-bar-fill" id="ahu-evcw-bar" style="width:85%;background:var(--sky)"></div></div>
+                </div>
+                <div class="action-row">
+                  <div class="act-btn act-open" onclick="ctrlAHU('evcw',100)">Deschide</div>
+                  <div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050" onclick="ctrlAHU('evcw',50)">50%</div>
+                  <div class="act-btn act-close" onclick="ctrlAHU('evcw',0)">Închide</div>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Setpoint zonă</span>
+                  <div class="sp-controls">
+                    <div class="sp-btn" onclick="adjSPahu('evcw',-0.5)">−</div>
+                    <div class="sp-val" id="sp-ahu-evcw">22.0°C</div>
+                    <div class="sp-btn" onclick="adjSPahu('evcw',+0.5)">+</div>
+                  </div>
+                </div>
+                <div class="mode-row">
+                  <div class="mode-btn selected" onclick="setModeAHU('evcw','AUTO',this)">AUTO</div>
+                  <div class="mode-btn" onclick="setModeAHU('evcw','MAN',this)">MANUAL</div>
+                  <div class="mode-btn" onclick="setModeAHU('evcw','PROG',this)">PROGRAM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LOG COMENZI -->
+            <div class="cmd-log-wrap" style="margin-top:8px">
+              <div class="cmd-log-title">Log comenzi</div>
+              <div class="cmd-log" id="ahu-cmdlog">
+                <div class="log-e"><span class="log-ts">--:--:--</span><span class="log-info">AHU-1 · simulare activă</span></div>
+              </div>
+            </div>
+
+          </div><!-- /pid-ctrl-body -->
+        </div><!-- /pid-ctrl-panel AHU -->
+        </div><!-- /flex wrapper -->
+
       </div><!-- /view-ahu1 -->
+
+      <!-- ══ VIEW: ETAJ 1 ══ -->
+      <div id="view-etaj1" class="view">
+
+        <!-- Header -->
+        <div class="sec-header">
+          <div class="sec-title" style="display:flex;align-items:center;gap:8px">
+            <i class="ti ti-building" style="color:var(--acc)"></i>
+            Etaj 1 — Plan BMS · 10 clase · Hol
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="e1-season-badge" style="font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 10px;border-radius:3px;background:var(--crit-bg);color:var(--crit);border:1px solid var(--crit-b)">🔥 IARNĂ — CALD</span>
+            <div onclick="e1ToggleSeason()" class="sec-action" style="cursor:pointer">Comută sezon</div>
+            <div onclick="e1ShowFloor()" class="sec-action" style="cursor:pointer" id="e1-back-btn" style="display:none">← Înapoi la plan</div>
+          </div>
+        </div>
+
+        <!-- FLOOR PLAN VIEW -->
+        <div id="e1-floor-view">
+          <!-- KPI strip -->
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px">
+            <div class="kpi-s"><div class="kpi-s-label">Temp medie</div><div class="kpi-s-val ok" id="e1k-temp">21.4<span class="kpi-s-unit">°C</span></div><div class="kpi-s-sub">10 zone</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">CO₂ mediu</div><div class="kpi-s-val" style="color:var(--acc)" id="e1k-co2">648<span class="kpi-s-unit">ppm</span></div><div class="kpi-s-sub">lim 1000 ppm</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">FC active</div><div class="kpi-s-val ok">18<span class="kpi-s-unit">/20</span></div><div class="kpi-s-sub">ventiloconvectoare</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">Pardoseli ON</div><div class="kpi-s-val ok">8<span class="kpi-s-unit">/10</span></div><div class="kpi-s-sub">pompe recirculare</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">Alarme CO₂</div><div class="kpi-s-val" style="color:var(--warn)">2<span class="kpi-s-unit"></span></div><div class="kpi-s-sub">cls.4, cls.7</div></div>
+          </div>
+
+          <!-- FLOOR GRID — macheta etaj -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px">
+            <div style="font-size:9px;color:var(--t3);font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+              <i class="ti ti-layout-grid" style="font-size:11px"></i>
+              Plan Etaj 1 — click pe o clasă pentru detalii
+            </div>
+
+            <!-- Corridor label top -->
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:6px 14px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">
+              ← CORIDOR / HOL PRINCIPAL →
+            </div>
+
+            <!-- Clasele 1-5 sus -->
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px" id="e1-row1"></div>
+
+            <!-- Corridor middle -->
+            <div style="background:var(--bg1);border:1px dashed var(--border);border-radius:var(--r);padding:8px 14px;text-align:center;font-family:var(--mono);font-size:8px;color:var(--t4);letter-spacing:1px;margin:4px 0;display:flex;align-items:center;justify-content:space-between">
+              <span style="color:var(--t3)">↑ CLASE 1–5</span>
+              <span>H O L</span>
+              <span style="color:var(--t3)">CLASE 6–10 ↓</span>
+            </div>
+
+            <!-- Clasele 6-10 jos -->
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px" id="e1-row2"></div>
+
+          </div>
+        </div>
+
+        <!-- ROOM DETAIL VIEW (hidden initially) -->
+        <div id="e1-room-view" style="display:none"></div>
+
+      </div><!-- /view-etaj1 -->
 
 
     </div><!-- /content-scroll -->
@@ -3013,6 +3272,17 @@ function setView(name, btn) {
 function setZone(btn) {
   document.querySelectorAll('.zone-btn').forEach(function(b) { b.classList.remove('on'); });
   btn.classList.add('on');
+  if (btn.textContent.trim() === 'Etaj 1') {
+    // deschide view-ul Etaj 1 si dezactiveaza tab-urile ctx
+    document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
+    document.querySelectorAll('.ctx-tab').forEach(function(b) { b.classList.remove('on'); });
+    var v = document.getElementById('view-etaj1');
+    if (v) v.classList.add('on');
+    var ap = document.getElementById('alarm-panel');
+    var layout = document.getElementById('layout');
+    if (ap) ap.style.display = 'none';
+    if (layout) layout.style.gridTemplateColumns = '1fr auto';
+  }
 }
 
 /* ═══ GAUGE ENGINE ═══ */
@@ -3664,6 +3934,53 @@ function ctrlCmd(device, cmd) {
   });
 }
 
+/* ── AHU-1 Control Bar functions ── */
+function ahuLog(msg, type) {
+  var log=document.getElementById('ahu-cmdlog'); if(!log) return;
+  var n=new Date();
+  var ts=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+  var div=document.createElement('div'); div.className='log-e';
+  div.innerHTML='<span class="log-ts">'+ts+'</span><span class="log-'+(type||'ok')+'">'+msg+'</span>';
+  log.insertBefore(div, log.firstChild);
+  while(log.children.length>20) log.removeChild(log.lastChild);
+}
+
+function ctrlAHU(device, pct) {
+  var bar=document.getElementById('ahu-'+device+'-bar');
+  var pctEl=document.getElementById('ahu-'+device+'-pct');
+  var badge=document.getElementById('badge-ahu-'+device);
+  if(bar){
+    bar.style.width=pct+'%';
+    if(device==='evcw') bar.style.background='var(--sky)';
+    else bar.style.background=pct===0?'var(--ros)':pct<100?'var(--warn)':'var(--ok)';
+  }
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(badge){
+    var txt=pct===0?'ÎNCHIS':pct===100?'DESCHIS':pct+'%';
+    var col=pct===0?'var(--ros)':pct<100?'var(--amber)':'var(--ok)';
+    var bg=pct===0?'var(--rose-bg)':pct<100?'var(--amber-bg)':'var(--ok-bg)';
+    var brd=pct===0?'var(--ros-b)':pct<100?'var(--amber-b)':'var(--ok-b)';
+    if(device==='evcw'&&pct>0&&pct<100){col='var(--amber)';bg='var(--amber-bg)';brd='var(--amber-b)';}
+    badge.textContent=txt; badge.style.color=col; badge.style.background=bg; badge.style.borderColor=brd;
+  }
+  ahuLog(device.toUpperCase()+' poziție → '+pct+'% [SIM]', pct===0?'warn':'ok');
+}
+
+function setModeAHU(device, mode, btn) {
+  var parent=btn.parentElement;
+  parent.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  ahuLog(device.toUpperCase()+' mod → '+mode,'info');
+}
+
+function adjSPahu(device, delta) {
+  var el=document.getElementById('sp-ahu-'+device); if(!el) return;
+  var v=parseFloat(el.textContent)||0;
+  v=parseFloat((v+delta).toFixed(1));
+  el.textContent=v.toFixed(1)+'°C';
+  ahuLog(device.toUpperCase()+' setpoint → '+v.toFixed(1)+'°C [SIM]','ok');
+}
+
 /* Toggle PID flow */
 function togglePidFlow() {
   var flows=['pid-flow-h1','pid-flow-c1','pid-flow-z'];
@@ -3754,6 +4071,682 @@ function live(){
   s('pid-date',new Date().getFullYear());
 }
 setInterval(live,2500);live();
+
+
+/* ═══════════════════════════════════════════════════
+   ETAJ 1 — BMS
+═══════════════════════════════════════════════════ */
+var E1_SEASON = 'iarna'; // 'iarna' | 'vara'
+var E1_ACTIVE_ROOM = null;
+
+var E1_ZONES = [
+  {id:'cls1',  name:'Clasa 1',  icon:'ti-school', temp:21.8, sp:22.0, co2:612,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls2',  name:'Clasa 2',  icon:'ti-school', temp:22.1, sp:22.0, co2:588,  rh:54, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.3, evPct:100, fc1Spd:2, fc2Spd:1, alarm:false, color:'var(--acc)'},
+  {id:'cls3',  name:'Clasa 3',  icon:'ti-school', temp:21.3, sp:22.0, co2:701,  rh:55, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:3, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls4',  name:'Clasa 4',  icon:'ti-school', temp:20.9, sp:22.0, co2:1050, rh:58, fc1:'INCALZIRE', fc2:'STANDBY',   pard:true,  pardSP:21.5, pardTemp:20.8, evPct:100, fc1Spd:3, fc2Spd:0, alarm:true,  color:'var(--warn)'},
+  {id:'cls5',  name:'Clasa 5',  icon:'ti-school', temp:22.4, sp:22.0, co2:543,  rh:50, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:false, pardSP:21.5, pardTemp:20.5, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls6',  name:'Clasa 6',  icon:'ti-school', temp:21.6, sp:22.0, co2:634,  rh:53, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.2, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls7',  name:'Clasa 7',  icon:'ti-school', temp:20.2, sp:22.0, co2:1140, rh:61, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:20.9, evPct:100, fc1Spd:3, fc2Spd:3, alarm:true,  color:'var(--crit)'},
+  {id:'cls8',  name:'Clasa 8',  icon:'ti-school', temp:22.0, sp:22.0, co2:489,  rh:48, fc1:'STANDBY',   fc2:'STANDBY',   pard:false, pardSP:21.5, pardTemp:20.2, evPct:0,   fc1Spd:0, fc2Spd:0, alarm:false, color:'var(--t3)'},
+  {id:'cls9',  name:'Clasa 9',  icon:'ti-school', temp:21.7, sp:22.0, co2:622,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls10', name:'Clasa 10', icon:'ti-school', temp:21.5, sp:22.0, co2:598,  rh:51, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:1, fc2Spd:2, alarm:false, color:'var(--acc)'},
+];
+
+function e1Co2Col(v){ return v>1000?'var(--crit)':v>800?'var(--warn)':'var(--acc)'; }
+function e1Co2Lbl(v){ return v>1000?'CRITIC':v>800?'RIDICAT':'NORMAL'; }
+function e1Co2Bdg(v){ return v>1000?'b-crit':v>800?'b-warn':'b-info'; }
+function e1TmpCol(z){ return z.temp<z.sp-1.5?'var(--acc)':z.temp>z.sp+1?'var(--warn)':'var(--ok)'; }
+function e1FcCol(s){ return s==='INCALZIRE'?'#ef5350':s==='RACIRE'?'#42a5f5':s==='VENTILATIE'?'var(--ok)':'var(--t4)'; }
+function e1FcBdg(s){ return s==='INCALZIRE'?'b-crit':s==='RACIRE'?'b-info':s==='VENTILATIE'?'b-ok':'b-off'; }
+
+/* ── Render floor tiles ── */
+function e1RenderFloor(){
+  var r1 = document.getElementById('e1-row1');
+  var r2 = document.getElementById('e1-row2');
+  if(!r1||!r2) return;
+  r1.innerHTML=''; r2.innerHTML='';
+  E1_ZONES.forEach(function(z,i){
+    var tc = e1TmpCol(z);
+    var cc = e1Co2Col(z.co2);
+    var alarmBorder = z.alarm ? 'border-color:var(--warn-b);' : '';
+    var alarmAnim   = z.alarm ? 'animation:dotpulse 1.5s infinite;' : '';
+    var fcActive = (z.fc1!=='STANDBY'||z.fc2!=='STANDBY');
+    var tile = document.createElement('div');
+    tile.style.cssText = 'background:var(--bg3);border:1px solid var(--border);'+alarmBorder+'border-radius:var(--r2);padding:10px 10px 8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;'+alarmAnim;
+    tile.onmouseover = function(){ this.style.borderColor='var(--acc-b)'; this.style.background='var(--bg4)'; };
+    tile.onmouseout  = function(){ this.style.borderColor=z.alarm?'var(--warn-b)':'var(--border)'; this.style.background='var(--bg3)'; };
+    tile.onclick     = function(){ e1OpenRoom(z.id); };
+
+    // top bar color by status
+    var barColor = z.alarm?'var(--warn)': fcActive?'var(--acc)':'var(--border2)';
+
+    tile.innerHTML =
+      '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+barColor+'"></div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+        '<span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--t1)">'+z.name+'</span>'+
+        (z.alarm ? '<span style="font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-b)">CO₂!</span>' : '')+
+      '</div>'+
+      // temp
+      '<div style="display:flex;align-items:baseline;gap:2px;margin-bottom:2px">'+
+        '<span style="font-family:var(--mono);font-size:18px;font-weight:400;color:'+tc+'" id="e1tile-t-'+z.id+'">'+z.temp.toFixed(1)+'</span>'+
+        '<span style="font-family:var(--mono);font-size:10px;color:var(--t3)">°C</span>'+
+        '<span style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-left:4px">/ '+z.sp.toFixed(1)+'°C</span>'+
+      '</div>'+
+      // co2
+      '<div style="display:flex;align-items:center;gap:4px;margin-bottom:5px">'+
+        '<i class="ti ti-cloud" style="font-size:9px;color:'+cc+'"></i>'+
+        '<span style="font-family:var(--mono);font-size:10px;color:'+cc+'" id="e1tile-co2-'+z.id+'">'+z.co2+'</span>'+
+        '<span style="font-family:var(--mono);font-size:9px;color:var(--t4)">ppm</span>'+
+      '</div>'+
+      // icons row
+      '<div style="display:flex;align-items:center;gap:5px;border-top:1px solid var(--border);padding-top:5px">'+
+        '<span title="Ventiloconvector A" style="font-size:11px;color:'+(z.fc1!=='STANDBY'?e1FcCol(z.fc1):'var(--t4)')+'"><i class="ti ti-wind"></i></span>'+
+        '<span title="Ventiloconvector B" style="font-size:11px;color:'+(z.fc2!=='STANDBY'?e1FcCol(z.fc2):'var(--t4)')+'"><i class="ti ti-wind"></i></span>'+
+        '<span title="Pardoseala" style="font-size:11px;color:'+(z.pard?'var(--crit)':'var(--t4)')+'"><i class="ti ti-temperature-plus"></i></span>'+
+        '<span title="CO2 sensor" style="font-size:11px;color:'+cc+'"><i class="ti ti-cloud"></i></span>'+
+        '<span style="margin-left:auto;font-family:var(--mono);font-size:8px;color:var(--t4)">'+z.rh+'%</span>'+
+      '</div>'+
+      '<div style="text-align:right;margin-top:3px"><span style="font-family:var(--mono);font-size:7px;color:var(--t4)">detalii →</span></div>';
+
+    if(i<5) r1.appendChild(tile);
+    else     r2.appendChild(tile);
+  });
+}
+
+/* ── Open room detail ── */
+function e1OpenRoom(id){
+  E1_ACTIVE_ROOM = id;
+  var z = E1_ZONES.find(function(x){return x.id===id;});
+  if(!z) return;
+  document.getElementById('e1-floor-view').style.display = 'none';
+  document.getElementById('e1-back-btn').style.display   = '';
+  var rv = document.getElementById('e1-room-view');
+  rv.style.display = '';
+  rv.innerHTML = e1RoomHTML(z);
+}
+
+function e1ShowFloor(){
+  E1_ACTIVE_ROOM = null;
+  document.getElementById('e1-floor-view').style.display = '';
+  document.getElementById('e1-back-btn').style.display   = 'none';
+  document.getElementById('e1-room-view').style.display  = 'none';
+  document.getElementById('e1-room-view').innerHTML      = '';
+}
+
+/* ── Room HTML ── */
+function e1RoomHTML(z){
+  var tc  = e1TmpCol(z), cc = e1Co2Col(z.co2);
+  var isSummer = E1_SEASON==='vara';
+  var agentCol = isSummer?'var(--acc)':'var(--crit)';
+  var fc1c = e1FcCol(z.fc1), fc2c = e1FcCol(z.fc2);
+  var on = z.pard, pc = on?'var(--crit)':'var(--t4)';
+  var dmpOpen = z.co2 > 800;
+
+  return (
+    // breadcrumb
+    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--acc);cursor:pointer;text-decoration:underline" onclick="e1ShowFloor()">← Plan Etaj 1</span>'+
+      '<span style="color:var(--t4)">›</span>'+
+      '<span style="font-family:var(--mono);font-size:10px;color:var(--t1);font-weight:700">'+z.name+'</span>'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-left:6px">addr '+((E1_ZONES.findIndex(function(x){return x.id===z.id;})+1)*4+100)+'</span>'+
+      '<span style="margin-left:auto;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;background:'+(isSummer?'var(--info-bg)':'var(--crit-bg)')+';color:'+(isSummer?'var(--acc)':'var(--crit)')+';border:1px solid '+(isSummer?'var(--acc-b)':'var(--crit-b)')+'">'+
+        (isSummer?'❄ VARĂ':'🔥 IARNĂ')+
+      '</span>'+
+    '</div>'+
+
+    // LAYOUT: 46% stanga | 54% dreapta
+    '<div style="display:grid;grid-template-columns:46% 1fr;gap:10px;align-items:start">'+
+
+      // ══ STANGA: TERMOSTAT + SCHEMA ══
+      '<div style="display:flex;flex-direction:column;gap:8px">'+
+
+        // TERMOSTAT — principal, cu control
+        '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden">'+
+          '<div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">'+
+            '<div style="display:flex;align-items:center;gap:6px">'+
+              '<i class="ti ti-thermometer" style="color:'+tc+';font-size:15px"></i>'+
+              '<div>'+
+                '<div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--t1);letter-spacing:.5px">TERMOSTAT</div>'+
+                '<div style="font-family:var(--mono);font-size:8px;color:var(--t3)">Comandă locală · M-Bus addr</div>'+
+              '</div>'+
+            '</div>'+
+            '<span class="eq-card-badge '+(Math.abs(z.temp-z.sp)<=0.5?'b-ok':z.temp<z.sp?'b-info':'b-warn')+'">'+(Math.abs(z.temp-z.sp)<=0.5?'CONFORT':z.temp<z.sp?'SUB SP':'PESTE SP')+'</span>'+
+          '</div>'+
+          '<div style="padding:10px 12px">'+
+            // 4 valori principale
+            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:8px">'+
+              e1MetricBox('T° CURENT','rm-temp-'+z.id,z.temp.toFixed(1),'°C',tc)+
+              e1MetricBox('SETPOINT','rm-sp-'+z.id,z.sp.toFixed(1),'°C','var(--t1)')+
+              e1MetricBox('UMIDITATE','',z.rh,'%','var(--acc)')+
+              e1MetricBox('ΔT · SP','rm-dt-'+z.id,(z.temp-z.sp>=0?'+':'')+(z.temp-z.sp).toFixed(1),'°C',(Math.abs(z.temp-z.sp)<=0.5?'var(--ok)':'var(--warn)'))+
+            '</div>'+
+            // setpoint control
+            '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r)">'+
+              '<span style="font-size:9px;color:var(--t3);font-family:var(--mono)">Setpoint cameră</span>'+
+              '<div class="sp-controls">'+
+                '<div class="sp-btn" onclick="e1AdjSP(\''+z.id+'\',-0.5)">−</div>'+
+                '<div class="sp-val" id="rm-spctrl-'+z.id+'">'+z.sp.toFixed(1)+'°C</div>'+
+                '<div class="sp-btn" onclick="e1AdjSP(\''+z.id+'\',+0.5)">+</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+
+        // SCHEMA P&ID
+        e1RoomSVG(z)+
+
+      '</div>'+ // /stanga
+
+      // ══ DREAPTA: monitoring compacte ══
+      '<div style="display:flex;flex-direction:column;gap:7px">'+
+
+        // FC-A + FC-B — monitoring 2 coloane
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
+          e1FcMonitor(z,'fc1',fc1c)+
+          e1FcMonitor(z,'fc2',fc2c)+
+        '</div>'+
+
+        // CO2 + POMPA — monitoring 2 coloane
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
+          e1Co2Monitor(z,cc,dmpOpen)+
+          e1PardMonitor(z,on,pc)+
+        '</div>'+
+
+        // EV agent
+        '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 10px">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">'+
+            '<div style="display:flex;align-items:center;gap:5px">'+
+              '<i class="ti ti-adjustments" style="color:var(--acc);font-size:12px"></i>'+
+              '<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--t2)">EV AGENT · 2 ȚEVI</span>'+
+            '</div>'+
+            '<span class="eq-card-badge '+(z.evPct===100?'b-ok':z.evPct===0?'b-crit':'b-warn')+'" id="rm-evbdg-'+z.id+'">'+
+              (z.evPct===100?'DESCHIS':z.evPct===0?'ÎNCHIS':z.evPct+'%')+
+            '</span>'+
+          '</div>'+
+          '<div style="font-size:7px;color:var(--t3);font-family:var(--mono);margin-bottom:3px">Poziție · '+(isSummer?'CW 7°C':'HW 68°C')+'</div>'+
+          '<div class="ev-bar-track" style="margin-bottom:2px"><div class="ev-bar-fill" id="rm-evbar-'+z.id+'" style="width:'+z.evPct+'%;background:'+(z.evPct>50?'var(--ok)':'var(--warn)')+'"></div></div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:7px;color:var(--t4);font-family:var(--mono);margin-bottom:6px"><span>0%</span><span id="rm-evpct-'+z.id+'">'+z.evPct+'%</span><span>100%</span></div>'+
+          '<div class="action-row" style="margin:0">'+
+            '<div class="act-btn act-open" style="font-size:8px" onclick="e1SetEV(\''+z.id+'\',100)">Deschide</div>'+
+            '<div class="act-btn" style="background:#071428;color:var(--sky);border-color:#0e3050;font-size:8px" onclick="e1SetEV(\''+z.id+'\',50)">50%</div>'+
+            '<div class="act-btn act-close" style="font-size:8px" onclick="e1SetEV(\''+z.id+'\',0)">Închide</div>'+
+          '</div>'+
+        '</div>'+
+
+      '</div>'+ // /dreapta
+    '</div>'
+  );
+}
+
+// ── helper box metric ──
+function e1MetricBox(label, id, val, unit, color){
+  return (
+    '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 5px;text-align:center">'+
+      '<div style="font-size:7px;color:var(--t3);font-family:var(--mono);letter-spacing:.4px;margin-bottom:2px">'+label+'</div>'+
+      '<div style="font-family:var(--mono);font-size:20px;font-weight:300;line-height:1;color:'+color+'"'+(id?' id="'+id+'"':'')+'>'+val+'</div>'+
+      '<div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:1px">'+unit+'</div>'+
+    '</div>'
+  );
+}
+
+// ── FC monitoring — fara butoane ──
+function e1FcMonitor(z, fc, color){
+  var state = z[fc], spd = z[fc+'Spd'];
+  var num = fc==='fc1'?'1':'2';
+  var lbl = fc==='fc1'?'FC-A · Geam':'FC-B · Interior';
+  var animDur = state==='STANDBY'?'99s':spd===3?'0.32s':spd===2?'0.62s':'1.1s';
+  var fanSVG =
+    '<svg width="36" height="36" viewBox="0 0 36 36" style="flex-shrink:0">'+
+      '<circle cx="18" cy="18" r="16" fill="#0d1219" stroke="'+color+'" stroke-width="1"/>'+
+      '<g><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="'+animDur+'" repeatCount="indefinite" '+(state==='STANDBY'?'begin="indefinite"':'')+' />'+
+        '<path d="M18 4 Q23 11 18 18 Q13 11 18 4" fill="'+color+'" opacity="0.65"/>'+
+        '<path d="M32 18 Q25 23 18 18 Q25 13 32 18" fill="'+color+'" opacity="0.65"/>'+
+        '<path d="M18 32 Q13 25 18 18 Q23 25 18 32" fill="'+color+'" opacity="0.65"/>'+
+        '<path d="M4 18 Q11 13 18 18 Q11 23 4 18" fill="'+color+'" opacity="0.65"/>'+
+        '<circle cx="18" cy="18" r="3" fill="'+color+'"/>'+
+      '</g>'+
+    '</svg>';
+  return (
+    '<div style="background:var(--bg2);border:1px solid '+(state!=='STANDBY'?color:'var(--border)')+';border-radius:var(--r2);padding:8px 9px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'+
+        '<span style="font-family:var(--mono);font-size:8px;font-weight:700;color:var(--t2)">'+lbl+'</span>'+
+        '<span class="eq-card-badge '+e1FcBdg(state)+'" id="rm-fc'+num+'bdg-'+z.id+'" style="font-size:7px">'+state+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+        fanSVG+
+        '<div style="flex:1">'+
+          '<div style="font-size:7px;color:var(--t3);font-family:var(--mono);margin-bottom:3px">VITEZĂ</div>'+
+          '<div style="display:flex;gap:3px">'+
+            [1,2,3].map(function(s){
+              var sel=spd===s;
+              return '<div style="flex:1;text-align:center;padding:3px 0;font-family:var(--mono);font-size:9px;font-weight:700;border-radius:3px;border:1px solid '+(sel?color:'var(--border)')+';background:'+(sel?'rgba(0,0,0,0.4)':'var(--bg3)')+';color:'+(sel?color:'var(--t4)')+'">'+s+'</div>';
+            }).join('')+
+          '</div>'+
+          '<div style="font-size:7px;color:var(--t4);font-family:var(--mono);margin-top:3px">~'+(spd===0?0:spd===1?450:spd===2?850:1250)+' rpm</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'
+  );
+}
+
+// ── CO2 monitoring + status damper ──
+function e1Co2Monitor(z, cc, dmpOpen){
+  var pct = Math.min(100,Math.round(z.co2/20));
+  var arcC = cc.replace('var(--crit)','#e53935').replace('var(--warn)','#fb8c00').replace('var(--acc)','#1e88e5');
+  var r=22, circ=2*Math.PI*r, dash=circ*(pct/100), gap=circ-dash;
+  var dc = dmpOpen ? '#43a047' : '#37474f';
+  return (
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 9px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">'+
+        '<span style="font-family:var(--mono);font-size:8px;font-weight:700;color:var(--t2)">CO₂ · NDIR</span>'+
+        '<span class="eq-card-badge '+(z.co2>1000?'b-crit':z.co2>800?'b-warn':'b-info')+'" id="rm-co2bdg-'+z.id+'" style="font-size:7px">'+(z.co2>1000?'CRITIC':z.co2>800?'RIDICAT':'NORMAL')+'</span>'+
+      '</div>'+
+      // arc + valoare
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+
+        '<svg width="52" height="52" viewBox="0 0 52 52" style="flex-shrink:0">'+
+          '<circle cx="26" cy="26" r="22" fill="none" stroke="#1e2d3d" stroke-width="5"/>'+
+          '<circle cx="26" cy="26" r="22" fill="none" stroke="'+arcC+'" stroke-width="5" stroke-dasharray="'+dash.toFixed(1)+' '+gap.toFixed(1)+'" stroke-dashoffset="'+((circ*0.25)).toFixed(1)+'" stroke-linecap="round" id="rm-co2arc-'+z.id+'"/>'+
+          '<text x="26" y="24" text-anchor="middle" fill="'+arcC+'" font-size="10" font-weight="400" font-family="JetBrains Mono,monospace" id="rm-co2-'+z.id+'">'+z.co2+'</text>'+
+          '<text x="26" y="33" text-anchor="middle" fill="#3d5a75" font-size="6" font-family="JetBrains Mono,monospace">ppm</text>'+
+          (z.co2>800?'<circle cx="26" cy="44" r="3" fill="'+arcC+'"><animate attributeName="opacity" values="1;0.1;1" dur="0.7s" repeatCount="indefinite"/></circle>':'<circle cx="26" cy="44" r="3" fill="'+arcC+'" opacity="0.15"/>')+
+        '</svg>'+
+        '<div style="flex:1;font-family:var(--mono);font-size:7px">'+
+          '<div style="color:var(--ok);margin-bottom:2px">&lt;800 Normal</div>'+
+          '<div style="color:var(--warn);margin-bottom:2px">800-1000 Ridicat</div>'+
+          '<div style="color:var(--crit)">&gt;1000 Critic</div>'+
+        '</div>'+
+      '</div>'+
+      // bara CO2
+      '<div class="ev-bar-track" style="margin-bottom:2px"><div class="ev-bar-fill" id="rm-co2bar-'+z.id+'" style="width:'+pct+'%;background:'+cc+'"></div></div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:6px;color:var(--t4);font-family:var(--mono);margin-bottom:6px"><span>0</span><span>1000</span><span>2000</span></div>'+
+      // separator
+      '<div style="border-top:1px solid var(--border);padding-top:5px">'+
+        '<div style="font-size:7px;color:var(--t3);font-family:var(--mono);margin-bottom:3px">DAMPER AER PROASPĂT · FCU local</div>'+
+        // damper vizual SVG
+        e1DamperSVG(dmpOpen, dc, z.id)+
+        '<div style="font-size:7px;font-family:var(--mono);color:'+dc+';margin-top:3px;display:flex;justify-content:space-between" id="rm-dmp-lbl-'+z.id+'">'+
+          '<span>'+(dmpOpen?'75° · DESCHIS':'0° · ÎNCHIS')+'</span>'+
+          '<span style="color:var(--t4)">prag: 800ppm</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'
+  );
+}
+
+// ── Damper SVG vizual clar pe dark theme ──
+function e1DamperSVG(open, dc, zid){
+  // duct dreptunghiular, lama rotita, flux animat
+  var lamaAng = open ? 75 : 0; // grade fata de vertical
+  var rad = lamaAng * Math.PI / 180;
+  var px=30, py=12; // pivot centru duct
+  var L=9;
+  var x1=(px-Math.sin(rad)*L).toFixed(1), y1=(py-Math.cos(rad)*L).toFixed(1);
+  var x2=(px+Math.sin(rad)*L).toFixed(1), y2=(py+Math.cos(rad)*L).toFixed(1);
+  return (
+    '<svg width="100%" height="28" viewBox="0 0 100 28" style="display:block" xmlns="http://www.w3.org/2000/svg">'+
+      // duct
+      '<rect x="4" y="4" width="60" height="20" rx="3" fill="#0d1219" stroke="'+dc+'" stroke-width="1"/>'+
+      // flux animat cand deschis
+      (open?
+        '<line x1="8" y1="14" x2="60" y2="14" stroke="'+dc+'" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.7">'+
+          '<animate attributeName="stroke-dashoffset" from="0" to="-18" dur="0.5s" repeatCount="indefinite"/>'+
+        '</line>'
+      :'')+
+      // lama damper rotita
+      '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+dc+'" stroke-width="2.5" stroke-linecap="round" id="rm-dmp-lama-'+zid+'"/>'+
+      // pivot
+      '<circle cx="'+px+'" cy="'+py+'" r="2" fill="'+dc+'"/>'+
+      // actuator
+      '<line x1="'+px+'" y1="0" x2="'+px+'" y2="4" stroke="'+dc+'" stroke-width="1.5"/>'+
+      '<rect x="'+(px-5)+'" y="0" width="10" height="4" rx="1" fill="#1a2a1a" stroke="'+dc+'" stroke-width="0.8"/>'+
+      // unghi indicator
+      '<text x="'+(px+14)+'" y="12" fill="'+dc+'" font-size="7" font-family="JetBrains Mono,monospace" font-weight="700">'+(open?'75°':'0°')+'</text>'+
+      // sageata aer exterior
+      '<line x1="68" y1="14" x2="80" y2="14" stroke="'+dc+'" stroke-width="1.5" '+(open?'':'opacity="0.3"')+' />'+
+      '<polygon points="80,11 86,14 80,17" fill="'+dc+'" '+(open?'':'opacity="0.3"')+' />'+
+      '<text x="90" y="11" fill="'+dc+'" font-size="6" font-family="JetBrains Mono,monospace">EXT</text>'+
+      '<text x="90" y="19" fill="'+dc+'" font-size="5.5" font-family="JetBrains Mono,monospace">AER</text>'+
+    '</svg>'
+  );
+}
+
+// ── Pardoseala monitoring — fara butoane ──
+function e1PardMonitor(z, on, pc){
+  var animDur = on?'1.5s':'99s';
+  var pipeC = on?'#e53935':'#37474f';
+  var pumpSVG =
+    '<svg width="40" height="40" viewBox="0 0 40 40" style="flex-shrink:0">'+
+      '<circle cx="20" cy="20" r="17" fill="'+(on?'#1a0505':'#0d1219')+'" stroke="'+pipeC+'" stroke-width="1.5"/>'+
+      '<polygon points="10,28 10,12 30,20" fill="'+pipeC+'" opacity="0.75"/>'+
+      '<g><animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="'+animDur+'" repeatCount="indefinite" '+(on?'':'begin="indefinite"')+' />'+
+        '<line x1="20" y1="6" x2="20" y2="34" stroke="'+pipeC+'" stroke-width="0.8" opacity="0.2"/>'+
+        '<line x1="6" y1="20" x2="34" y2="20" stroke="'+pipeC+'" stroke-width="0.8" opacity="0.2"/>'+
+      '</g>'+
+    '</svg>';
+  return (
+    '<div style="background:var(--bg2);border:1px solid '+(on?'#3a1010':'var(--border)')+';border-radius:var(--r2);padding:8px 9px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">'+
+        '<span style="font-family:var(--mono);font-size:8px;font-weight:700;color:var(--t2)">POMPĂ PARD.</span>'+
+        '<span class="eq-card-badge '+(on?'b-crit':'b-off')+'" id="rm-pardbdg-'+z.id+'">'+(on?'ACTIV':'OPRIT')+'</span>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'+
+        pumpSVG+
+        '<div style="flex:1">'+
+          '<div style="font-size:7px;color:var(--t3);font-family:var(--mono);margin-bottom:2px">T° PARDOSEALĂ</div>'+
+          '<div style="display:flex;align-items:baseline;gap:2px;margin-bottom:3px">'+
+            '<span style="font-family:var(--mono);font-size:18px;font-weight:300;color:'+pc+'" id="rm-pardtemp-'+z.id+'">'+z.pardTemp.toFixed(1)+'</span>'+
+            '<span style="font-family:var(--mono);font-size:9px;color:var(--t3)">°C</span>'+
+          '</div>'+
+          '<div style="font-size:7px;color:var(--t4);font-family:var(--mono)">SP: <span id="rm-pardsp-'+z.id+'">'+z.pardSP.toFixed(1)+'</span>°C</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="padding:4px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);font-family:var(--mono);font-size:7px;color:var(--t3)">'+
+        'Comandă: <span style="color:var(--t2)">termostat local</span>'+
+      '</div>'+
+    '</div>'
+  );
+}
+
+/* ── Room SVG ── */
+function e1RoomSVG(z){
+  var isSummer = E1_SEASON==='vara';
+  var fc1c = e1FcCol(z.fc1), fc2c = e1FcCol(z.fc2);
+  var cc = e1Co2Col(z.co2), tc = e1TmpCol(z);
+  var on = z.pard;
+  var pipeS = isSummer?'#0d2a4a':'#4a0f0f';
+  var pipeF = isSummer?'#42a5f5':'#ef5350';
+  var pipeD = isSummer?'-36':'36';
+  var agtTxt = isSummer?'CW 7°C':'HW 68°C';
+  var agtCol = isSummer?'#42a5f5':'#ef5350';
+  var pc = on?'#ef5350':'#1e2d3d';
+  var pb = on?'#1a0505':'#0d1219';
+  var dmpOpen = z.co2 > 800;
+  var dc = dmpOpen?'#43a047':'#2e4a2e';
+
+  return (
+'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden">'+
+'<div style="padding:5px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">'+
+  '<span style="font-family:var(--mono);font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:1px">Schema P&ID · '+z.name+'</span>'+
+  '<span style="font-family:var(--mono);font-size:8px;color:'+agtCol+'">'+agtTxt+'</span>'+
+'</div>'+
+'<svg viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;background:#07090d" font-family="JetBrains Mono,monospace">'+
+
+  // camere
+  '<rect x="8" y="8" width="344" height="264" rx="3" fill="none" stroke="#1e2d3d" stroke-width="1.5"/>'+
+  (on?'<defs><pattern id="hf3" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="10" x2="10" y2="0" stroke="#4a0f0f" stroke-width="0.4" opacity="0.18"/></pattern></defs><rect x="9" y="9" width="342" height="262" fill="url(#hf3)"/>':'')+
+
+  // ferestre
+  '<rect x="50"  y="8" width="50" height="5" rx="1" fill="#0d1a2e" stroke="#1e3a5a" stroke-width="0.8"/>'+
+  '<rect x="150" y="8" width="50" height="5" rx="1" fill="#0d1a2e" stroke="#1e3a5a" stroke-width="0.8"/>'+
+  '<rect x="250" y="8" width="50" height="5" rx="1" fill="#0d1a2e" stroke="#1e3a5a" stroke-width="0.8"/>'+
+
+  // usa
+  '<rect x="148" y="267" width="40" height="5" rx="1" fill="#0d1a2e" stroke="#1e3a5a" stroke-width="0.8"/>'+
+
+  // conducta TUR
+  '<line x1="8" y1="26" x2="352" y2="26" stroke="'+pipeS+'" stroke-width="6" stroke-linecap="round"/>'+
+  '<line x1="8" y1="26" x2="352" y2="26" stroke="'+pipeF+'" stroke-width="2" stroke-dasharray="10,8" opacity="0.8">'+
+    '<animate attributeName="stroke-dashoffset" from="0" to="'+pipeD+'" dur="1s" repeatCount="indefinite"/>'+
+  '</line>'+
+  '<rect x="10" y="18" width="52" height="12" rx="2" fill="#07090d" stroke="'+pipeS+'" stroke-width="0.8"/>'+
+  '<text x="36" y="27" text-anchor="middle" fill="'+agtCol+'" font-size="6.5" font-weight="700">TUR · '+agtTxt+'</text>'+
+
+  // conducta RETUR
+  '<line x1="8" y1="36" x2="352" y2="36" stroke="'+pipeS+'" stroke-width="3" opacity="0.45"/>'+
+
+  // FC-A cu damper
+  e1FcSVGwDamper(z,'fc1',78,44,fc1c,pipeS,pipeF,dmpOpen,dc)+
+
+  // FC-B cu damper
+  e1FcSVGwDamper(z,'fc2',258,44,fc2c,pipeS,pipeF,dmpOpen,dc)+
+
+  // Termostat perete dreapta
+  e1ThermoSVGpid(z,328,130,tc)+
+
+  // CO2 perete stanga
+  e1Co2SVGpid(z,28,130,e1Co2Col(z.co2))+
+
+  // Pompa pardoseala centru jos
+  e1PumpSVGpid(z,178,195,on,pc,pb)+
+
+  // M-Bus gateway
+  '<rect x="282" y="252" width="62" height="20" rx="2" fill="#071428" stroke="#0d2a50" stroke-width="0.8"/>'+
+  '<text x="313" y="261" text-anchor="middle" fill="#1e3a5a" font-size="6" font-weight="700">M-Bus GATEWAY</text>'+
+  '<text x="313" y="269" text-anchor="middle" fill="#1e3a5a" font-size="5.5">TSTAT · FCU-A · FCU-B</text>'+
+  '<line x1="282" y1="261" x2="260" y2="261" stroke="#0d2a50" stroke-width="0.8" stroke-dasharray="3,2"/>'+
+
+'</svg>'+
+'</div>'
+  );
+}
+
+// ── FCU cu damper atasat ──
+function e1FcSVGwDamper(z, fc, cx, cy, color, pipeS, pipeF, dmpOpen, dc){
+  var state=z[fc], spd=z[fc+'Spd'];
+  var bg=state==='INCALZIRE'?'#1a0505':state==='RACIRE'?'#071428':state==='VENTILATIE'?'#001a0a':'#0d1219';
+  var animDur=state==='STANDBY'?'99s':spd===3?'0.35s':spd===2?'0.65s':'1.1s';
+  var w=50, h=58, x=cx-w/2, y=cy;
+  // damper sub FCU
+  var dy=y+h+6; // top duct
+  var dpx=cx, dpy=dy+9; // pivot
+  var lamaAng=dmpOpen?75:0, rad=lamaAng*Math.PI/180, L=10;
+  var lx1=(dpx-Math.sin(rad)*L).toFixed(1), ly1=(dpy-Math.cos(rad)*L).toFixed(1);
+  var lx2=(dpx+Math.sin(rad)*L).toFixed(1), ly2=(dpy+Math.cos(rad)*L).toFixed(1);
+
+  return (
+    // corp FCU
+    '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+bg+'" stroke="'+color+'" stroke-width="1.2"/>'+
+    '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="3" fill="'+color+'" opacity="0.55"/>'+
+    '<text x="'+cx+'" y="'+(y+11)+'" text-anchor="middle" fill="'+color+'" font-size="7" font-weight="700">'+fc.toUpperCase()+'</text>'+
+    // ventilator
+    '<circle cx="'+cx+'" cy="'+(y+28)+'" r="13" fill="#07090d" stroke="'+color+'" stroke-width="1"/>'+
+    '<g>'+
+      '<animateTransform attributeName="transform" type="rotate" from="0 '+cx+' '+(y+28)+'" to="360 '+cx+' '+(y+28)+'" dur="'+animDur+'" repeatCount="indefinite" '+(state==='STANDBY'?'begin="indefinite"':'')+' />'+
+      '<path d="M'+cx+' '+(y+17)+' Q'+(cx+7)+' '+(y+24)+' '+cx+' '+(y+28)+' Q'+(cx-7)+' '+(y+24)+' '+cx+' '+(y+17)+'" fill="'+color+'" opacity="0.7"/>'+
+      '<path d="M'+(cx+13)+' '+(y+28)+' Q'+(cx+6)+' '+(y+35)+' '+cx+' '+(y+28)+' Q'+(cx+6)+' '+(y+21)+' '+(cx+13)+' '+(y+28)+'" fill="'+color+'" opacity="0.7"/>'+
+      '<path d="M'+cx+' '+(y+39)+' Q'+(cx-7)+' '+(y+32)+' '+cx+' '+(y+28)+' Q'+(cx+7)+' '+(y+32)+' '+cx+' '+(y+39)+'" fill="'+color+'" opacity="0.7"/>'+
+      '<path d="M'+(cx-13)+' '+(y+28)+' Q'+(cx-6)+' '+(y+21)+' '+cx+' '+(y+28)+' Q'+(cx-6)+' '+(y+35)+' '+(cx-13)+' '+(y+28)+'" fill="'+color+'" opacity="0.7"/>'+
+      '<circle cx="'+cx+'" cy="'+(y+28)+'" r="3" fill="'+color+'"/>'+
+    '</g>'+
+    // speed dots
+    (spd>=1?'<circle cx="'+(cx-7)+'" cy="'+(y+47)+'" r="2" fill="'+color+'"/>':'<circle cx="'+(cx-7)+'" cy="'+(y+47)+'" r="2" fill="#1e2d3d"/>')+
+    (spd>=2?'<circle cx="'+cx+'"     cy="'+(y+47)+'" r="2" fill="'+color+'"/>':'<circle cx="'+cx+'"     cy="'+(y+47)+'" r="2" fill="#1e2d3d"/>')+
+    (spd>=3?'<circle cx="'+(cx+7)+'" cy="'+(y+47)+'" r="2" fill="'+color+'"/>':'<circle cx="'+(cx+7)+'" cy="'+(y+47)+'" r="2" fill="#1e2d3d"/>')+
+    '<text x="'+cx+'" y="'+(y+56)+'" text-anchor="middle" fill="'+color+'" font-size="5.5">'+state+'</text>'+
+
+    // racord conducta
+    '<line x1="'+cx+'" y1="36" x2="'+cx+'" y2="'+y+'" stroke="'+pipeS+'" stroke-width="3"/>'+
+    '<line x1="'+cx+'" y1="36" x2="'+cx+'" y2="'+y+'" stroke="'+pipeF+'" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6">'+
+      '<animate attributeName="stroke-dashoffset" from="0" to="15" dur="0.7s" repeatCount="indefinite"/>'+
+    '</line>'+
+    // EV simbol
+    '<rect x="'+(cx-5)+'" y="'+(y-10)+'" width="10" height="8" rx="1" fill="#07090d" stroke="'+color+'" stroke-width="0.8"/>'+
+    '<line x1="'+(cx-5)+'" y1="'+(y-10)+'" x2="'+(cx+5)+'" y2="'+(y-2)+'" stroke="'+color+'" stroke-width="0.8"/>'+
+    '<line x1="'+(cx+5)+'" y1="'+(y-10)+'" x2="'+(cx-5)+'" y2="'+(y-2)+'" stroke="'+color+'" stroke-width="0.8"/>'+
+
+    // ── DAMPER sub FCU ──
+    // fir comanda 0-10V de la FCU la damper
+    '<line x1="'+cx+'" y1="'+(y+h)+'" x2="'+cx+'" y2="'+dy+'" stroke="'+dc+'" stroke-width="1" stroke-dasharray="2,2" opacity="0.8"/>'+
+    // duct
+    '<rect x="'+(cx-14)+'" y="'+dy+'" width="28" height="18" rx="2" fill="#0a120a" stroke="'+dc+'" stroke-width="1"/>'+
+    // flux animat
+    (dmpOpen?
+      '<line x1="'+(cx-12)+'" y1="'+dpy+'" x2="'+(cx+12)+'" y2="'+dpy+'" stroke="'+dc+'" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.75">'+
+        '<animate attributeName="stroke-dashoffset" from="0" to="-14" dur="0.5s" repeatCount="indefinite"/>'+
+      '</line>'
+    :'')+
+    // lama
+    '<line x1="'+lx1+'" y1="'+ly1+'" x2="'+lx2+'" y2="'+ly2+'" stroke="'+dc+'" stroke-width="2.5" stroke-linecap="round"/>'+
+    '<circle cx="'+dpx+'" cy="'+dpy+'" r="1.8" fill="'+dc+'"/>'+
+    // actuator
+    '<rect x="'+(dpx-4)+'" y="'+(dy-6)+'" width="8" height="5" rx="1" fill="#0a120a" stroke="'+dc+'" stroke-width="0.8"/>'+
+    '<line x1="'+dpx+'" y1="'+(dy-6)+'" x2="'+dpx+'" y2="'+dy+'" stroke="'+dc+'" stroke-width="1"/>'+
+    // unghi
+    '<text x="'+(cx+17)+'" y="'+(dy+12)+'" fill="'+dc+'" font-size="6" font-weight="700">'+(dmpOpen?'75°':'0°')+'</text>'+
+    // label
+    '<text x="'+cx+'" y="'+(dy+27)+'" text-anchor="middle" fill="'+dc+'" font-size="5.5">DAMPER</text>'
+  );
+}
+
+// ── Termostat PID ──
+function e1ThermoSVGpid(z, x, y, tc){
+  var bx=x-24, by=y-30;
+  return (
+    '<rect x="'+bx+'" y="'+by+'" width="48" height="60" rx="3" fill="#0d1219" stroke="'+tc+'" stroke-width="1.2"/>'+
+    '<rect x="'+bx+'" y="'+by+'" width="48" height="3" fill="'+tc+'" opacity="0.5"/>'+
+    '<text x="'+x+'" y="'+(by+12)+'" text-anchor="middle" fill="'+tc+'" font-size="7" font-weight="700">TSTAT</text>'+
+    '<rect x="'+(bx+3)+'" y="'+(by+15)+'" width="42" height="24" rx="2" fill="#07090d" stroke="#1e2d3d" stroke-width="0.5"/>'+
+    '<text x="'+x+'" y="'+(by+30)+'" text-anchor="middle" fill="'+tc+'" font-size="14" font-weight="300" id="rm-svgt-'+z.id+'">'+z.temp.toFixed(1)+'</text>'+
+    '<text x="'+x+'" y="'+(by+42)+'" text-anchor="middle" fill="#3d5a75" font-size="6">°C  SP:'+z.sp.toFixed(1)+'</text>'+
+    '<circle cx="'+(bx+8)+'" cy="'+(by+53)+'" r="3" fill="'+tc+'">'+(Math.abs(z.temp-z.sp)<=0.5?'<animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>':'')+'</circle>'+
+    '<text x="'+(bx+14)+'" y="'+(by+56)+'" fill="#3d5a75" font-size="6">RH: '+z.rh+'%</text>'+
+    '<line x1="'+bx+'" y1="'+(by+27)+'" x2="8" y2="'+(by+27)+'" stroke="#1e2d3d" stroke-width="0.8" stroke-dasharray="3,2"/>'
+  );
+}
+
+// ── CO2 senzor PID ──
+function e1Co2SVGpid(z, x, y, cc){
+  var bx=x-18, by=y-26;
+  return (
+    '<rect x="'+bx+'" y="'+by+'" width="36" height="52" rx="3" fill="#0a0014" stroke="'+cc+'" stroke-width="1.2"/>'+
+    '<rect x="'+bx+'" y="'+by+'" width="36" height="3" fill="'+cc+'" opacity="0.5"/>'+
+    '<text x="'+x+'" y="'+(by+11)+'" text-anchor="middle" fill="'+cc+'" font-size="7" font-weight="700">CO₂</text>'+
+    '<rect x="'+(bx+3)+'" y="'+(by+14)+'" width="30" height="20" rx="2" fill="#07090d" stroke="#1e0a2a" stroke-width="0.5"/>'+
+    '<text x="'+x+'" y="'+(by+27)+'" text-anchor="middle" fill="'+cc+'" font-size="11" font-weight="300" id="rm-svgco2-'+z.id+'">'+z.co2+'</text>'+
+    '<text x="'+x+'" y="'+(by+38)+'" text-anchor="middle" fill="#3d5a75" font-size="5.5">ppm</text>'+
+    (z.co2>800?'<circle cx="'+x+'" cy="'+(by+46)+'" r="3.5" fill="'+cc+'"><animate attributeName="opacity" values="1;0.1;1" dur="0.7s" repeatCount="indefinite"/></circle>':'<circle cx="'+x+'" cy="'+(by+46)+'" r="3.5" fill="'+cc+'" opacity="0.15"/>')+
+    '<line x1="'+(bx+36)+'" y1="'+(by+25)+'" x2="352" y2="'+(by+25)+'" stroke="#1e2d3d" stroke-width="0.8" stroke-dasharray="3,2"/>'
+  );
+}
+
+// ── Pompa recirculare PID ──
+function e1PumpSVGpid(z, cx, cy, on, pc, pb){
+  var animDur=on?'1.5s':'99s', r=18;
+  var pxIn=cx-r-26, pxOut=cx+r+26;
+  return (
+    '<line x1="'+pxIn+'" y1="'+cy+'" x2="'+(cx-r)+'" y2="'+cy+'" stroke="'+pc+'" stroke-width="4" stroke-linecap="round"/>'+
+    (on?'<line x1="'+pxIn+'" y1="'+cy+'" x2="'+(cx-r)+'" y2="'+cy+'" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="0.8s" repeatCount="indefinite"/></line>':'')+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+pb+'" stroke="'+pc+'" stroke-width="1.8"/>'+
+    '<polygon points="'+(cx-10)+','+(cy+8)+' '+(cx-10)+','+(cy-8)+' '+(cx+12)+','+cy+'" fill="'+pc+'" opacity="0.75"/>'+
+    '<g><animateTransform attributeName="transform" type="rotate" from="0 '+cx+' '+cy+'" to="360 '+cx+' '+cy+'" dur="'+animDur+'" repeatCount="indefinite" '+(on?'':'begin="indefinite"')+' />'+
+      '<line x1="'+cx+'" y1="'+(cy-r+4)+'" x2="'+cx+'" y2="'+(cy+r-4)+'" stroke="'+pc+'" stroke-width="0.8" opacity="0.2"/>'+
+      '<line x1="'+(cx-r+4)+'" y1="'+cy+'" x2="'+(cx+r-4)+'" y2="'+cy+'" stroke="'+pc+'" stroke-width="0.8" opacity="0.2"/>'+
+    '</g>'+
+    '<line x1="'+(cx+r)+'" y1="'+cy+'" x2="'+pxOut+'" y2="'+cy+'" stroke="'+pc+'" stroke-width="4" stroke-linecap="round"/>'+
+    (on?'<line x1="'+(cx+r)+'" y1="'+cy+'" x2="'+pxOut+'" y2="'+cy+'" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="0.8s" repeatCount="indefinite"/></line>':'')+
+    '<path d="M'+pxIn+' '+cy+' L'+pxIn+' '+(cy+32)+' L'+pxOut+' '+(cy+32)+' L'+pxOut+' '+cy+'" fill="none" stroke="'+pc+'" stroke-width="1.2" opacity="0.15" stroke-dasharray="4,3"/>'+
+    '<text x="'+cx+'" y="'+(cy+r+10)+'" text-anchor="middle" fill="'+pc+'" font-size="6.5" font-weight="700">POMPĂ PARD.</text>'+
+    '<text x="'+cx+'" y="'+(cy+r+18)+'" text-anchor="middle" fill="'+pc+'" font-size="5.5" id="rm-svgpard-'+z.id+'">'+(on?'ACTIV · '+z.pardTemp.toFixed(1)+'°C':'OPRITĂ')+'</text>'+
+    '<text x="'+(pxIn-2)+'" y="'+(cy-5)+'" text-anchor="end" fill="'+pc+'" font-size="5.5">RETUR</text>'+
+    '<text x="'+(pxOut+2)+'" y="'+(cy-5)+'" fill="'+pc+'" font-size="5.5">TUR</text>'
+  );
+}
+
+/* ── Control functions ── */
+function e1SetFC(zid, fc, mode){
+  var z = E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z[fc] = mode;
+  var bdg = document.getElementById('rm-fc'+(fc==='fc1'?'1':'2')+'bdg-'+zid);
+  if(bdg){ bdg.className='eq-card-badge '+e1FcBdg(mode); bdg.textContent=mode; }
+  pidLog('[ET1] '+zid+' '+fc+' → '+mode, mode==='STANDBY'?'warn':'ok');
+  if(E1_ACTIVE_ROOM===zid) e1OpenRoom(zid);
+}
+function e1SetEV(zid, pct){
+  var z = E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z.evPct = pct;
+  var bar=document.getElementById('rm-evbar-'+zid), pctEl=document.getElementById('rm-evpct-'+zid), bdg=document.getElementById('rm-evbdg-'+zid);
+  if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>50?'var(--ok)':'var(--warn)'; }
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(bdg){ bdg.className='eq-card-badge '+(pct===100?'b-ok':pct===0?'b-crit':'b-warn'); bdg.textContent=pct===100?'DESCHIS':pct===0?'ÎNCHIS':pct+'%'; }
+  pidLog('[ET1] '+zid+' EV → '+pct+'%', pct===0?'warn':'ok');
+}
+function e1AdjSP(zid, d){
+  var z=E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z.sp=parseFloat((z.sp+d).toFixed(1));
+  var el=document.getElementById('rm-spctrl-'+zid); if(el) el.textContent=z.sp.toFixed(1)+'°C';
+  var el2=document.getElementById('rm-sp-'+zid); if(el2) el2.textContent=z.sp.toFixed(1);
+  pidLog('[ET1] '+zid+' SP temp → '+z.sp+'°C','ok');
+}
+function e1AdjPardSP(zid, d){
+  var z=E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z.pardSP=parseFloat((z.pardSP+d).toFixed(1));
+  var el=document.getElementById('rm-pardspctrl-'+zid); if(el) el.textContent=z.pardSP.toFixed(1)+'°C';
+  var el2=document.getElementById('rm-pardsp-'+zid); if(el2) el2.textContent=z.pardSP.toFixed(1);
+  pidLog('[ET1] '+zid+' SP pardoseală → '+z.pardSP+'°C','ok');
+}
+function e1TogglePard(zid){
+  var z=E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z.pard=!z.pard;
+  var tog=document.getElementById('rm-pardtog-'+zid), lbl=document.getElementById('rm-pardlbl-'+zid), bdg=document.getElementById('rm-pardbdg-'+zid);
+  if(tog){ tog.className='toggle-switch'+(z.pard?' on':''); }
+  if(lbl){ lbl.textContent=z.pard?'ON':'OFF'; lbl.className='toggle-state '+(z.pard?'ok':'t3'); }
+  if(bdg){ bdg.className='eq-card-badge '+(z.pard?'b-crit':'b-off'); bdg.textContent=z.pard?'🔥 ACTIV':'OPRIT'; }
+  pidLog('[ET1] '+zid+' pardoseală → '+(z.pard?'PORNIT':'OPRIT'), z.pard?'ok':'warn');
+  // re-render SVG only
+  if(E1_ACTIVE_ROOM===zid) e1OpenRoom(zid);
+}
+function e1FcSpd(btn, zid, fc, spd){
+  var z=E1_ZONES.find(function(x){return x.id===zid;}); if(!z) return;
+  z[fc+'Spd']=spd;
+  var parent=btn.parentElement;
+  parent.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  pidLog('[ET1] '+zid+' '+fc+' viteză → '+spd,'info');
+}
+function e1ToggleSeason(){
+  E1_SEASON = E1_SEASON==='iarna' ? 'vara' : 'iarna';
+  var bdg = document.getElementById('e1-season-badge');
+  if(bdg){
+    if(E1_SEASON==='iarna'){ bdg.textContent='🔥 IARNĂ — CALD'; bdg.style.background='var(--crit-bg)'; bdg.style.color='var(--crit)'; bdg.style.borderColor='var(--crit-b)'; }
+    else                   { bdg.textContent='❄ VARĂ — RECE';   bdg.style.background='var(--info-bg)'; bdg.style.color='var(--acc)';  bdg.style.borderColor='var(--acc-b)'; }
+  }
+  E1_ZONES.forEach(function(z){
+    if(z.fc1==='INCALZIRE'||z.fc1==='RACIRE') z.fc1 = E1_SEASON==='iarna'?'INCALZIRE':'RACIRE';
+    if(z.fc2==='INCALZIRE'||z.fc2==='RACIRE') z.fc2 = E1_SEASON==='iarna'?'INCALZIRE':'RACIRE';
+  });
+  e1RenderFloor();
+  if(E1_ACTIVE_ROOM) e1OpenRoom(E1_ACTIVE_ROOM);
+  pidLog('[ET1] Sezon → '+(E1_SEASON==='iarna'?'IARNĂ':'VARĂ'),'info');
+}
+
+/* ── Live simulation ── */
+setInterval(function(){
+  var v=document.getElementById('view-etaj1');
+  if(!v||!v.classList.contains('on')) return;
+  E1_ZONES.forEach(function(z){
+    z.temp     = parseFloat((z.temp+(Math.random()-.5)*0.06).toFixed(2));
+    z.co2      = Math.max(400,Math.min(1300,z.co2+Math.round((Math.random()-.45)*9)));
+    z.pardTemp = parseFloat((z.pardTemp+(Math.random()-.48)*0.03).toFixed(2));
+    // update floor tiles
+    var tt=document.getElementById('e1tile-t-'+z.id);
+    var tc2=document.getElementById('e1tile-co2-'+z.id);
+    if(tt){ tt.textContent=z.temp.toFixed(1); tt.style.color=e1TmpCol(z); }
+    if(tc2){ tc2.textContent=z.co2; tc2.style.color=e1Co2Col(z.co2); }
+    // update room view if open
+    if(E1_ACTIVE_ROOM===z.id){
+      var rt=document.getElementById('rm-temp-'+z.id); if(rt){rt.textContent=z.temp.toFixed(1); rt.style.color=e1TmpCol(z);}
+      var rc=document.getElementById('rm-co2-'+z.id);  if(rc){rc.textContent=z.co2; rc.style.color=e1Co2Col(z.co2);}
+      var rcb=document.getElementById('rm-co2bar-'+z.id); if(rcb){rcb.style.width=Math.min(100,Math.round(z.co2/20))+'%'; rcb.style.background=e1Co2Col(z.co2);}
+      var arc=document.getElementById('rm-co2arc-'+z.id);if(arc){var p2=Math.min(100,Math.round(z.co2/20));var ci=2*Math.PI*22;var dd=ci*(p2/100);arc.setAttribute('stroke-dasharray',dd.toFixed(1)+' '+(ci-dd).toFixed(1));arc.setAttribute('stroke',e1Co2Col(z.co2).replace('var(--crit)','#e53935').replace('var(--warn)','#fb8c00').replace('var(--acc)','#1e88e5'));}
+      var rcbdg=document.getElementById('rm-co2bdg-'+z.id); if(rcbdg){rcbdg.className='eq-card-badge '+e1Co2Bdg(z.co2); rcbdg.textContent=e1Co2Lbl(z.co2);}
+      var rpt=document.getElementById('rm-pardtemp-'+z.id); if(rpt) rpt.textContent=z.pardTemp.toFixed(1);
+      var rdt=document.getElementById('rm-dt-'+z.id); if(rdt) rdt.textContent=(z.temp-z.sp>0?'+':'')+(z.temp-z.sp).toFixed(1);
+      var st=document.getElementById('rm-svgt-'+z.id); if(st){st.textContent=z.temp.toFixed(1); st.setAttribute('fill',e1TmpCol(z));}
+      var sc=document.getElementById('rm-svgco2-'+z.id); if(sc){sc.textContent=z.co2; sc.setAttribute('fill',e1Co2Col(z.co2).replace('var(--crit)','#e53935').replace('var(--warn)','#fb8c00').replace('var(--acc)','#1e88e5'));}
+      var sp2=document.getElementById('rm-svgpard-'+z.id); if(sp2) sp2.textContent=(z.pard?'ACTIV · '+z.pardTemp.toFixed(1)+'°C':'OPRITĂ');
+      var dO=z.co2>800,dC=dO?'#43a047':'#37474f',dLbl=dO?'75° · DESCHIS':'0° · ÎNCHIS';
+      var dl=document.getElementById('rm-dmp-lbl-'+z.id); if(dl){var sp=dl.querySelectorAll('span');if(sp[0]){sp[0].textContent=dLbl;sp[0].style.color=dC;}}
+    }
+  });
+}, 2500);
+
+/* ── Init ── */
+(function(){
+  var chk=setInterval(function(){
+    if(document.getElementById('e1-row1')){ clearInterval(chk); e1RenderFloor(); }
+  },150);
+})();
+
 
 </script>
 </body>
