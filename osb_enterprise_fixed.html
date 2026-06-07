@@ -3009,8 +3009,8 @@ html,body{width:100%;height:100%;background:#07090d;overflow:hidden;font-family:
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px">
             <div class="kpi-s"><div class="kpi-s-label">Temp medie</div><div class="kpi-s-val ok" id="e1k-temp">21.4<span class="kpi-s-unit">°C</span></div><div class="kpi-s-sub">10 zone</div></div>
             <div class="kpi-s"><div class="kpi-s-label">CO₂ mediu</div><div class="kpi-s-val" style="color:var(--acc)" id="e1k-co2">648<span class="kpi-s-unit">ppm</span></div><div class="kpi-s-sub">lim 1000 ppm</div></div>
-            <div class="kpi-s"><div class="kpi-s-label">FC active</div><div class="kpi-s-val ok">18<span class="kpi-s-unit">/20</span></div><div class="kpi-s-sub">ventiloconvectoare</div></div>
-            <div class="kpi-s"><div class="kpi-s-label">Pardoseli ON</div><div class="kpi-s-val ok">8<span class="kpi-s-unit">/10</span></div><div class="kpi-s-sub">pompe recirculare</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">Clase CALD</div><div class="kpi-s-val" style="color:#ef5350" id="e1k-cald">9<span class="kpi-s-unit">/10</span></div><div class="kpi-s-sub">🔥 termostat</div></div>
+            <div class="kpi-s"><div class="kpi-s-label">Clase RECE</div><div class="kpi-s-val" style="color:#42a5f5" id="e1k-rece">1<span class="kpi-s-unit">/10</span></div><div class="kpi-s-sub">❄ termostat</div></div>
             <div class="kpi-s"><div class="kpi-s-label">Alarme CO₂</div><div class="kpi-s-val" style="color:var(--warn)">2<span class="kpi-s-unit"></span></div><div class="kpi-s-sub">cls.4, cls.7</div></div>
           </div>
 
@@ -3272,16 +3272,20 @@ function setView(name, btn) {
 function setZone(btn) {
   document.querySelectorAll('.zone-btn').forEach(function(b) { b.classList.remove('on'); });
   btn.classList.add('on');
+  var ap = document.getElementById('alarm-panel');
   if (btn.textContent.trim() === 'Etaj 1') {
-    // deschide view-ul Etaj 1 si dezactiveaza tab-urile ctx
     document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
     document.querySelectorAll('.ctx-tab').forEach(function(b) { b.classList.remove('on'); });
     var v = document.getElementById('view-etaj1');
     if (v) v.classList.add('on');
-    var ap = document.getElementById('alarm-panel');
-    var layout = document.getElementById('layout');
     if (ap) ap.style.display = 'none';
-    if (layout) layout.style.gridTemplateColumns = '1fr auto';
+  } else {
+    if (ap) ap.style.display = '';
+    if (btn.textContent.trim() === 'Toate') {
+      document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('on'); });
+      var ov = document.querySelector('.ctx-tab');
+      if (ov) { ov.classList.add('on'); setView('overview', ov); }
+    }
   }
 }
 
@@ -4080,16 +4084,16 @@ var E1_SEASON = 'iarna'; // 'iarna' | 'vara'
 var E1_ACTIVE_ROOM = null;
 
 var E1_ZONES = [
-  {id:'cls1',  name:'Clasa 1',  icon:'ti-school', temp:21.8, sp:22.0, co2:612,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
-  {id:'cls2',  name:'Clasa 2',  icon:'ti-school', temp:22.1, sp:22.0, co2:588,  rh:54, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.3, evPct:100, fc1Spd:2, fc2Spd:1, alarm:false, color:'var(--acc)'},
-  {id:'cls3',  name:'Clasa 3',  icon:'ti-school', temp:21.3, sp:22.0, co2:701,  rh:55, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:3, fc2Spd:2, alarm:false, color:'var(--acc)'},
-  {id:'cls4',  name:'Clasa 4',  icon:'ti-school', temp:20.9, sp:22.0, co2:1050, rh:58, fc1:'INCALZIRE', fc2:'STANDBY',   pard:true,  pardSP:21.5, pardTemp:20.8, evPct:100, fc1Spd:3, fc2Spd:0, alarm:true,  color:'var(--warn)'},
-  {id:'cls5',  name:'Clasa 5',  icon:'ti-school', temp:22.4, sp:22.0, co2:543,  rh:50, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:false, pardSP:21.5, pardTemp:20.5, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
-  {id:'cls6',  name:'Clasa 6',  icon:'ti-school', temp:21.6, sp:22.0, co2:634,  rh:53, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.2, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
-  {id:'cls7',  name:'Clasa 7',  icon:'ti-school', temp:20.2, sp:22.0, co2:1140, rh:61, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:20.9, evPct:100, fc1Spd:3, fc2Spd:3, alarm:true,  color:'var(--crit)'},
-  {id:'cls8',  name:'Clasa 8',  icon:'ti-school', temp:22.0, sp:22.0, co2:489,  rh:48, fc1:'STANDBY',   fc2:'STANDBY',   pard:false, pardSP:21.5, pardTemp:20.2, evPct:0,   fc1Spd:0, fc2Spd:0, alarm:false, color:'var(--t3)'},
-  {id:'cls9',  name:'Clasa 9',  icon:'ti-school', temp:21.7, sp:22.0, co2:622,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)'},
-  {id:'cls10', name:'Clasa 10', icon:'ti-school', temp:21.5, sp:22.0, co2:598,  rh:51, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:1, fc2Spd:2, alarm:false, color:'var(--acc)'},
+  {id:'cls1',  name:'Clasa 1',  icon:'ti-school', temp:21.8, sp:22.0, co2:612,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls2',  name:'Clasa 2',  icon:'ti-school', temp:22.1, sp:22.0, co2:588,  rh:54, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.3, evPct:100, fc1Spd:2, fc2Spd:1, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls3',  name:'Clasa 3',  icon:'ti-school', temp:21.3, sp:22.0, co2:701,  rh:55, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:3, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls4',  name:'Clasa 4',  icon:'ti-school', temp:20.9, sp:22.0, co2:1050, rh:58, fc1:'INCALZIRE', fc2:'STANDBY',   pard:true,  pardSP:21.5, pardTemp:20.8, evPct:100, fc1Spd:3, fc2Spd:0, alarm:true,  color:'var(--warn)', mod:'CALD'},
+  {id:'cls5',  name:'Clasa 5',  icon:'ti-school', temp:22.4, sp:22.0, co2:543,  rh:50, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:false, pardSP:21.5, pardTemp:20.5, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls6',  name:'Clasa 6',  icon:'ti-school', temp:21.6, sp:22.0, co2:634,  rh:53, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.2, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls7',  name:'Clasa 7',  icon:'ti-school', temp:20.2, sp:22.0, co2:1140, rh:61, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:20.9, evPct:100, fc1Spd:3, fc2Spd:3, alarm:true,  color:'var(--crit)', mod:'CALD'},
+  {id:'cls8',  name:'Clasa 8',  icon:'ti-school', temp:22.0, sp:22.0, co2:489,  rh:48, fc1:'STANDBY',   fc2:'STANDBY',   pard:false, pardSP:21.5, pardTemp:20.2, evPct:0,   fc1Spd:0, fc2Spd:0, alarm:false, color:'var(--t3)', mod:'RECE'},
+  {id:'cls9',  name:'Clasa 9',  icon:'ti-school', temp:21.7, sp:22.0, co2:622,  rh:52, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.1, evPct:100, fc1Spd:2, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
+  {id:'cls10', name:'Clasa 10', icon:'ti-school', temp:21.5, sp:22.0, co2:598,  rh:51, fc1:'INCALZIRE', fc2:'INCALZIRE', pard:true,  pardSP:21.5, pardTemp:21.0, evPct:100, fc1Spd:1, fc2Spd:2, alarm:false, color:'var(--acc)', mod:'CALD'},
 ];
 
 function e1Co2Col(v){ return v>1000?'var(--crit)':v>800?'var(--warn)':'var(--acc)'; }
@@ -4117,8 +4121,10 @@ function e1RenderFloor(){
     tile.onmouseout  = function(){ this.style.borderColor=z.alarm?'var(--warn-b)':'var(--border)'; this.style.background='var(--bg3)'; };
     tile.onclick     = function(){ e1OpenRoom(z.id); };
 
-    // top bar color by status
-    var barColor = z.alarm?'var(--warn)': fcActive?'var(--acc)':'var(--border2)';
+    var modCol = (z.mod||'CALD')==='CALD'?'#ef5350':'#42a5f5';
+    var modBg=(z.mod||'CALD')==='CALD'?'rgba(239,83,80,0.12)':'rgba(66,165,245,0.12)';
+    var modIco=(z.mod||'CALD')==='CALD'?'🔥':'❄';
+    var barColor=z.alarm?'var(--warn)':modCol;
 
     tile.innerHTML =
       '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+barColor+'"></div>'+
@@ -4227,6 +4233,16 @@ function e1RoomHTML(z){
                 '<div class="sp-btn" onclick="e1AdjSP(\''+z.id+'\',-0.5)">−</div>'+
                 '<div class="sp-val" id="rm-spctrl-'+z.id+'">'+z.sp.toFixed(1)+'°C</div>'+
                 '<div class="sp-btn" onclick="e1AdjSP(\''+z.id+'\',+0.5)">+</div>'+
+              '</div>'+
+            '</div>'+
+            '<div style="margin-top:5px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;background:'+(z.mod==='CALD'?'rgba(239,83,80,0.07)':'rgba(66,165,245,0.07)')+';border:1px solid '+(z.mod==='CALD'?'rgba(239,83,80,0.3)':'rgba(66,165,245,0.3)')+';border-radius:var(--r)">'+
+              '<div>'+
+                '<div style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(z.mod==='CALD'?'#ef5350':'#42a5f5')+'" id="rm-mod-'+z.id+'">'+(z.mod==='CALD'?'🔥 CALD':'❄ RECE')+'</div>'+
+                '<div style="font-family:var(--mono);font-size:7px;color:var(--t3);margin-top:1px">Setare termostat · M-Bus</div>'+
+              '</div>'+
+              '<div style="display:flex;gap:4px">'+
+                '<div onclick="e1SetMod(\''+z.id+'\',\'CALD\')" style="font-family:var(--mono);font-size:8px;font-weight:700;padding:4px 10px;border-radius:3px;cursor:pointer;border:1px solid rgba(239,83,80,0.5);background:rgba(239,83,80,0.1);color:#ef5350">🔥 CALD</div>'+
+                '<div onclick="e1SetMod(\''+z.id+'\',\'RECE\')" style="font-family:var(--mono);font-size:8px;font-weight:700;padding:4px 10px;border-radius:3px;cursor:pointer;border:1px solid rgba(66,165,245,0.5);background:rgba(66,165,245,0.1);color:#42a5f5">❄ RECE</div>'+
               '</div>'+
             '</div>'+
           '</div>'+
@@ -4640,6 +4656,17 @@ function e1PumpSVGpid(z, cx, cy, on, pc, pb){
     '<text x="'+(pxIn-2)+'" y="'+(cy-5)+'" text-anchor="end" fill="'+pc+'" font-size="5.5">RETUR</text>'+
     '<text x="'+(pxOut+2)+'" y="'+(cy-5)+'" fill="'+pc+'" font-size="5.5">TUR</text>'
   );
+}
+
+function e1SetMod(zid,mod){
+  var z=E1_ZONES.find(function(x){return x.id===zid;});if(!z)return;
+  z.mod=mod;
+  var el=document.getElementById('rm-mod-'+zid);
+  if(el){el.textContent=mod==='CALD'?'🔥 CALD':'❄ RECE';el.style.color=mod==='CALD'?'#ef5350':'#42a5f5';}
+  e1RenderFloor();
+  var cald=E1_ZONES.filter(function(z){return(z.mod||'CALD')==='CALD';}).length;
+  var kc=document.getElementById('e1k-cald');if(kc)kc.innerHTML=cald+'<span class="kpi-s-unit">/10</span>';
+  var kr=document.getElementById('e1k-rece');if(kr)kr.innerHTML=(10-cald)+'<span class="kpi-s-unit">/10</span>';
 }
 
 /* ── Control functions ── */
